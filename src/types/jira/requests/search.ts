@@ -1,6 +1,6 @@
 /**
  * An issue search request.
- * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-rest-api-3-search-post
+ * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-rest-api-3-search-jql-post
  * @see https://docs.atlassian.com/software/jira/docs/api/REST/9.9.1/#api/2/search-searchUsingSearchRequest
  */
 export interface SearchRequest {
@@ -22,13 +22,13 @@ export interface SearchRequest {
      * The maximum number of items to return per page.
      */
     maxResults?: number;
+}
+export interface SearchRequestServer extends SearchRequest {
     /**
      * The index of the first item to return in the page of results (page offset). The base index is
      * `0`.
      */
     startAt?: number;
-}
-export interface SearchRequestServer extends SearchRequest {
     /**
      * Determines how to validate the JQL query and treat the validation results. Supported values:
      * - `true` returns a 400 response code if any errors are found, along with a list of all
@@ -62,18 +62,17 @@ export interface SearchRequestCloud extends SearchRequest {
      */
     fieldsByKeys?: boolean;
     /**
+     * The token for a page to fetch that is not the first page. The first page has a
+     * `nextPageToken` of `null`. Use the `nextPageToken` to fetch the next page of issues.
+     */
+    nextPageToken?: string;
+    /**
      * A list of up to 5 issue properties to include in the results. This parameter accepts a
      * comma-separated list.
      */
     properties?: readonly [string?, string?, string?, string?, string?] | string;
     /**
-     * Determines how to validate the JQL query and treat the validation results. Supported values:
-     * - `strict` returns a 400 response code if any errors are found, along with a list of all
-     *  errors (and warnings)
-     * - `warn` returns all errors as warnings
-     * - `none` no validation is performed
-     *
-     * The default is `strict`.
+     * Strong consistency issue ids to be reconciled with search results. Accepts max 50 ids.
      */
-    validateQuery?: "none" | "strict" | "warn";
+    reconcileIssues?: number[];
 }

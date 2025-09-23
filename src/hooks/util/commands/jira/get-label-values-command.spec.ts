@@ -6,7 +6,8 @@ import { describe, it } from "node:test";
 import { PatCredentials } from "../../../../client/authentication/credentials";
 import { AxiosRestClient } from "../../../../client/https/requests";
 import type { JiraClient } from "../../../../client/jira/jira-client";
-import { BaseJiraClient } from "../../../../client/jira/jira-client";
+import { JiraClientCloud } from "../../../../client/jira/jira-client-cloud";
+import { JiraClientServer } from "../../../../client/jira/jira-client-server";
 import { dedent } from "../../../../util/dedent";
 import { LOG } from "../../../../util/logging";
 import { ConstantCommand } from "../constant-command";
@@ -16,7 +17,7 @@ describe(relative(cwd(), __filename), async () => {
     await describe(GetLabelValuesCommand.name, async () => {
         await it("fetches labels", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
-            const jiraClient = new BaseJiraClient(
+            const jiraClient = new JiraClientCloud(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 new AxiosRestClient(axios)
@@ -54,7 +55,7 @@ describe(relative(cwd(), __filename), async () => {
 
         await it("displays a warning for issues which do not exist", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
-            const jiraClient = new BaseJiraClient(
+            const jiraClient = new JiraClientServer(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 new AxiosRestClient(axios)
@@ -96,7 +97,7 @@ describe(relative(cwd(), __filename), async () => {
 
         await it("displays a warning for issues whose fields cannot be parsed", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
-            const jiraClient = new BaseJiraClient(
+            const jiraClient = new JiraClientCloud(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 new AxiosRestClient(axios)
@@ -141,7 +142,7 @@ describe(relative(cwd(), __filename), async () => {
 
         await it("throws when encountering search failures", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
-            const jiraClient = new BaseJiraClient(
+            const jiraClient = new JiraClientServer(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 new AxiosRestClient(axios)

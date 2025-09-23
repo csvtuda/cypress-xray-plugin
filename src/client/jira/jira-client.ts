@@ -7,18 +7,31 @@ import type { FieldDetail } from "../../types/jira/responses/field-detail";
 import type { Issue } from "../../types/jira/responses/issue";
 import type { IssueTypeDetails } from "../../types/jira/responses/issue-type-details";
 import type { IssueUpdate } from "../../types/jira/responses/issue-update";
-import type { SearchResults } from "../../types/jira/responses/search-results";
 import type { User } from "../../types/jira/responses/user";
-import type { StringMap } from "../../types/util";
 import { dedent } from "../../util/dedent";
 import { LOG } from "../../util/logging";
 import { Client } from "../client";
 import { loggedRequest } from "../util";
 
 /**
- * All methods a Jira client needs to implement.
+ * Search functionality which Jira clients can implement.
  */
-export interface JiraClient {
+export interface HasSearch {
+    /**
+     * Searches for issues using JQL. Automatically performs pagination if necessary.
+     *
+     * @param request - the search request
+     * @returns the search results
+     * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-rest-api-3-search-jql-post
+     * @see https://docs.atlassian.com/software/jira/docs/api/REST/9.9.1/#api/2/search-searchUsingSearchRequest
+     */
+    search(request: SearchRequest): Promise<Issue[]>;
+}
+
+/**
+ * Attachment functionality Jira clients can implement.
+ */
+export interface HasAddAttachment {
     /**
      * Adds one or more attachments to an issue. Attachments are posted as multipart/form-data.
      *
@@ -29,6 +42,12 @@ export interface JiraClient {
      * @see https://docs.atlassian.com/software/jira/docs/api/REST/9.7.0/#api/2/issue/\{issueIdOrKey\}/attachments-addAttachment
      */
     addAttachment(issueIdOrKey: string, ...files: string[]): Promise<Attachment[]>;
+}
+
+/**
+ * Issue editing functionality Jira clients can implement.
+ */
+export interface HasEditIssue {
     /**
      * Edits an issue. A transition may be applied and issue properties updated as part of the edit.
      * The edits to the issue's fields are defined using `update` and `fields`.
@@ -43,6 +62,12 @@ export interface JiraClient {
      * @see https://docs.atlassian.com/software/jira/docs/api/REST/9.10.0/#api/2/issue-editIssue
      */
     editIssue(issueIdOrKey: string, issueUpdateData: IssueUpdate): Promise<string>;
+}
+
+/**
+ * Issue fields retrieval functionality Jira clients can implement.
+ */
+export interface HasGetFields {
     /**
      * Returns system and custom issue fields according to the following rules:
      * - Fields that cannot be added to the issue navigator are always returned
@@ -58,6 +83,12 @@ export interface JiraClient {
      * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-fields/#api-rest-api-3-field-get
      */
     getFields(): Promise<FieldDetail[]>;
+}
+
+/**
+ * Issue type retrieval functionality Jira clients can implement.
+ */
+export interface HasGetIssueTypes {
     /**
      * Returns all issue types.
      *
@@ -66,23 +97,12 @@ export interface JiraClient {
      * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-types/#api-rest-api-3-issuetype-get
      */
     getIssueTypes(): Promise<IssueTypeDetails[]>;
-    /**
-     * Returns details for the current user.
-     *
-     * @returns the user details
-     * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-myself/#api-rest-api-3-myself-get
-     * @see https://docs.atlassian.com/software/jira/docs/api/REST/9.11.0/#api/2/myself
-     */
-    getMyself(): Promise<User>;
-    /**
-     * Searches for issues using JQL. Automatically performs pagination if necessary.
-     *
-     * @param request - the search request
-     * @returns the search results
-     * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-issue-search/#api-rest-api-3-search-post
-     * @see https://docs.atlassian.com/software/jira/docs/api/REST/9.9.1/#api/2/search-searchUsingSearchRequest
-     */
-    search(request: SearchRequest): Promise<Issue[]>;
+}
+
+/**
+ * Issue transitioning functionality Jira clients can implement.
+ */
+export interface HasTransitionIssue {
     /**
      * Performs an issue transition and, if the transition has a screen, updates the fields from the
      * transition screen.
@@ -101,9 +121,43 @@ export interface JiraClient {
 }
 
 /**
+ * Self functionality Jira clients can implement.
+ */
+export interface HasMyself {
+    /**
+     * Returns details for the current user.
+     *
+     * @returns the user details
+     * @see https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-myself/#api-rest-api-3-myself-get
+     * @see https://docs.atlassian.com/software/jira/docs/api/REST/9.11.0/#api/2/myself
+     */
+    getMyself(): Promise<User>;
+}
+
+/**
+ * All methods a Jira client needs to implement.
+ */
+export type JiraClient = HasAddAttachment &
+    HasEditIssue &
+    HasGetFields &
+    HasGetIssueTypes &
+    HasTransitionIssue &
+    HasMyself &
+    HasSearch;
+
+/**
  * A Jira client class for communicating with Jira instances.
  */
-export class BaseJiraClient extends Client implements JiraClient {
+export class BaseJiraClient
+    extends Client
+    implements
+        HasAddAttachment,
+        HasEditIssue,
+        HasGetFields,
+        HasGetIssueTypes,
+        HasTransitionIssue,
+        HasMyself
+{
     @loggedRequest({ purpose: "attach files" })
     public async addAttachment(issueIdOrKey: string, ...files: string[]): Promise<Attachment[]> {
         if (files.length === 0) {
@@ -234,44 +288,6 @@ export class BaseJiraClient extends Client implements JiraClient {
         );
         LOG.message("debug", "Successfully retrieved user details.");
         return response.data;
-    }
-
-    @loggedRequest({ purpose: "search issues" })
-    public async search(request: SearchRequest): Promise<Issue[]> {
-        const header = await this.credentials.getAuthorizationHeader();
-        LOG.message("debug", "Searching issues...");
-        let total = 0;
-        let startAt = request.startAt ?? 0;
-        const results: StringMap<Issue> = {};
-        do {
-            const paginatedRequest = {
-                ...request,
-                startAt: startAt,
-            };
-            const response: AxiosResponse<SearchResults> = await this.httpClient.post(
-                `${this.apiBaseUrl}/rest/api/latest/search`,
-                paginatedRequest,
-                {
-                    headers: {
-                        ...header,
-                    },
-                }
-            );
-            total = response.data.total ?? total;
-            if (response.data.issues) {
-                for (const issue of response.data.issues) {
-                    if (issue.key) {
-                        results[issue.key] = issue;
-                    }
-                }
-                // Explicit check because it could also be 0.
-                if (typeof response.data.startAt === "number") {
-                    startAt = response.data.startAt + response.data.issues.length;
-                }
-            }
-        } while (startAt && startAt < total);
-        LOG.message("debug", `Found ${total.toString()} issues`);
-        return Object.values(results);
     }
 
     @loggedRequest({ purpose: "edit issue" })
