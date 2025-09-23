@@ -7,7 +7,8 @@ import { beforeEach, describe, it } from "node:test";
 import { mockedCypressEventEmitter } from "../test/util";
 import { PatCredentials } from "./client/authentication/credentials";
 import { AxiosRestClient } from "./client/https/requests";
-import { BaseJiraClient, type JiraClient } from "./client/jira/jira-client";
+import { type JiraClient } from "./client/jira/jira-client";
+import { JiraClientServer } from "./client/jira/jira-client-server";
 import { ServerClient } from "./client/xray/xray-client-server";
 import globalContext, {
     PluginContext,
@@ -29,7 +30,7 @@ import { dedent } from "./util/dedent";
 import { ExecutableGraph } from "./util/graph/executable-graph";
 import { CapturingLogger, LOG } from "./util/logging";
 
-describe(relative(cwd(), __filename), async () => {
+void describe(relative(cwd(), __filename), () => {
     let jiraClient: JiraClient;
     let config: PluginConfigOptions<"14">;
     let pluginContext: PluginContext;
@@ -38,7 +39,7 @@ describe(relative(cwd(), __filename), async () => {
         config = JSON.parse(
             fs.readFileSync("./test/resources/cypress.config.json", "utf-8")
         ) as PluginConfigOptions<"14">;
-        jiraClient = new BaseJiraClient(
+        jiraClient = new JiraClientServer(
             "http://localhost:1234",
             new PatCredentials("token"),
             new AxiosRestClient(axios)
@@ -78,8 +79,8 @@ describe(relative(cwd(), __filename), async () => {
         resetPlugin();
     });
 
-    await describe(configureXrayPlugin.name, async () => {
-        await it("registers tasks only if disabled", async (context) => {
+    void describe(configureXrayPlugin.name, () => {
+        void it("registers tasks only if disabled", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const mockedOn = context.mock.fn();
             await configureXrayPlugin(mockedOn, config, {
@@ -99,7 +100,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(mockedOn.mock.calls[0].arguments[0], "task");
         });
 
-        await it("registers tasks only if run in interactive mode", async (context) => {
+        void it("registers tasks only if run in interactive mode", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const mockedOn = context.mock.fn();
             config.isTextTerminal = false;
@@ -117,7 +118,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(mockedOn.mock.calls[0].arguments[0], "task");
         });
 
-        await it("initializes the plugin context with the provided options", async (context) => {
+        void it("initializes the plugin context with the provided options", async (context) => {
             config.env = {
                 ["JIRA_API_TOKEN"]: "token",
                 jsonEnabled: true,
@@ -262,7 +263,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("initializes the clients with different http configurations", async (context) => {
+        void it("initializes the clients with different http configurations", async (context) => {
             const options: CypressXrayPluginOptions = {
                 http: {
                     jira: {
@@ -312,7 +313,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("initializes the logging module", async (context) => {
+        void it("initializes the logging module", async (context) => {
             const configure = context.mock.method(LOG, "configure", context.mock.fn());
             context.mock.method(globalContext, "initClients", () => pluginContext.getClients());
             const options: CypressXrayPluginOptions = {
@@ -331,7 +332,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("initializes the logging module with resolved relative paths", async (context) => {
+        void it("initializes the logging module with resolved relative paths", async (context) => {
             const configure = context.mock.method(LOG, "configure", context.mock.fn());
             context.mock.method(globalContext, "initClients", () => pluginContext.getClients());
             const options: CypressXrayPluginOptions = {
@@ -353,7 +354,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("initializes the logging module without changing absolute paths", async (context) => {
+        void it("initializes the logging module without changing absolute paths", async (context) => {
             const configure = context.mock.method(LOG, "configure", context.mock.fn());
             context.mock.method(globalContext, "initClients", () => pluginContext.getClients());
             const options: CypressXrayPluginOptions = {
@@ -375,7 +376,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("initializes the logging module with custom loggers", async (context) => {
+        void it("initializes the logging module with custom loggers", async (context) => {
             const configure = context.mock.method(LOG, "configure", context.mock.fn());
             context.mock.method(globalContext, "initClients", () => pluginContext.getClients());
             const logger = () => {
@@ -400,7 +401,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("adds upload commands", async (context) => {
+        void it("adds upload commands", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             context.mock.method(globalContext, "initClients", () => pluginContext.getClients());
             const addUploadCommands = context.mock.method(
@@ -467,7 +468,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("displays an error for failed runs", async (context) => {
+        void it("displays an error for failed runs", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             context.mock.method(globalContext, "initClients", () => pluginContext.getClients());
             context.mock.method(globalContext, "getGlobalContext", () => pluginContext);
@@ -491,7 +492,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("does not display a warning if the plugin was configured but disabled", async (context) => {
+        void it("does not display a warning if the plugin was configured but disabled", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             await configureXrayPlugin(mockedCypressEventEmitter, config, {
                 jira: { projectKey: "CYP", url: "http://localhost:1234" },
@@ -503,7 +504,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("does not display an error for failed runs if disabled", async (context) => {
+        void it("does not display an error for failed runs if disabled", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const failedResults: CypressFailedRunResult = {
                 failures: 47,
@@ -522,7 +523,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("should skip the results upload if disabled", async (context) => {
+        void it("should skip the results upload if disabled", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             context.mock.method(globalContext, "initClients", () => pluginContext.getClients());
             context.mock.method(globalContext, "getGlobalContext", () => pluginContext);
@@ -542,7 +543,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("displays a warning if there are failed vertices", async (context) => {
+        void it("displays a warning if there are failed vertices", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             context.mock.method(globalContext, "initClients", () => pluginContext.getClients());
             context.mock.method(jiraClient, "getIssueTypes", () => [{ name: "Test Execution" }]);
@@ -649,7 +650,7 @@ describe(relative(cwd(), __filename), async () => {
         });
     });
 
-    await it("displays warning and errors after other log messages", async (context) => {
+    void it("displays warning and errors after other log messages", async (context) => {
         const message = context.mock.method(LOG, "message", context.mock.fn());
         const xrayClient = new ServerClient(
             "http://localhost:1234",
@@ -774,7 +775,7 @@ describe(relative(cwd(), __filename), async () => {
         ]);
     });
 
-    await describe(syncFeatureFile.name, async () => {
+    void describe(syncFeatureFile.name, () => {
         let file: FileObject;
         beforeEach(() => {
             file = {
@@ -785,7 +786,7 @@ describe(relative(cwd(), __filename), async () => {
             };
         });
 
-        await it("displays warnings if the plugin was not configured", (context) => {
+        void it("displays warnings if the plugin was not configured", (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             syncFeatureFile(file);
             assert.deepStrictEqual(message.mock.calls[0].arguments, [
@@ -800,7 +801,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("does not display a warning if the plugin was configured but disabled", async (context) => {
+        void it("does not display a warning if the plugin was configured but disabled", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             await configureXrayPlugin(mockedCypressEventEmitter, config, {
                 jira: { projectKey: "CYP", url: "http://localhost:1234" },
@@ -813,7 +814,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("does not do anything if disabled", (context) => {
+        void it("does not do anything if disabled", (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             file.filePath = "./test/resources/features/taggedCloud.feature";
             pluginContext.getOptions().plugin.enabled = false;
@@ -829,7 +830,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("adds synchronization commands", (context) => {
+        void it("adds synchronization commands", (context) => {
             const addSynchronizationCommands = context.mock.method(
                 filePreprocessor,
                 "addSynchronizationCommands"
@@ -851,7 +852,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("does not add synchronization commands for native test files", (context) => {
+        void it("does not add synchronization commands for native test files", (context) => {
             const addSynchronizationCommands = context.mock.method(
                 filePreprocessor,
                 "addSynchronizationCommands"

@@ -15,9 +15,9 @@ import { LOG } from "../../../../util/logging";
 import { ConstantCommand } from "../constant-command";
 import { ImportExecutionCucumberCommand } from "./import-execution-cucumber-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(ImportExecutionCucumberCommand.name, async () => {
-        await it("imports cucumber multipart", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(ImportExecutionCucumberCommand.name, () => {
+        void it("imports cucumber multipart", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const xrayClient = new ServerClient(
                 "http://localhost:1234",
@@ -65,7 +65,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(message.mock.callCount(), 0);
         });
 
-        it("emits the upload event", async (context) => {
+        void it("emits the upload event", async (context) => {
             const multipart = {
                 features: JSON.parse(
                     fs.readFileSync(

@@ -7,9 +7,9 @@ import { LOG } from "../../../util/logging";
 import { ConstantCommand } from "../../util/commands/constant-command";
 import { GetUpdatedIssuesCommand } from "./get-updated-issues-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(GetUpdatedIssuesCommand.name, async () => {
-        await it("returns all affected issues", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(GetUpdatedIssuesCommand.name, () => {
+        void it("returns all affected issues", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new GetUpdatedIssuesCommand(
                 { filePath: "~/home/test/some.feature" },
@@ -29,7 +29,7 @@ describe(relative(cwd(), __filename), async () => {
         });
     });
 
-    await it("warns about issues not updated by xray", async (context) => {
+    void it("warns about issues not updated by xray", async (context) => {
         const message = context.mock.method(LOG, "message", context.mock.fn());
         const command = new GetUpdatedIssuesCommand(
             { filePath: "~/home/test/some.feature" },
@@ -64,7 +64,7 @@ describe(relative(cwd(), __filename), async () => {
         ]);
     });
 
-    await it("warns about unknown issues updated by xray", async (context) => {
+    void it("warns about unknown issues updated by xray", async (context) => {
         const message = context.mock.method(LOG, "message", context.mock.fn());
         const command = new GetUpdatedIssuesCommand(
             { filePath: "~/home/test/some.feature" },
@@ -99,7 +99,7 @@ describe(relative(cwd(), __filename), async () => {
         ]);
     });
 
-    await it("warns about issue key mismatches", async (context) => {
+    void it("warns about issue key mismatches", async (context) => {
         const message = context.mock.method(LOG, "message", context.mock.fn());
         const command = new GetUpdatedIssuesCommand(
             { filePath: "~/home/test/some.feature" },

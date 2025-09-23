@@ -11,7 +11,7 @@ import { getCreatedTestExecutionIssueKey } from "../util.mjs";
 // https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues/450
 // ============================================================================================== //
 
-describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () => {
+void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => {
     for (const testCase of [
         {
             expectedScreenshots: [
@@ -38,7 +38,7 @@ describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () =>
             title: "evidence uploads can be split into multiple requests (server)",
         },
     ] as const) {
-        await it(testCase.title, async () => {
+        void it(testCase.title, async () => {
             const output = runCypress(testCase.projectDirectory, {
                 expectedStatusCode: 0,
                 includeDefaultEnv: testCase.service,

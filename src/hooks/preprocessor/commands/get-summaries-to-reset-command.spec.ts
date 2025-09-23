@@ -7,9 +7,9 @@ import { LOG } from "../../../util/logging";
 import { ConstantCommand } from "../../util/commands/constant-command";
 import { GetSummariesToResetCommand } from "./get-summaries-to-reset-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(GetSummariesToResetCommand.name, async () => {
-        await it("returns summaries of issues to reset", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(GetSummariesToResetCommand.name, () => {
+        void it("returns summaries of issues to reset", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new GetSummariesToResetCommand(
                 LOG,
@@ -27,7 +27,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("warns about unknown old summaries", async (context) => {
+        void it("warns about unknown old summaries", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const command = new GetSummariesToResetCommand(
                 LOG,

@@ -6,16 +6,17 @@ import { describe, it } from "node:test";
 import { PatCredentials } from "../../../../client/authentication/credentials";
 import { AxiosRestClient } from "../../../../client/https/requests";
 import type { JiraClient } from "../../../../client/jira/jira-client";
-import { BaseJiraClient } from "../../../../client/jira/jira-client";
+import { JiraClientCloud } from "../../../../client/jira/jira-client-cloud";
+import { JiraClientServer } from "../../../../client/jira/jira-client-server";
 import { LOG } from "../../../../util/logging";
 import { ConstantCommand } from "../constant-command";
 import { AttachFilesCommand } from "./attach-files-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(AttachFilesCommand.name, async () => {
-        await it("attaches files", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(AttachFilesCommand.name, () => {
+        void it("attaches files", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
-            const jiraClient = new BaseJiraClient(
+            const jiraClient = new JiraClientCloud(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 new AxiosRestClient(axios)
@@ -53,9 +54,9 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("does not throw without files to attach", async (context) => {
+        void it("does not throw without files to attach", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
-            const jiraClient = new BaseJiraClient(
+            const jiraClient = new JiraClientServer(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 new AxiosRestClient(axios)

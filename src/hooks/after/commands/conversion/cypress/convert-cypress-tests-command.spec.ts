@@ -15,8 +15,8 @@ import { LOG } from "../../../../../util/logging";
 import { ConstantCommand } from "../../../../util/commands/constant-command";
 import { ConvertCypressTestsCommand } from "./convert-cypress-tests-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(ConvertCypressTestsCommand.name, async () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(ConvertCypressTestsCommand.name, () => {
         let options: InternalCypressXrayPluginOptions;
         beforeEach(() => {
             options = {
@@ -38,8 +38,8 @@ describe(relative(cwd(), __filename), async () => {
             };
         });
 
-        await describe("<13", async () => {
-            await it("converts test results into xray results json", async (context) => {
+        void describe("<13", () => {
+            void it("converts test results into xray results json", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const result = JSON.parse(
                     readFileSync("./test/resources/runResultExistingTestIssues.json", "utf-8")
@@ -89,7 +89,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("converts test results with multiple issue keys into xray results json", async (context) => {
+            void it("converts test results with multiple issue keys into xray results json", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const result = JSON.parse(
                     readFileSync(
@@ -157,8 +157,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe(">=13", async () => {
-            await it("converts test results into xray results json", async (context) => {
+        void describe(">=13", () => {
+            void it("converts test results into xray results json", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const result = JSON.parse(
                     readFileSync("./test/resources/runResult_13_0_0.json", "utf-8")
@@ -235,7 +235,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("converts test results with multiple issue keys into xray results json", async (context) => {
+            void it("converts test results with multiple issue keys into xray results json", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const result = JSON.parse(
                     readFileSync(
@@ -316,7 +316,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("warns about non-attributable screenshots", async (context) => {
+            void it("warns about non-attributable screenshots", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const result = JSON.parse(
                     readFileSync("./test/resources/runResult_13_0_0.json", "utf-8")
@@ -399,7 +399,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("uses default iterated passing statuses", async (context) => {
+            void it("uses default iterated passing statuses", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const result: CypressRunResult = JSON.parse(
                     readFileSync("./test/resources/iteratedResult_13_16_0.json", "utf-8")
@@ -432,7 +432,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(tests[0].iterations[3].status, "PASSED");
             });
 
-            await it("uses default iterated pending statuses", async (context) => {
+            void it("uses default iterated pending statuses", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const result: CypressRunResult = JSON.parse(
                     readFileSync("./test/resources/iteratedResult_13_16_0.json", "utf-8")
@@ -465,7 +465,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(tests[0].iterations[3].status, "TO DO");
             });
 
-            await it("uses default iterated skipped statuses", async (context) => {
+            void it("uses default iterated skipped statuses", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const result: CypressRunResult = JSON.parse(
                     readFileSync("./test/resources/iteratedResult_13_16_0.json", "utf-8")
@@ -498,7 +498,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(tests[0].iterations[3].status, "FAILED");
             });
 
-            await it("uses default iterated failed statuses", async (context) => {
+            void it("uses default iterated failed statuses", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const result: CypressRunResult = JSON.parse(
                     readFileSync("./test/resources/iteratedResult_13_16_0.json", "utf-8")
@@ -527,7 +527,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(tests[0].iterations[3].status, "PASSED");
             });
 
-            await it("uses custom aggregated statuses", async (context) => {
+            void it("uses custom aggregated statuses", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const result: CypressRunResult = JSON.parse(
                     readFileSync("./test/resources/iteratedResult_13_16_0.json", "utf-8")
@@ -570,7 +570,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("skips tests when encountering unknown statuses", async (context) => {
+        void it("skips tests when encountering unknown statuses", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultUnknownStatus.json", "utf-8")
@@ -616,7 +616,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("uploads screenshots by default", async (context) => {
+        void it("uploads screenshots by default", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultExistingTestIssues.json", "utf-8")
@@ -644,7 +644,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[2].evidence[0].filename, "small.png");
         });
 
-        await it("skips cucumber screenshots", async (context) => {
+        void it("skips cucumber screenshots", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const result = JSON.parse(
                 readFileSync("./test/resources/runResult_13_0_0_mixed.json", "utf-8")
@@ -688,7 +688,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[0].evidence[0].filename, "small CYP-237.png");
         });
 
-        await it("skips screenshot upload if disabled", async (context) => {
+        void it("skips screenshot upload if disabled", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultExistingTestIssues.json", "utf-8")
@@ -716,7 +716,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[2].evidence, undefined);
         });
 
-        await it("normalizes screenshot filenames if enabled", async (context) => {
+        void it("normalizes screenshot filenames if enabled", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultProblematicScreenshot.json", "utf-8")
@@ -743,7 +743,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[0].evidence[0].filename, "t_rtle_with_problem_tic_name.png");
         });
 
-        await it("does not normalize screenshot filenames by default", async (context) => {
+        void it("does not normalize screenshot filenames by default", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultProblematicScreenshot.json", "utf-8")
@@ -769,7 +769,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[0].evidence[0].filename, "tûrtle with problemätic name.png");
         });
 
-        await it("includes all evidence", async (context) => {
+        void it("includes all evidence", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result = JSON.parse(
                 readFileSync("./test/resources/runResult_13_0_0.json", "utf-8")
@@ -869,7 +869,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("includes iteration parameters", async (context) => {
+        void it("includes iteration parameters", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result = JSON.parse(
                 readFileSync("./test/resources/runResult_13_0_0.json", "utf-8")
@@ -1005,7 +1005,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("uses custom passed statuses", async (context) => {
+        void it("uses custom passed statuses", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultExistingTestIssues.json", "utf-8")
@@ -1031,7 +1031,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[1].status, "it worked");
         });
 
-        await it("uses custom failed statuses", async (context) => {
+        void it("uses custom failed statuses", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultExistingTestIssues.json", "utf-8")
@@ -1056,7 +1056,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[2].status, "it did not work");
         });
 
-        await it("uses custom pending statuses", async (context) => {
+        void it("uses custom pending statuses", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultPending.json", "utf-8")
@@ -1084,7 +1084,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[3].status, "still pending");
         });
 
-        await it("uses custom skipped statuses", async (context) => {
+        void it("uses custom skipped statuses", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultSkipped.json", "utf-8")
@@ -1109,7 +1109,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[1].status, "omit");
         });
 
-        await it("uses default iterated passing statuses", async (context) => {
+        void it("uses default iterated passing statuses", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/iteratedResult.json", "utf-8")
@@ -1141,7 +1141,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[0].iterations[3].status, "PASS");
         });
 
-        await it("uses default iterated pending statuses", async (context) => {
+        void it("uses default iterated pending statuses", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/iteratedResult.json", "utf-8")
@@ -1173,7 +1173,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[0].iterations[3].status, "TODO");
         });
 
-        await it("uses default iterated skipped statuses", async (context) => {
+        void it("uses default iterated skipped statuses", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/iteratedResult.json", "utf-8")
@@ -1205,7 +1205,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[0].iterations[3].status, "FAIL");
         });
 
-        await it("uses default iterated failed statuses", async (context) => {
+        void it("uses default iterated failed statuses", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/iteratedResult.json", "utf-8")
@@ -1233,7 +1233,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[0].iterations[3].status, "PASS");
         });
 
-        await it("uses custom aggregated statuses", async (context) => {
+        void it("uses custom aggregated statuses", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/iteratedResult.json", "utf-8")
@@ -1274,7 +1274,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[0].iterations[3].status, "PASS");
         });
 
-        await it("does not modify test information", async (context) => {
+        void it("does not modify test information", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultExistingTestIssues.json", "utf-8")
@@ -1301,7 +1301,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[2].testInfo, undefined);
         });
 
-        await it("includes test issue keys", async (context) => {
+        void it("includes test issue keys", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultExistingTestIssues.json", "utf-8")
@@ -1328,7 +1328,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[2].testKey, "CYP-49");
         });
 
-        await it("defaults to server status values", async (context) => {
+        void it("defaults to server status values", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultExistingTestIssues.json", "utf-8")
@@ -1355,7 +1355,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[2].status, "FAIL");
         });
 
-        await it("uses cloud status values", async (context) => {
+        void it("uses cloud status values", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultExistingTestIssues.json", "utf-8")
@@ -1382,7 +1382,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(tests[2].status, "FAILED");
         });
 
-        await it("throws if no native cypress tests were executed", async (context) => {
+        void it("throws if no native cypress tests were executed", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultExistingTestIssues.json", "utf-8")
@@ -1407,7 +1407,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("returns its parameters", (context) => {
+        void it("returns its parameters", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const result: CypressRunResult = JSON.parse(
                 readFileSync("./test/resources/runResultExistingTestIssues.json", "utf-8")

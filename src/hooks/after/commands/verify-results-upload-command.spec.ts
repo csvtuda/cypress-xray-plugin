@@ -8,9 +8,9 @@ import { LOG } from "../../../util/logging";
 import { ConstantCommand } from "../../util/commands/constant-command";
 import { VerifyResultsUploadCommand } from "./verify-results-upload-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(VerifyResultsUploadCommand.name, async () => {
-        await it("prints a success message for successful cypress uploads", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(VerifyResultsUploadCommand.name, () => {
+        void it("prints a success message for successful cypress uploads", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const command = new VerifyResultsUploadCommand({ url: "http://localhost:1234" }, LOG, {
                 cucumberExecutionIssueKey: new ConstantCommand(LOG, undefined),
@@ -23,7 +23,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("prints a success message for successful cucumber uploads", async (context) => {
+        void it("prints a success message for successful cucumber uploads", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const command = new VerifyResultsUploadCommand({ url: "http://localhost:1234" }, LOG, {
                 cucumberExecutionIssueKey: new ConstantCommand(LOG, "CYP-123"),
@@ -36,7 +36,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("prints a success message for successful uploads", async (context) => {
+        void it("prints a success message for successful uploads", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const command = new VerifyResultsUploadCommand({ url: "http://localhost:1234" }, LOG, {
                 cucumberExecutionIssueKey: new ConstantCommand(LOG, "CYP-123"),
@@ -49,7 +49,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("skips for mismatched execution issue keys", async (context) => {
+        void it("skips for mismatched execution issue keys", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new VerifyResultsUploadCommand({ url: "http://localhost:1234" }, LOG, {
                 cucumberExecutionIssueKey: new ConstantCommand(LOG, "CYP-456"),
@@ -69,7 +69,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("skips when there are no results", async (context) => {
+        void it("skips when there are no results", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new VerifyResultsUploadCommand({ url: "http://localhost:1234" }, LOG, {
                 cucumberExecutionIssueKey: new ConstantCommand(LOG, undefined),

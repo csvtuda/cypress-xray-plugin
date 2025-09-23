@@ -7,9 +7,9 @@ import { SkippedError } from "../util/errors";
 import { LOG } from "../util/logging";
 import { Command, ComputableState } from "./command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(Command.name, async () => {
-        await it("computes the result on compute call", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(Command.name, () => {
+        void it("computes the result on compute call", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             class ArithmeticCommand extends Command<number, null> {
                 private readonly x: number;
@@ -38,7 +38,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(await resultPromise, 100);
         });
 
-        await it("returns the failure reason", async (context) => {
+        void it("returns the failure reason", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const error = new Error("Failure 123");
             class FailingCommand extends Command<number, null> {
@@ -52,7 +52,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(command.getState(), ComputableState.FAILED);
         });
 
-        await it("returns arbitrary failure reasons", async (context) => {
+        void it("returns arbitrary failure reasons", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             class FailingCommand extends Command<number, null> {
                 protected computeResult(): Promise<number> {
@@ -65,7 +65,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(command.getState(), ComputableState.FAILED);
         });
 
-        await it("returns the skip reason", async (context) => {
+        void it("returns the skip reason", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const error = new SkippedError("Skip 123");
             class SkippingCommand extends Command<number, null> {
@@ -79,7 +79,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(command.getState(), ComputableState.SKIPPED);
         });
 
-        await it("updates its state", async (context) => {
+        void it("updates its state", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const eventEmitter = new EventEmitter();
 
@@ -105,7 +105,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(command.getState(), ComputableState.SUCCEEDED);
         });
 
-        await it("computes its result only once", async (context) => {
+        void it("computes its result only once", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             class ComputingCommand extends Command<number, null> {
                 private hasComputed = false;
@@ -127,7 +127,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(await command.compute(), 42);
         });
 
-        await it("returns the LOG", (context) => {
+        void it("returns the LOG", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             class SomeCommand extends Command<string, null> {
                 protected computeResult(): Promise<string> {

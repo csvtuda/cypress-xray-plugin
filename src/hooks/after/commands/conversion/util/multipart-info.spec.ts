@@ -5,9 +5,9 @@ import { describe, it } from "node:test";
 import { dedent } from "../../../../../util/dedent";
 import { buildMultipartInfoCloud, buildMultipartInfoServer } from "./multipart-info";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(buildMultipartInfoCloud.name, async () => {
-        await it("adds default information", () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(buildMultipartInfoCloud.name, () => {
+        void it("adds default information", () => {
             const info = buildMultipartInfoCloud(
                 {
                     browserName: "Chromium",
@@ -32,7 +32,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(info.fields.issuetype, undefined);
         });
 
-        await it("uses provided summaries", () => {
+        void it("uses provided summaries", () => {
             const info = buildMultipartInfoCloud(
                 {
                     browserName: "Chromium",
@@ -49,7 +49,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(info.fields.summary, "Hello");
         });
 
-        await it("uses provided descriptions", () => {
+        void it("uses provided descriptions", () => {
             const info = buildMultipartInfoCloud(
                 {
                     browserName: "Chromium",
@@ -66,7 +66,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(info.fields.description, "Hello There");
         });
 
-        await it("uses provided test execution issue types", () => {
+        void it("uses provided test execution issue types", () => {
             const info = buildMultipartInfoCloud(
                 {
                     browserName: "Chromium",
@@ -92,7 +92,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("uses provided test plans", () => {
+        void it("uses provided test plans", () => {
             const info = buildMultipartInfoCloud(
                 {
                     browserName: "Chromium",
@@ -115,7 +115,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("uses provided test environments", () => {
+        void it("uses provided test environments", () => {
             const info = buildMultipartInfoCloud(
                 {
                     browserName: "Chromium",
@@ -138,7 +138,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("uses provided custom data", () => {
+        void it("uses provided custom data", () => {
             const info = buildMultipartInfoCloud(
                 {
                     browserName: "Chromium",
@@ -182,7 +182,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("prefers custom data to plugin data", () => {
+        void it("prefers custom data to plugin data", () => {
             const info = buildMultipartInfoCloud(
                 {
                     browserName: "Chromium",
@@ -212,8 +212,8 @@ describe(relative(cwd(), __filename), async () => {
         });
     });
 
-    await describe(buildMultipartInfoServer.name, async () => {
-        await it("adds default information", () => {
+    void describe(buildMultipartInfoServer.name, () => {
+        void it("adds default information", () => {
             const info = buildMultipartInfoServer(
                 {
                     browserName: "Chromium",
@@ -241,7 +241,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(info.fields.issuetype, undefined);
         });
 
-        await it("uses provided summaries", () => {
+        void it("uses provided summaries", () => {
             const info = buildMultipartInfoServer(
                 {
                     browserName: "Chromium",
@@ -258,7 +258,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(info.fields.summary, "Hello");
         });
 
-        await it("uses provided descriptions", () => {
+        void it("uses provided descriptions", () => {
             const info = buildMultipartInfoServer(
                 {
                     browserName: "Chromium",
@@ -275,7 +275,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(info.fields.description, "Hello There");
         });
 
-        await it("uses provided test execution issue types", () => {
+        void it("uses provided test execution issue types", () => {
             const info = buildMultipartInfoServer(
                 {
                     browserName: "Chromium",
@@ -300,7 +300,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("uses provided test plans", () => {
+        void it("uses provided test plans", () => {
             const info = buildMultipartInfoServer(
                 {
                     browserName: "Chromium",
@@ -321,7 +321,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(info.fields.customField_12345, ["CYP-123"]);
         });
 
-        await it("uses provided test environments", () => {
+        void it("uses provided test environments", () => {
             const info = buildMultipartInfoServer(
                 {
                     browserName: "Chromium",
@@ -342,7 +342,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(info.fields.customField_12345, ["DEV"]);
         });
 
-        await it("uses provided custom data", () => {
+        void it("uses provided custom data", () => {
             const info = buildMultipartInfoServer(
                 {
                     browserName: "Chromium",
@@ -382,7 +382,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("prefers custom data to plugin data", () => {
+        void it("prefers custom data to plugin data", () => {
             const info = buildMultipartInfoServer(
                 {
                     browserName: "Chromium",

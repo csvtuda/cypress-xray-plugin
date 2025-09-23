@@ -6,9 +6,9 @@ import { describe, it } from "node:test";
 import { parseFeatureFile } from "./gherkin";
 import { getCucumberScenarioIssueTags } from "./scenario";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(getCucumberScenarioIssueTags.name, async () => {
-        await it("extracts scenario tags without prefix", () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(getCucumberScenarioIssueTags.name, () => {
+        void it("extracts scenario tags without prefix", () => {
             const feature = parseFeatureFile(
                 "./test/resources/features/taggedNoPrefixMultipleScenario.feature"
             ).feature;
@@ -20,7 +20,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("extracts scenario tags with prefix", () => {
+        void it("extracts scenario tags with prefix", () => {
             const feature = parseFeatureFile(
                 "./test/resources/features/taggedPrefixMultipleScenario.feature"
             ).feature;

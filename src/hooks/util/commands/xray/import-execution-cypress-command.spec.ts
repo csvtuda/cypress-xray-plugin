@@ -16,9 +16,9 @@ import { LOG } from "../../../../util/logging";
 import { ConstantCommand } from "../constant-command";
 import { ImportExecutionCypressCommand } from "./import-execution-cypress-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(ImportExecutionCypressCommand.name, async () => {
-        await it("imports cypress xray json", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(ImportExecutionCypressCommand.name, () => {
+        void it("imports cypress xray json", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const results: XrayTestExecutionResults = {
                 info: { description: "Hello", summary: "Test Execution Summary" },
@@ -72,8 +72,8 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(message.mock.callCount(), 0);
         });
 
-        describe("splits evidence uploads into multiple requests", async () => {
-            await it("server", async (context) => {
+        void describe("splits evidence uploads into multiple requests", () => {
+            void it("server", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const results: XrayTestExecutionResults = {
                     info: { description: "Hello", summary: "Test Execution Summary" },
@@ -200,7 +200,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("cloud", async (context) => {
+            void it("cloud", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const results: XrayTestExecutionResults = {
                     info: { description: "Hello", summary: "Test Execution Summary" },
@@ -250,7 +250,11 @@ describe(relative(cwd(), __filename), async () => {
                 context.mock.method(credentials, "getAuthorizationHeader", () => {
                     return { ["Authorization"]: "ey12345" };
                 });
-                const xrayClient = new XrayClientCloud(credentials, restClient);
+                const xrayClient = new XrayClientCloud(
+                    "http://localhost:1234",
+                    credentials,
+                    restClient
+                );
                 const importExecutionMultipartCallArgs: Parameters<
                     XrayClientCloud["importExecutionMultipart"]
                 >[] = [];
@@ -360,7 +364,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        it("emits the upload event", async (context) => {
+        void it("emits the upload event", async (context) => {
             const results: XrayTestExecutionResults = {
                 info: { description: "Hello", summary: "Test Execution Summary" },
                 testExecutionKey: "CYP-123",
@@ -417,8 +421,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        describe("splits evidence uploads into multiple sequential requests", async () => {
-            await it("server", async (context) => {
+        void describe("splits evidence uploads into multiple sequential requests", () => {
+            void it("server", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const results: XrayTestExecutionResults = {
                     info: { description: "Hello", summary: "Test Execution Summary" },
@@ -545,7 +549,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("cloud", async (context) => {
+            void it("cloud", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const results: XrayTestExecutionResults = {
                     info: { description: "Hello", summary: "Test Execution Summary" },
@@ -595,7 +599,11 @@ describe(relative(cwd(), __filename), async () => {
                 context.mock.method(credentials, "getAuthorizationHeader", () => {
                     return { ["Authorization"]: "ey12345" };
                 });
-                const xrayClient = new XrayClientCloud(credentials, restClient);
+                const xrayClient = new XrayClientCloud(
+                    "http://localhost:1234",
+                    credentials,
+                    restClient
+                );
                 const importExecutionMultipartCallArgs: Parameters<
                     XrayClientCloud["importExecutionMultipart"]
                 >[] = [];

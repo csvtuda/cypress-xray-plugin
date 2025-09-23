@@ -9,9 +9,9 @@ import { LOG } from "../../../../../util/logging";
 import { ConstantCommand } from "../../../../util/commands/constant-command";
 import { ConvertCucumberFeaturesCommand } from "./convert-cucumber-features-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(ConvertCucumberFeaturesCommand.name, async () => {
-        await it("converts cucumber results into cucumber features data", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(ConvertCucumberFeaturesCommand.name, () => {
+        void it("converts cucumber results into cucumber features data", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const cucumberReport: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(
@@ -38,7 +38,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(features.length, 1);
         });
 
-        await it("returns parameters", (context) => {
+        void it("returns parameters", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const cucumberReport: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(
@@ -74,7 +74,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("converts cucumber results into cloud cucumber features data", async (context) => {
+        void it("converts cucumber results into cloud cucumber features data", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const cucumberReport: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(
@@ -102,7 +102,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(features.length, 1);
         });
 
-        await it("includes all tagged features and tests", async (context) => {
+        void it("includes all tagged features and tests", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const cucumberReport: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(
@@ -134,7 +134,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(features[1].elements.length, 1);
         });
 
-        await it("uses the configured test execution issue key", async (context) => {
+        void it("uses the configured test execution issue key", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const cucumberReport: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(
@@ -165,7 +165,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(features[1].tags, [{ name: "@CYP-456" }]);
         });
 
-        await it("uses the configured test execution issue key even without existing tags", async (context) => {
+        void it("uses the configured test execution issue key even without existing tags", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const cucumberReport: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(
@@ -196,7 +196,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(features[0].tags, [{ name: "@CYP-456" }]);
         });
 
-        await it("includes screenshots if enabled", async (context) => {
+        void it("includes screenshots if enabled", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const cucumberReport: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(
@@ -230,7 +230,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("respects custom statuses", async (context) => {
+        void it("respects custom statuses", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new ConvertCucumberFeaturesCommand(
                 {
@@ -360,7 +360,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(features[0].elements[0].steps[5].result.status, "IS PENDING");
         });
 
-        await it("skips background elements", async (context) => {
+        void it("skips background elements", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const cucumberReport: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(
@@ -388,7 +388,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(features[0].elements.length, 2);
         });
 
-        await it("skips embeddings if screenshots are disabled", async (context) => {
+        void it("skips embeddings if screenshots are disabled", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const cucumberReport: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(
@@ -420,7 +420,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(features[0].elements[2].steps[1].embeddings, []);
         });
 
-        await it("skips untagged scenarios", async (context) => {
+        void it("skips untagged scenarios", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const cucumberReport: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(
@@ -500,7 +500,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(features, []);
         });
 
-        await it("skips scenarios without recognised issue tags", async (context) => {
+        void it("skips scenarios without recognised issue tags", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const cucumberReport: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(
@@ -568,7 +568,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(features, []);
         });
 
-        await it("includes scenarios with multiple tags", async (context) => {
+        void it("includes scenarios with multiple tags", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const cucumberReport: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(

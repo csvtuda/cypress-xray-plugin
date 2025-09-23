@@ -4,8 +4,8 @@ import { cwd } from "node:process";
 import { beforeEach, describe, it } from "node:test";
 import { SimpleDirectedEdge, SimpleDirectedGraph } from "./graph";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(SimpleDirectedGraph.name, async () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(SimpleDirectedGraph.name, () => {
         let graph: SimpleDirectedGraph<number> = new SimpleDirectedGraph<number>();
 
         beforeEach(() => {
@@ -21,13 +21,13 @@ describe(relative(cwd(), __filename), async () => {
             graph.connect(2, 4);
         });
 
-        await describe(graph.place.name, async () => {
-            await it("adds vertices", () => {
+        void describe(graph.place.name, () => {
+            void it("adds vertices", () => {
                 graph.place(7);
                 assert.deepStrictEqual([...graph.getVertices()], [0, 1, 2, 3, 4, 7]);
             });
 
-            await it("detects duplicates", () => {
+            void it("detects duplicates", () => {
                 graph.place(5);
                 assert.throws(
                     () => {
@@ -38,8 +38,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe(graph.connect.name, async () => {
-            await it("connects to existing vertices", () => {
+        void describe(graph.connect.name, () => {
+            void it("connects to existing vertices", () => {
                 graph.place(5);
                 graph.connect(0, 5);
                 assert.deepStrictEqual(
@@ -53,7 +53,7 @@ describe(relative(cwd(), __filename), async () => {
                 );
             });
 
-            await it("detects unknown source vertices", () => {
+            void it("detects unknown source vertices", () => {
                 assert.throws(
                     () => {
                         graph.connect(42, 0);
@@ -62,7 +62,7 @@ describe(relative(cwd(), __filename), async () => {
                 );
             });
 
-            await it("detects unknown destination vertices", () => {
+            void it("detects unknown destination vertices", () => {
                 assert.throws(
                     () => {
                         graph.connect(0, 42);
@@ -71,7 +71,7 @@ describe(relative(cwd(), __filename), async () => {
                 );
             });
 
-            await it("detects cycles", () => {
+            void it("detects cycles", () => {
                 assert.throws(
                     () => {
                         graph.connect(4, 2);
@@ -80,7 +80,7 @@ describe(relative(cwd(), __filename), async () => {
                 );
             });
 
-            await it("detects duplicates", () => {
+            void it("detects duplicates", () => {
                 graph.place(8);
                 graph.connect(0, 8);
                 assert.throws(
@@ -91,7 +91,7 @@ describe(relative(cwd(), __filename), async () => {
                 );
             });
 
-            await it("detects self loops", () => {
+            void it("detects self loops", () => {
                 assert.throws(
                     () => {
                         graph.connect(0, 0);
@@ -101,15 +101,15 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe(graph.find.name, async () => {
-            await it("finds vertices", () => {
+        void describe(graph.find.name, () => {
+            void it("finds vertices", () => {
                 assert.strictEqual(
                     graph.find((vertex: number) => vertex === 3),
                     3
                 );
             });
 
-            await it("does not find nonexistent vertices", () => {
+            void it("does not find nonexistent vertices", () => {
                 assert.strictEqual(
                     graph.find((vertex: number) => vertex === 6),
                     undefined
@@ -117,14 +117,14 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe(graph.getVertices.name, async () => {
-            await it("returns all vertices", () => {
+        void describe(graph.getVertices.name, () => {
+            void it("returns all vertices", () => {
                 assert.deepStrictEqual([...graph.getVertices()], [0, 1, 2, 3, 4]);
             });
         });
 
-        await describe(graph.getEdges.name, async () => {
-            await it("returns all edges", () => {
+        void describe(graph.getEdges.name, () => {
+            void it("returns all edges", () => {
                 assert.deepStrictEqual(
                     [...graph.getEdges()],
                     [
@@ -137,18 +137,18 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe(graph.size.name, async () => {
-            await it("returns the vertex set cardinality", () => {
+        void describe(graph.size.name, () => {
+            void it("returns the vertex set cardinality", () => {
                 assert.strictEqual(graph.size("vertices"), 5);
             });
 
-            await it("returns the edge set cardinality", () => {
+            void it("returns the edge set cardinality", () => {
                 assert.strictEqual(graph.size("edges"), 4);
             });
         });
 
-        await describe(graph.getOutgoing.name, async () => {
-            await it("returns the outgoing edges of a vertex", () => {
+        void describe(graph.getOutgoing.name, () => {
+            void it("returns the outgoing edges of a vertex", () => {
                 assert.deepStrictEqual(
                     [...graph.getOutgoing(0)],
                     [
@@ -159,69 +159,69 @@ describe(relative(cwd(), __filename), async () => {
                 );
             });
 
-            await it("returns empty arrays for leaf nodes", () => {
+            void it("returns empty arrays for leaf nodes", () => {
                 assert.deepStrictEqual([...graph.getOutgoing(4)], []);
             });
 
-            await it("throws for nonexistent nodes", () => {
+            void it("throws for nonexistent nodes", () => {
                 assert.throws(() => [...graph.getOutgoing(10)], { message: "Unknown vertex: 10" });
             });
         });
 
-        await describe(graph.getIncoming.name, async () => {
-            await it("returns the incoming edges of a vertex", () => {
+        void describe(graph.getIncoming.name, () => {
+            void it("returns the incoming edges of a vertex", () => {
                 assert.deepStrictEqual([...graph.getIncoming(3)], [new SimpleDirectedEdge(0, 3)]);
             });
 
-            await it("returns empty arrays for root nodes", () => {
+            void it("returns empty arrays for root nodes", () => {
                 assert.deepStrictEqual([...graph.getIncoming(0)], []);
             });
 
-            await it("throws for nonexistent nodes", () => {
+            void it("throws for nonexistent nodes", () => {
                 assert.throws(() => [...graph.getIncoming(10)], { message: "Unknown vertex: 10" });
             });
         });
 
-        await describe(graph.hasOutgoing.name, async () => {
-            await it("returns true for vertices with outgoing edges", () => {
+        void describe(graph.hasOutgoing.name, () => {
+            void it("returns true for vertices with outgoing edges", () => {
                 assert.strictEqual(graph.hasOutgoing(0), true);
             });
 
-            await it("returns false for vertices without outgoing edges", () => {
+            void it("returns false for vertices without outgoing edges", () => {
                 assert.strictEqual(graph.hasOutgoing(4), false);
             });
 
-            await it("throws for nonexistent nodes", () => {
+            void it("throws for nonexistent nodes", () => {
                 assert.throws(() => graph.hasOutgoing(10), { message: "Unknown vertex: 10" });
             });
         });
 
-        await describe(graph.hasIncoming.name, async () => {
-            await it("returns true for vertices with incoming edges", () => {
+        void describe(graph.hasIncoming.name, () => {
+            void it("returns true for vertices with incoming edges", () => {
                 assert.strictEqual(graph.hasIncoming(1), true);
             });
 
-            await it("returns false for vertices without incoming edges", () => {
+            void it("returns false for vertices without incoming edges", () => {
                 assert.strictEqual(graph.hasIncoming(0), false);
             });
 
-            await it("throws for nonexistent nodes", () => {
+            void it("throws for nonexistent nodes", () => {
                 assert.throws(() => graph.hasIncoming(10), { message: "Unknown vertex: 10" });
             });
         });
     });
 
-    await describe("edge", async () => {
+    void describe("edge", () => {
         const edge = new SimpleDirectedEdge("abc", "def");
 
-        await describe(edge.getSource.name, async () => {
-            await it("returns the source vertex", () => {
+        void describe(edge.getSource.name, () => {
+            void it("returns the source vertex", () => {
                 assert.strictEqual(edge.getSource(), "abc");
             });
         });
 
-        await describe(edge.getDestination.name, async () => {
-            await it("returns the destination vertex", () => {
+        void describe(edge.getDestination.name, () => {
+            void it("returns the destination vertex", () => {
                 assert.strictEqual(edge.getDestination(), "def");
             });
         });

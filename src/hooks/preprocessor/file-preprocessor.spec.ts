@@ -6,7 +6,7 @@ import { beforeEach, describe, it } from "node:test";
 import { assertIsInstanceOf } from "../../../test/util";
 import { PatCredentials } from "../../client/authentication/credentials";
 import { AxiosRestClient } from "../../client/https/requests";
-import { BaseJiraClient } from "../../client/jira/jira-client";
+import { JiraClientServer } from "../../client/jira/jira-client-server";
 import { ServerClient } from "../../client/xray/xray-client-server";
 import globalContext from "../../context";
 import type { FileObject } from "../../types/cypress";
@@ -26,7 +26,7 @@ import { GetUpdatedIssuesCommand } from "./commands/get-updated-issues-command";
 import { ParseFeatureFileCommand } from "./commands/parse-feature-file-command";
 import filePreprocessor from "./file-preprocessor";
 
-describe(relative(cwd(), __filename), async () => {
+void describe(relative(cwd(), __filename), () => {
     let clients: ClientCombination;
     let options: InternalCypressXrayPluginOptions;
 
@@ -63,7 +63,7 @@ describe(relative(cwd(), __filename), async () => {
         };
         const restClient = new AxiosRestClient(axios);
         clients = {
-            jiraClient: new BaseJiraClient(
+            jiraClient: new JiraClientServer(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 restClient
@@ -77,7 +77,7 @@ describe(relative(cwd(), __filename), async () => {
         };
     });
 
-    await describe(filePreprocessor.addSynchronizationCommands.name, async () => {
+    void describe(filePreprocessor.addSynchronizationCommands.name, () => {
         const file = {
             ...({} as FileObject),
             filePath: "./path/to/file.feature",
@@ -85,7 +85,7 @@ describe(relative(cwd(), __filename), async () => {
             shouldWatch: false,
         };
 
-        await it("adds all commands necessary for feature file upload", (context) => {
+        void it("adds all commands necessary for feature file upload", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const graph = new ExecutableGraph<Command>();
             filePreprocessor.addSynchronizationCommands(file, options, clients, graph, LOG);
@@ -131,7 +131,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(graph.size("vertices"), 13);
         });
 
-        await it("correctly connects all commands", (context) => {
+        void it("correctly connects all commands", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const graph = new ExecutableGraph<Command>();
             filePreprocessor.addSynchronizationCommands(file, options, clients, graph, LOG);
@@ -202,7 +202,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(graph.size("edges"), 18);
         });
 
-        await it("reuses existing commands", (context) => {
+        void it("reuses existing commands", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const graph = new ExecutableGraph<Command>();
             const parseFeatureFileCommand = graph.place(
@@ -217,7 +217,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("uses preconfigured jira field ids", (context) => {
+        void it("uses preconfigured jira field ids", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const graph = new ExecutableGraph<Command>();
             filePreprocessor.addSynchronizationCommands(file, options, clients, graph, LOG);

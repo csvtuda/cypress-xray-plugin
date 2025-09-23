@@ -16,8 +16,8 @@ import { JwtCredentials } from "../authentication/credentials";
 import { AxiosRestClient } from "../https/requests";
 import { XrayClientCloud } from "./xray-client-cloud";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(XrayClientCloud.name, async () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(XrayClientCloud.name, () => {
         let client: XrayClientCloud;
         let restClient: AxiosRestClient;
 
@@ -35,8 +35,8 @@ describe(relative(cwd(), __filename), async () => {
             client = new XrayClientCloud("https://xray.cloud.getxray.app", credentials, restClient);
         });
 
-        await describe("import execution", async () => {
-            await it("calls the correct endpoint", async (context) => {
+        void describe("import execution", () => {
+            void it("calls the correct endpoint", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
 
                 const post = context.mock.method(restClient, "post", () => {
@@ -87,7 +87,7 @@ describe(relative(cwd(), __filename), async () => {
                 );
             });
 
-            await it("should handle successful responses", async (context) => {
+            void it("should handle successful responses", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
 
                 context.mock.method(restClient, "post", () => {
@@ -134,7 +134,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(response, "CYP-123");
             });
 
-            await it("handles bad responses", async (context) => {
+            void it("handles bad responses", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const logErrorToFile = context.mock.method(
                     LOG,
@@ -196,8 +196,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("import execution multipart", async () => {
-            await it("calls the correct endpoint", async (context) => {
+        void describe("import execution multipart", () => {
+            void it("calls the correct endpoint", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
 
                 const post = context.mock.method(restClient, "post", () => {
@@ -236,7 +236,7 @@ describe(relative(cwd(), __filename), async () => {
                 );
             });
 
-            await it("handles successful responses", async (context) => {
+            void it("handles successful responses", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
 
                 context.mock.method(restClient, "post", () => {
@@ -270,7 +270,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(response, "CYP-123");
             });
 
-            await it("handles bad responses", async (context) => {
+            void it("handles bad responses", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const logErrorToFile = context.mock.method(
                     LOG,
@@ -327,8 +327,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("import execution cucumber multipart", async () => {
-            await it("calls the correct endpoint", async (context) => {
+        void describe("import execution cucumber multipart", () => {
+            void it("calls the correct endpoint", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
 
                 const post = context.mock.method(restClient, "post", () => {
@@ -367,7 +367,7 @@ describe(relative(cwd(), __filename), async () => {
                 );
             });
 
-            await it("should handle successful responses", async (context) => {
+            void it("should handle successful responses", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
 
                 context.mock.method(restClient, "post", () => {
@@ -402,7 +402,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(response, "CYP-123");
             });
 
-            await it("handles bad responses", async (context) => {
+            void it("handles bad responses", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const logErrorToFile = context.mock.method(
                     LOG,
@@ -460,8 +460,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("import feature", async () => {
-            await it("calls the correct endpoint", async (context) => {
+        void describe("import feature", () => {
+            void it("calls the correct endpoint", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
 
                 const post = context.mock.method(restClient, "post", () => {
@@ -507,7 +507,7 @@ describe(relative(cwd(), __filename), async () => {
                 );
             });
 
-            await it("handles successful responses", async (context) => {
+            void it("handles successful responses", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
 
                 context.mock.method(restClient, "post", () => {
@@ -552,7 +552,7 @@ describe(relative(cwd(), __filename), async () => {
                 });
             });
 
-            await it("handles responses with errors", async (context) => {
+            void it("handles responses with errors", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
 
                 const post = context.mock.method(restClient, "post", () => {
@@ -605,7 +605,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("handles responses without any updated issues", async (context) => {
+            void it("handles responses without any updated issues", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
 
                 const post = context.mock.method(restClient, "post", () => {
@@ -656,7 +656,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("handles bad responses", async (context) => {
+            void it("handles bad responses", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const logErrorToFile = context.mock.method(
                     LOG,
@@ -710,7 +710,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("handles network failures", async (context) => {
+            void it("handles network failures", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const logErrorToFile = context.mock.method(
                     LOG,

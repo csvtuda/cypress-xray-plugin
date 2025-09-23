@@ -6,9 +6,9 @@ import { LOG } from "../../../util/logging";
 import { ConstantCommand } from "../../util/commands/constant-command";
 import { ExtractIssueKeysCommand } from "./extract-issue-keys-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(ExtractIssueKeysCommand.name, async () => {
-        await it("merges all issue keys into one array", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(ExtractIssueKeysCommand.name, () => {
+        void it("merges all issue keys into one array", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const extractIssueKeysCommand = new ExtractIssueKeysCommand(
                 LOG,

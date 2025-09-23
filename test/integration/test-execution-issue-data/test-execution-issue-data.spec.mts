@@ -11,7 +11,7 @@ import { getCreatedTestExecutionIssueKey } from "../util.mjs";
 // https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues/359
 // ============================================================================================== //
 
-describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () => {
+void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => {
     for (const test of [
         {
             expectedLabels: [],
@@ -46,7 +46,7 @@ describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () =>
             title: "test execution issue data is wrapped (server)",
         },
     ] as const) {
-        await it(test.title, async () => {
+        void it(test.title, async () => {
             const output = runCypress(test.projectDirectory, {
                 includeDefaultEnv: test.service,
             });

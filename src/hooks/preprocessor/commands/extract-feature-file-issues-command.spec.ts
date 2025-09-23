@@ -9,9 +9,9 @@ import { ConstantCommand } from "../../util/commands/constant-command";
 import { ExtractFeatureFileIssuesCommand } from "./extract-feature-file-issues-command";
 import { parseFeatureFile } from "./parsing/gherkin";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(ExtractFeatureFileIssuesCommand.name, async () => {
-        await it("extracts cucumber issue data", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(ExtractFeatureFileIssuesCommand.name, () => {
+        void it("extracts cucumber issue data", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const document = parseFeatureFile(
                 "./test/resources/features/taggedPrefixCorrect.feature"
@@ -43,7 +43,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("skips empty feature files", async (context) => {
+        void it("skips empty feature files", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const document: GherkinDocument = {
                 comments: [],
@@ -64,7 +64,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("handles rules", async (context) => {
+        void it("handles rules", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const document: GherkinDocument = {
                 comments: [{ location: { line: 5 }, text: "@CYP-456" }],
@@ -142,7 +142,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("throws for missing scenario tags", async (context) => {
+        void it("throws for missing scenario tags", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const document = parseFeatureFile(
                 "./test/resources/features/taggedPrefixMissingScenario.feature"
@@ -199,7 +199,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("throws for missing scenario tags (no scenario name)", async (context) => {
+        void it("throws for missing scenario tags (no scenario name)", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const document = parseFeatureFile(
                 "./test/resources/features/taggedPrefixMissingScenario.feature"
@@ -259,7 +259,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("throws for wrong scenario tags", async (context) => {
+        void it("throws for wrong scenario tags", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const document = parseFeatureFile(
                 "./test/resources/features/taggedWrongScenarioTags.feature"
@@ -313,7 +313,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("throws for wrong scenario tags (no scenario name, no steps)", async (context) => {
+        void it("throws for wrong scenario tags (no scenario name, no steps)", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const document = parseFeatureFile(
                 "./test/resources/features/taggedWrongScenarioTags.feature"
@@ -371,7 +371,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("throws for missing background tags", async (context) => {
+        void it("throws for missing background tags", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const document = parseFeatureFile(
                 "./test/resources/features/taggedPrefixMissingBackground.feature"
@@ -428,7 +428,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("throws for missing background tags (no background steps and names)", async (context) => {
+        void it("throws for missing background tags (no background steps and names)", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const document = parseFeatureFile(
                 "./test/resources/features/taggedPrefixMissingBackground.feature"
@@ -489,7 +489,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("throws for wrong background tags (no background name)", async (context) => {
+        void it("throws for wrong background tags (no background name)", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const document = parseFeatureFile(
                 "./test/resources/features/taggedWrongBackgroundTags.feature"
@@ -545,7 +545,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("throws for wrong background tags", async (context) => {
+        void it("throws for wrong background tags", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const document = parseFeatureFile(
                 "./test/resources/features/taggedWrongBackgroundTags.feature"
@@ -598,8 +598,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("no prefix", async () => {
-            await it("throws for multiple scenario tags (no scenario name, no steps)", async (context) => {
+        void describe("no prefix", () => {
+            void it("throws for multiple scenario tags (no scenario name, no steps)", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const document = parseFeatureFile(
                     "./test/resources/features/taggedNoPrefixMultipleScenario.feature"
@@ -640,7 +640,7 @@ describe(relative(cwd(), __filename), async () => {
                 });
             });
 
-            await it("throws for multiple background tags", async (context) => {
+            void it("throws for multiple background tags", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const document = parseFeatureFile(
                     "./test/resources/features/taggedNoPrefixMultipleBackground.feature"
@@ -680,7 +680,7 @@ describe(relative(cwd(), __filename), async () => {
                 });
             });
 
-            await it("throws for multiple background tags (no background name)", async (context) => {
+            void it("throws for multiple background tags (no background name)", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const document = parseFeatureFile(
                     "./test/resources/features/taggedNoPrefixMultipleBackground.feature"
@@ -724,8 +724,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("prefixed", async () => {
-            await it("throws for multiple scenario tags", async (context) => {
+        void describe("prefixed", () => {
+            void it("throws for multiple scenario tags", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const document = parseFeatureFile(
                     "./test/resources/features/taggedPrefixMultipleScenario.feature"
@@ -761,7 +761,7 @@ describe(relative(cwd(), __filename), async () => {
                 });
             });
 
-            await it("throws for multiple background tags", async (context) => {
+            void it("throws for multiple background tags", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const document = parseFeatureFile(
                     "./test/resources/features/taggedPrefixMultipleBackground.feature"

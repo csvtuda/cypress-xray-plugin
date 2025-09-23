@@ -9,9 +9,9 @@ import { LOG } from "../../../../../util/logging";
 import { ConstantCommand } from "../../../../util/commands/constant-command";
 import { CombineCucumberMultipartCommand } from "./combine-cucumber-multipart-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(CombineCucumberMultipartCommand.name, async () => {
-        await it("combines cucumber multipart data", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(CombineCucumberMultipartCommand.name, () => {
+        void it("combines cucumber multipart data", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const cucumberFeatures: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(

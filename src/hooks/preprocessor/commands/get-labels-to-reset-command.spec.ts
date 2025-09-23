@@ -7,9 +7,9 @@ import { LOG } from "../../../util/logging";
 import { ConstantCommand } from "../../util/commands/constant-command";
 import { GetLabelsToResetCommand } from "./get-labels-to-reset-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(GetLabelsToResetCommand.name, async () => {
-        await it("returns labels of issues to reset", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(GetLabelsToResetCommand.name, () => {
+        void it("returns labels of issues to reset", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new GetLabelsToResetCommand(
                 LOG,
@@ -30,7 +30,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("warns about unknown old labels", async (context) => {
+        void it("warns about unknown old labels", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const command = new GetLabelsToResetCommand(
                 LOG,

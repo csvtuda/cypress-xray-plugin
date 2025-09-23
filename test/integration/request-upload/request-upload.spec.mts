@@ -11,7 +11,7 @@ import { runCypress } from "../../sh.mjs";
 // https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues/314
 // ============================================================================================== //
 
-describe(relative(process.cwd(), import.meta.filename), () => {
+void describe(relative(process.cwd(), import.meta.filename), () => {
     for (const test of [
         {
             logDirectory: join(import.meta.dirname, "automatic-cloud", "logs"),
@@ -38,7 +38,7 @@ describe(relative(process.cwd(), import.meta.filename), () => {
             title: "cy.request gets overwritten using manual task calls (server)",
         },
     ] as const) {
-        it(test.title, () => {
+        void it(test.title, () => {
             runCypress(test.projectDirectory, {
                 includeDefaultEnv: test.service,
             });

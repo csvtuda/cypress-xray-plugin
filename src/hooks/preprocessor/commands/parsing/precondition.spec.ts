@@ -9,9 +9,9 @@ import {
     getCucumberPreconditionIssueTags,
 } from "./precondition";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(getCucumberPreconditionIssueComments.name, async () => {
-        await it("extracts relevant comments without prefix", () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(getCucumberPreconditionIssueComments.name, () => {
+        void it("extracts relevant comments without prefix", () => {
             const document = parseFeatureFile(
                 "./test/resources/features/taggedNoPrefixMultipleBackground.feature"
             );
@@ -21,7 +21,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(comments, ["#@CYP-244", "# a random comment", "#@CYP-262"]);
         });
 
-        await it("extracts relevant comments with prefix", () => {
+        void it("extracts relevant comments with prefix", () => {
             const document = parseFeatureFile(
                 "./test/resources/features/taggedPrefixMultipleBackground.feature"
             );
@@ -35,7 +35,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("handles empty backgrounds", () => {
+        void it("handles empty backgrounds", () => {
             const document = parseFeatureFile(
                 "./test/resources/features/taggedNoPrefixMultipleBackground.feature"
             );
@@ -47,8 +47,8 @@ describe(relative(cwd(), __filename), async () => {
         });
     });
 
-    await describe(getCucumberPreconditionIssueTags.name, async () => {
-        await it("extracts background tags without prefix", () => {
+    void describe(getCucumberPreconditionIssueTags.name, () => {
+        void it("extracts background tags without prefix", () => {
             const document = parseFeatureFile(
                 "./test/resources/features/taggedNoPrefixMultipleBackground.feature"
             );
@@ -59,7 +59,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(tags, ["CYP-244", "CYP-262"]);
         });
 
-        await it("extracts background tags with prefix", () => {
+        void it("extracts background tags with prefix", () => {
             const document = parseFeatureFile(
                 "./test/resources/features/taggedPrefixMultipleBackground.feature"
             );
@@ -75,7 +75,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(tags, ["CYP-244", "CYP-262"]);
         });
 
-        await it("handles empty backgrounds", () => {
+        void it("handles empty backgrounds", () => {
             const document = parseFeatureFile(
                 "./test/resources/features/taggedPrefixMultipleBackground.feature"
             );

@@ -9,9 +9,9 @@ import { dedent } from "../util/dedent";
 import { LOG } from "../util/logging";
 import * as tasks from "./tasks";
 
-describe(path.relative(process.cwd(), __filename), () => {
-    describe(tasks.enqueueTask.name, () => {
-        it("enqueues tasks for outgoing requests (url only)", (context) => {
+void describe(path.relative(process.cwd(), __filename), () => {
+    void describe(tasks.enqueueTask.name, () => {
+        void it("enqueues tasks for outgoing requests (url only)", (context) => {
             const { cy, cypress } = getMockedCypress();
             cypress.currentTest.titlePath = ["A test title"];
             const task = context.mock.method(cy, "task", context.mock.fn());
@@ -30,7 +30,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             ]);
         });
 
-        it("enqueues tasks for outgoing requests (object)", (context) => {
+        void it("enqueues tasks for outgoing requests (object)", (context) => {
             const { cy, cypress } = getMockedCypress();
             cypress.currentTest.titlePath = ["Another test title"];
             const task = context.mock.method(cy, "task", context.mock.fn());
@@ -53,7 +53,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             ]);
         });
 
-        it("enqueues tasks for incoming responses", (context) => {
+        void it("enqueues tasks for incoming responses", (context) => {
             const { cy, cypress } = getMockedCypress();
             cypress.currentTest.titlePath = ["Incoming test title"];
             const task = context.mock.method(cy, "task", context.mock.fn());
@@ -90,7 +90,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             ]);
         });
 
-        it("enqueues tasks for defining iteration parameters", (context) => {
+        void it("enqueues tasks for defining iteration parameters", (context) => {
             const { cy, cypress } = getMockedCypress();
             cypress.currentTest.titlePath = ["Incoming test title"];
             const task = context.mock.method(cy, "task", context.mock.fn());
@@ -108,8 +108,8 @@ describe(path.relative(process.cwd(), __filename), () => {
         });
     });
 
-    describe(tasks.CypressTaskListener.name, () => {
-        it("handles single outgoing requests for tests with issue key", (context) => {
+    void describe(tasks.CypressTaskListener.name, () => {
+        void it("handles single outgoing requests for tests with issue key", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const evidenceCollection = new SimpleEvidenceCollection();
             const addEvidence = context.mock.method(
@@ -143,7 +143,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             });
         });
 
-        it("handles single outgoing requests for tests with multiple issue keys", (context) => {
+        void it("handles single outgoing requests for tests with multiple issue keys", (context) => {
             const evidenceCollection = new SimpleEvidenceCollection();
             context.mock.method(LOG, "message", context.mock.fn());
             const listener = new tasks.CypressTaskListener(
@@ -182,7 +182,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             ]);
         });
 
-        it("handles multiple outgoing requests for tests with the same issue key", (context) => {
+        void it("handles multiple outgoing requests for tests with the same issue key", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const evidenceCollection = new SimpleEvidenceCollection();
             const addEvidence = context.mock.method(
@@ -241,7 +241,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             });
         });
 
-        it("handles single outgoing requests for tests without issue key", (context) => {
+        void it("handles single outgoing requests for tests without issue key", (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const evidenceCollection = new SimpleEvidenceCollection();
             const addEvidence = context.mock.method(
@@ -286,7 +286,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             ]);
         });
 
-        it("handles multiple outgoing requests for tests without issue key", (context) => {
+        void it("handles multiple outgoing requests for tests without issue key", (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const evidenceCollection = new SimpleEvidenceCollection();
             const addEvidence = context.mock.method(
@@ -341,7 +341,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             ]);
         });
 
-        it("handles single incoming responses for tests with issue key", (context) => {
+        void it("handles single incoming responses for tests with issue key", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const evidenceCollection = new SimpleEvidenceCollection();
             const addEvidence = context.mock.method(
@@ -393,7 +393,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             });
         });
 
-        it("handles single incoming responses for tests with multiple issue keys", (context) => {
+        void it("handles single incoming responses for tests with multiple issue keys", (context) => {
             const evidenceCollection = new SimpleEvidenceCollection();
             context.mock.method(LOG, "message", context.mock.fn());
             const listener = new tasks.CypressTaskListener(
@@ -441,7 +441,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             ]);
         });
 
-        it("handles multiple incoming responses for tests with the same issue key", (context) => {
+        void it("handles multiple incoming responses for tests with the same issue key", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const evidenceCollection = new SimpleEvidenceCollection();
             const addEvidence = context.mock.method(
@@ -530,7 +530,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             });
         });
 
-        it("handles single incoming responses for tests without issue key", (context) => {
+        void it("handles single incoming responses for tests without issue key", (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const evidenceCollection = new SimpleEvidenceCollection();
             const addEvidence = context.mock.method(
@@ -584,7 +584,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             ]);
         });
 
-        it("handles multiple incoming responses for tests without issue key", (context) => {
+        void it("handles multiple incoming responses for tests without issue key", (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const evidenceCollection = new SimpleEvidenceCollection();
             const addEvidence = context.mock.method(
@@ -654,7 +654,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             ]);
         });
 
-        it("handles iteration definitions for tests with issue key", (context) => {
+        void it("handles iteration definitions for tests with issue key", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const iterationParameterCollection = new SimpleIterationParameterCollection();
             const setIterationParameters = context.mock.method(
@@ -680,7 +680,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             assert.deepStrictEqual(result, { age: "42", name: "Bob" });
         });
 
-        it("handles single iteration definitions for tests with multiple issue keys", (context) => {
+        void it("handles single iteration definitions for tests with multiple issue keys", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const iterationParameterCollection = new SimpleIterationParameterCollection();
             const listener = new tasks.CypressTaskListener(
@@ -716,7 +716,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             );
         });
 
-        it("handles multiple iteration definitions for tests with the same issue key", (context) => {
+        void it("handles multiple iteration definitions for tests with the same issue key", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const iterationParameterCollection = new SimpleIterationParameterCollection();
             const listener = new tasks.CypressTaskListener(
@@ -749,7 +749,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             );
         });
 
-        it("handles single iteration definitions for tests without issue key", (context) => {
+        void it("handles single iteration definitions for tests without issue key", (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const iterationParameterCollection = new SimpleIterationParameterCollection();
             const setIterationParameters = context.mock.method(
@@ -791,7 +791,7 @@ describe(path.relative(process.cwd(), __filename), () => {
             ]);
         });
 
-        it("handles multiple iteration definitions for tests without issue key", (context) => {
+        void it("handles multiple iteration definitions for tests without issue key", (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const iterationParameterCollection = new SimpleIterationParameterCollection();
             const setIterationParameters = context.mock.method(

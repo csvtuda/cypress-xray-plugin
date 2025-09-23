@@ -13,9 +13,9 @@ import { LOG } from "../../../../util/logging";
 import { ConstantCommand } from "../constant-command";
 import { GetSummaryValuesCommand } from "./get-summary-values-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(GetSummaryValuesCommand.name, async () => {
-        await it("fetches summaries", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(GetSummaryValuesCommand.name, () => {
+        void it("fetches summaries", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const jiraClient = new JiraClientCloud(
                 "http://localhost:1234",
@@ -53,7 +53,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("displays a warning for issues which do not exist", async (context) => {
+        void it("displays a warning for issues which do not exist", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const jiraClient = new JiraClientCloud(
                 "http://localhost:1234",
@@ -95,7 +95,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("displays a warning for issues whose fields cannot be parsed", async (context) => {
+        void it("displays a warning for issues whose fields cannot be parsed", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const jiraClient = new JiraClientServer(
                 "http://localhost:1234",
@@ -143,7 +143,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("throws when encountering search failures", async (context) => {
+        void it("throws when encountering search failures", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const jiraClient = new JiraClientCloud(
                 "http://localhost:1234",

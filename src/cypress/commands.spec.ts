@@ -4,7 +4,7 @@ import process from "node:process";
 import { beforeEach, describe, it } from "node:test";
 import { getMockedCypress } from "../../test/mocks";
 
-describe(path.relative(process.cwd(), __filename), () => {
+void describe(path.relative(process.cwd(), __filename), () => {
     beforeEach(() => {
         const resolved = require.resolve(`${__dirname}/commands`);
         if (resolved in require.cache) {
@@ -13,7 +13,7 @@ describe(path.relative(process.cwd(), __filename), () => {
         }
     });
 
-    it("overwrites the cy.request command on import", async (context) => {
+    void it("overwrites the cy.request command on import", async (context) => {
         const overwriteSpy = context.mock.fn((name: string) => {
             assert.strictEqual(name, "request");
         });

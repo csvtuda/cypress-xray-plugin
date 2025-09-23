@@ -6,16 +6,16 @@ import { describe, it } from "node:test";
 import { PatCredentials } from "../../../../client/authentication/credentials";
 import { AxiosRestClient } from "../../../../client/https/requests";
 import type { JiraClient } from "../../../../client/jira/jira-client";
-import { BaseJiraClient } from "../../../../client/jira/jira-client";
+import { JiraClientServer } from "../../../../client/jira/jira-client-server";
 import { LOG } from "../../../../util/logging";
 import { ConstantCommand } from "../constant-command";
 import { TransitionIssueCommand } from "./transition-issue-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(TransitionIssueCommand.name, async () => {
-        await it("transitions issues", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(TransitionIssueCommand.name, () => {
+        void it("transitions issues", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
-            const jiraClient = new BaseJiraClient(
+            const jiraClient = new JiraClientServer(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 new AxiosRestClient(axios)

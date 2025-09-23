@@ -6,6 +6,7 @@ import { describe, it } from "node:test";
 import { PatCredentials } from "../../../client/authentication/credentials";
 import { AxiosRestClient } from "../../../client/https/requests";
 import { ServerClient } from "../../../client/xray/xray-client-server";
+import { PluginEventEmitter } from "../../../context";
 import type { Failable } from "../../../hooks/command";
 import { Command, ComputableState } from "../../../hooks/command";
 import { ImportExecutionCucumberCommand } from "../../../hooks/util/commands/xray/import-execution-cucumber-command";
@@ -20,9 +21,9 @@ import { CapturingLogger } from "../../logging";
 import { SimpleDirectedGraph } from "../graph";
 import { ChainingCommandGraphLogger, ChainingGraphLogger } from "./graph-logger";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(ChainingGraphLogger.name, async () => {
-        await it("logs correctly indented message chains", () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(ChainingGraphLogger.name, () => {
+        void it("logs correctly indented message chains", () => {
             const graph = new SimpleDirectedGraph<Failable>();
             const a = graph.place({ getFailure: () => new Error("A failed") });
             const b = graph.place({ getFailure: () => undefined });
@@ -69,7 +70,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("logs correctly indented message chains in diamond form", () => {
+        void it("logs correctly indented message chains in diamond form", () => {
             const graph = new SimpleDirectedGraph<Failable>();
             const a = graph.place({ getFailure: () => new Error("A failed") });
             const b = graph.place({ getFailure: () => undefined });
@@ -128,7 +129,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("does not log entirely successful forests", () => {
+        void it("does not log entirely successful forests", () => {
             const graph = new SimpleDirectedGraph<Failable>();
             const a = graph.place({ getFailure: () => undefined });
             const b = graph.place({ getFailure: () => undefined });
@@ -156,7 +157,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(logger.getMessages(), []);
         });
 
-        await it("logs correctly indented multiline chains", () => {
+        void it("logs correctly indented multiline chains", () => {
             const graph = new SimpleDirectedGraph<Failable>();
             const a = graph.place({
                 getFailure: () =>
@@ -207,7 +208,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("logs vertices with priority first", () => {
+        void it("logs vertices with priority first", () => {
             const graph = new SimpleDirectedGraph<Failable>();
             const a = graph.place({ getFailure: () => new Error("A failed") });
             const b = graph.place({ getFailure: () => new SkippedError("B skipped") });
@@ -249,14 +250,14 @@ describe(relative(cwd(), __filename), async () => {
         });
     });
 
-    await describe(ChainingCommandGraphLogger.name, async () => {
+    void describe(ChainingCommandGraphLogger.name, () => {
         class FailingCommand<R> extends Command<R, { message: string }> {
             protected computeResult(): R {
                 throw new Error(`No computing today: ${this.parameters.message}`);
             }
         }
 
-        await it("adds additional information to cucumber import command failures", async () => {
+        void it("adds additional information to cucumber import command failures", async () => {
             const logger = new CapturingLogger();
             const graph = new SimpleDirectedGraph<Command>();
             const a = graph.place(
@@ -265,6 +266,7 @@ describe(relative(cwd(), __filename), async () => {
             const b = graph.place(
                 new ImportExecutionCucumberCommand(
                     {
+                        emitter: new PluginEventEmitter(),
                         xrayClient: new ServerClient(
                             "http://localhost:1234",
                             new PatCredentials("token"),
@@ -291,7 +293,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("adds additional information to cypress import command failures", async () => {
+        void it("adds additional information to cypress import command failures", async () => {
             const logger = new CapturingLogger();
             const graph = new SimpleDirectedGraph<Command>();
             const a = graph.place(
@@ -303,6 +305,8 @@ describe(relative(cwd(), __filename), async () => {
             const b = graph.place(
                 new ImportExecutionCypressCommand(
                     {
+                        emitter: new PluginEventEmitter(),
+                        splitUpload: false,
                         xrayClient: new ServerClient(
                             "http://localhost:1234",
                             new PatCredentials("token"),
@@ -329,7 +333,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("adds additional information to feature file import command failures", async (context) => {
+        void it("adds additional information to feature file import command failures", async (context) => {
             const logger = new CapturingLogger();
             const xrayClient = new ServerClient(
                 "http://localhost:1234",

@@ -6,9 +6,9 @@ import { LOG } from "../../../util/logging";
 import { ConstantCommand } from "./constant-command";
 import { DestructureCommand } from "./destructure-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(DestructureCommand.name, async () => {
-        await it("returns the accessed object value", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(DestructureCommand.name, () => {
+        void it("returns the accessed object value", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new DestructureCommand(
                 LOG,
@@ -21,7 +21,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(await command.compute(), { c: "bonjour" });
         });
 
-        await it("throws for invalid object accesses", async (context) => {
+        void it("throws for invalid object accesses", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new DestructureCommand(
                 LOG,
