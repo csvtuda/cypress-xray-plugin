@@ -843,13 +843,11 @@ class AfterRunBuilder {
     }
 
     private getResultsCommand() {
-        if (!this.constants.results) {
-            this.constants.results = getOrCreateConstantCommand(
-                this.graph,
-                this.logger,
-                this.results
-            );
-        }
+        this.constants.results ??= getOrCreateConstantCommand(
+            this.graph,
+            this.logger,
+            this.results
+        );
         return this.constants.results;
     }
 }
