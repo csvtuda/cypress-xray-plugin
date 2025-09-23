@@ -7,7 +7,8 @@ import {
 } from "./client/authentication/credentials";
 import { AxiosRestClient } from "./client/https/requests";
 import type { JiraClient } from "./client/jira/jira-client";
-import { BaseJiraClient } from "./client/jira/jira-client";
+import { JiraClientCloud } from "./client/jira/jira-client-cloud";
+import { JiraClientServer } from "./client/jira/jira-client-server";
 import { XrayClientCloud } from "./client/xray/xray-client-cloud";
 import type { XrayClientServer } from "./client/xray/xray-client-server";
 import { ServerClient } from "./client/xray/xray-client-server";
@@ -575,7 +576,12 @@ async function initClients(
             env[ENV_NAMES.authentication.jira.username] as string,
             env[ENV_NAMES.authentication.jira.apiToken] as string
         );
-        const jiraClient = await getJiraClient(jiraOptions.url, credentials, httpClients.jira);
+        const jiraClient = await getJiraClient(
+            jiraOptions.url,
+            credentials,
+            httpClients.jira,
+            "cloud"
+        );
         if (
             ENV_NAMES.authentication.xray.clientId in env &&
             ENV_NAMES.authentication.xray.clientSecret in env
@@ -613,7 +619,12 @@ async function initClients(
         const credentials = new PatCredentials(
             env[ENV_NAMES.authentication.jira.apiToken] as string
         );
-        const jiraClient = await getJiraClient(jiraOptions.url, credentials, httpClients.jira);
+        const jiraClient = await getJiraClient(
+            jiraOptions.url,
+            credentials,
+            httpClients.jira,
+            "server"
+        );
         LOG.message("info", "Jira PAT found. Setting up Xray server PAT credentials.");
         const xrayClient = await getXrayServerClient(
             xrayOptions.url ?? jiraOptions.url,
@@ -637,7 +648,12 @@ async function initClients(
             env[ENV_NAMES.authentication.jira.username] as string,
             env[ENV_NAMES.authentication.jira.password] as string
         );
-        const jiraClient = await getJiraClient(jiraOptions.url, credentials, httpClients.jira);
+        const jiraClient = await getJiraClient(
+            jiraOptions.url,
+            credentials,
+            httpClients.jira,
+            "server"
+        );
         LOG.message(
             "info",
             "Jira username and password found. Setting up Xray server basic auth credentials."
@@ -751,9 +767,13 @@ async function getXrayServerClient(
 async function getJiraClient(
     url: string,
     credentials: HttpCredentials,
-    httpClient: AxiosRestClient
+    httpClient: AxiosRestClient,
+    kind: "cloud" | "server"
 ): Promise<JiraClient> {
-    const jiraClient = new BaseJiraClient(url, credentials, httpClient);
+    const jiraClient =
+        kind === "server"
+            ? new JiraClientServer(url, credentials, httpClient)
+            : new JiraClientCloud(url, credentials, httpClient);
     try {
         const userDetails = await jiraClient.getMyself();
         const username = userDetails.displayName ?? userDetails.emailAddress ?? userDetails.name;
