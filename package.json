@@ -6,13 +6,13 @@
     "author": "csvtuda",
     "repository": {
         "type": "git",
-        "url": "https://github.com/Qytera-Gmbh/cypress-xray-plugin"
+        "url": "https://github.com/csvtuda/cypress-xray-plugin"
     },
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues"
+        "url": "https://github.com/csvtuda/cypress-xray-plugin/issues"
     },
-    "homepage": "https://qytera-gmbh.github.io/projects/cypress-xray-plugin",
+    "homepage": "https://csvtuda.github.io/projects/cypress-xray-plugin",
     "keywords": [
         "cypress",
         "xray",

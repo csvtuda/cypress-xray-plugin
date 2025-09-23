@@ -620,7 +620,7 @@ describe(relative(cwd(), __filename), async () => {
                           The prefixes in Cucumber background or scenario tags might not be consistent with the scheme defined in Xray.
 
                           For more information, visit:
-                          - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/cucumber/#prefixes
+                          - https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/cucumber/#prefixes
                     `),
                 ]);
                 assert.strictEqual(logErrorToFile.mock.callCount(), 1);

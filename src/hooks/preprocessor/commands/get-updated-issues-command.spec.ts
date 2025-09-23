@@ -58,8 +58,8 @@ describe(relative(cwd(), __filename), async () => {
                   - Your plugin tag prefix settings match those defined in Xray.
 
                   More information:
-                  - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
-                  - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/cucumber/#prefixes
+                  - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                  - https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/cucumber/#prefixes
             `),
         ]);
     });
@@ -93,8 +93,8 @@ describe(relative(cwd(), __filename), async () => {
                   - Your plugin tag prefix settings match those defined in Xray.
 
                   More information:
-                  - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
-                  - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/cucumber/#prefixes
+                  - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                  - https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/cucumber/#prefixes
             `),
         ]);
     });
@@ -133,8 +133,8 @@ describe(relative(cwd(), __filename), async () => {
                   - Your plugin tag prefix settings match those defined in Xray.
 
                   More information:
-                  - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
-                  - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/cucumber/#prefixes
+                  - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                  - https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/cucumber/#prefixes
             `),
         ]);
     });

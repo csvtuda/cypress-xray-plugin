@@ -587,10 +587,10 @@ Some of the plugin's core functionality has been rewritten entirely to keep thin
 
 - The plugin will now _never_ create new Jira issues. The only exception to this rule are test execution issues.
 
-    - It now only uploads results of Cypress tests which include [a corresponding Jira key](https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/) and skips all other tests
+    - It now only uploads results of Cypress tests which include [a corresponding Jira key](https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/) and skips all other tests
     - It now only uploads results of Cucumber tests which include both:
-        - Issue tags for background elements (see [here](https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/))
-        - Issue tags for _all_ scenarios and scenario backgrounds (see [here](https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/))
+        - Issue tags for background elements (see [here](https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/))
+        - Issue tags for _all_ scenarios and scenario backgrounds (see [here](https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/))
     - It now also skips feature file upload/synchronization of feature files for which the above does not apply
 
 > [!NOTE]

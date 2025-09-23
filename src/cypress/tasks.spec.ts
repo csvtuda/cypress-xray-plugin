@@ -281,7 +281,7 @@ describe(path.relative(process.cwd(), __filename), () => {
                             });
 
                           For more information, visit:
-                          - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                          - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
                 `),
             ]);
         });
@@ -336,7 +336,7 @@ describe(path.relative(process.cwd(), __filename), () => {
                             });
 
                           For more information, visit:
-                          - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                          - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
                 `),
             ]);
         });
@@ -579,7 +579,7 @@ describe(path.relative(process.cwd(), __filename), () => {
                             });
 
                           For more information, visit:
-                          - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                          - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
                 `),
             ]);
         });
@@ -649,7 +649,7 @@ describe(path.relative(process.cwd(), __filename), () => {
                             });
 
                           For more information, visit:
-                          - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                          - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
                 `),
             ]);
         });
@@ -786,7 +786,7 @@ describe(path.relative(process.cwd(), __filename), () => {
                             });
 
                           For more information, visit:
-                          - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                          - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
                 `),
             ]);
         });
@@ -833,7 +833,7 @@ describe(path.relative(process.cwd(), __filename), () => {
                             });
 
                           For more information, visit:
-                          - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                          - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
                 `),
             ]);
         });
