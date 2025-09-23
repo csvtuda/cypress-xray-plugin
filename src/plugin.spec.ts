@@ -585,7 +585,7 @@ describe(relative(cwd(), __filename), async () => {
                               });
 
                             For more information, visit:
-                            - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                            - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
                 `),
             ]);
             assert.deepStrictEqual(message.mock.calls[2].arguments, [
@@ -608,7 +608,7 @@ describe(relative(cwd(), __filename), async () => {
                               });
 
                             For more information, visit:
-                            - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                            - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
                 `),
             ]);
             assert.deepStrictEqual(message.mock.calls[3].arguments, [
@@ -631,7 +631,7 @@ describe(relative(cwd(), __filename), async () => {
                               });
 
                             For more information, visit:
-                            - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                            - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
                 `),
             ]);
             assert.deepStrictEqual(message.mock.calls[4].arguments, [
@@ -795,7 +795,7 @@ describe(relative(cwd(), __filename), async () => {
 
                       Skipping file:preprocessor hook: Plugin misconfigured: configureXrayPlugin() was not called.
 
-                      Make sure your project is set up correctly: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/introduction/
+                      Make sure your project is set up correctly: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/introduction/
                 `),
             ]);
         });

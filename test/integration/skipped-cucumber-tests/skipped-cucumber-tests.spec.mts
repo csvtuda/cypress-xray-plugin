@@ -14,11 +14,11 @@ describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () =>
     for (const testCase of [
         {
             projectDirectory: join(import.meta.dirname, "cloud"),
-            projectKey: "CYP",
+            projectKey: "CXP",
             service: "cloud",
             testKeys: {
-                included: "CYP-798",
-                skipped: "CYP-797",
+                included: "CXP-12",
+                skipped: "CXP-13",
             },
             title: "results upload works for skipped cucumber tests (cloud)",
             xrayPassedStatus: "PASSED",

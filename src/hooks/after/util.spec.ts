@@ -99,7 +99,7 @@ describe(relative(cwd(), __filename), async () => {
                         });
 
                       For more information, visit:
-                      - https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                      - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
                 `),
             });
         });

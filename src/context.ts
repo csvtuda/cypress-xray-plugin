@@ -541,12 +541,8 @@ function initHttpClients(
                 http: httpConfigCommon,
                 rateLimiting: rateLimitingCommon,
             });
-            if (!jiraClient) {
-                jiraClient = httpClient;
-            }
-            if (!xrayClient) {
-                xrayClient = httpClient;
-            }
+            jiraClient ??= httpClient;
+            xrayClient ??= httpClient;
         }
     } else {
         const httpClient = new AxiosRestClient(axios, {

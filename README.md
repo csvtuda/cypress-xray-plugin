@@ -1,15 +1,12 @@
-> [!CAUTION]
-> This repository is no longer actively maintained. For the latest updates and ongoing development, please visit the new repository at [csvtuda/cypress-xray-plugin](https://github.com/csvtuda/cypress-xray-plugin).
-
 <h1 align="center">
-  <a href="https://qytera-gmbh.github.io/projects/cypress-xray-plugin">
+  <a href="https://csvtuda.github.io/projects/cypress-xray-plugin">
   <img width="100%" src="logo.svg" alt="Cypress Xray Plugin">
 </h1>
 
 [![npm version](https://img.shields.io/npm/v/cypress-xray-plugin?style=flat-square)](https://www.npmjs.com/package/cypress-xray-plugin)
 [![npm downloads](https://img.shields.io/npm/dm/cypress-xray-plugin?style=flat-square)](https://www.npmjs.com/package/cypress-xray-plugin)
-[![open GitHub issues](https://img.shields.io/github/issues-raw/qytera-gmbh/cypress-xray-plugin?style=flat-square)](https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues?q=is%3Aissue+is%3Aopen)
-[![unaddressed GitHub issues](https://img.shields.io/github/issues-search/qytera-gmbh/cypress-xray-plugin?label=unaddressed%20issues&query=no%3Aassignee%20is%3Aopen&style=flat-square)](https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues?q=is%3Aissue+is%3Aopen+no%3Aassignee)
+[![open GitHub issues](https://img.shields.io/github/issues-raw/csvtuda/cypress-xray-plugin?style=flat-square)](https://github.com/csvtuda/cypress-xray-plugin/issues?q=is%3Aissue+is%3Aopen)
+[![unaddressed GitHub issues](https://img.shields.io/github/issues-search/csvtuda/cypress-xray-plugin?label=unaddressed%20issues&query=no%3Aassignee%20is%3Aopen&style=flat-square)](https://github.com/csvtuda/cypress-xray-plugin/issues?q=is%3Aissue+is%3Aopen+no%3Aassignee)
 
 # Cypress Xray Plugin
 
@@ -56,9 +53,9 @@ export default defineConfig({
 });
 ```
 
-Make sure you also configure your [credentials](https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/authentication/#authentication) for Jira/Xray.
+Make sure you also configure your [credentials](https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/authentication/#authentication) for Jira/Xray.
 
-To have the plugin upload test results, [link your test cases](https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/) to Xray tests by specifying the corresponding issue keys in the test titles:
+To have the plugin upload test results, [link your test cases](https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/) to Xray tests by specifying the corresponding issue keys in the test titles:
 
 ```js
 it("PRJ-42 My test", () => {
@@ -71,14 +68,8 @@ it("PRJ-42 My test", () => {
 
 ## Documentation
 
-Please [visit the documentation](https://qytera-gmbh.github.io/projects/cypress-xray-plugin) to find out how to fully setup the plugin, including a full list of options.
+Please [visit the documentation](https://csvtuda.github.io/projects/cypress-xray-plugin) to find out how to fully setup the plugin, including a full list of options.
 
 ## Issues
 
-If you're encountering strange behaviour or feel like a feature is missing, feel free to create a [GitHub issue](https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues).
-
-## Further Reading
-
-Here is a small list of related blog posts that may be of interest:
-
-- :de: [Das Cypress Xray Plugin zur nahtlosen Integration Ihrer End-to-End Tests](https://www.qytera.de/blog/cypress-xray-plugin-e2e-tests)
+If you're encountering strange behaviour or feel like a feature is missing, feel free to create a [GitHub issue](https://github.com/csvtuda/cypress-xray-plugin/issues).

@@ -1709,7 +1709,7 @@ describe(relative(cwd(), __filename), async () => {
                         message: dedent(`
                         Failed to configure Xray client: Jira cloud credentials detected, but the provided Xray credentials are not Xray cloud credentials.
 
-                          You can find all configurations currently supported at: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/authentication/
+                          You can find all configurations currently supported at: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/authentication/
                     `),
                     }
                 );
@@ -1896,7 +1896,7 @@ describe(relative(cwd(), __filename), async () => {
                         message: dedent(`
                             Failed to configure Jira client: No viable authentication method was configured.
 
-                              You can find all configurations currently supported at: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/authentication/
+                              You can find all configurations currently supported at: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/authentication/
                         `),
                     }
                 );
@@ -1933,10 +1933,10 @@ describe(relative(cwd(), __filename), async () => {
                               Jira did not return a valid response: JSON containing a username was expected, but not received.
 
                             Make sure you have correctly set up:
-                            - Jira base URL: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/jira/#url
-                            - Jira authentication: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/authentication/#jira
+                            - Jira base URL: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/jira/#url
+                            - Jira authentication: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/authentication/#jira
 
-                            For more information, set the plugin to debug mode: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/plugin/#debug
+                            For more information, set the plugin to debug mode: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/plugin/#debug
                         `),
                     }
                 );
@@ -1975,10 +1975,10 @@ describe(relative(cwd(), __filename), async () => {
                               Jira did not return a valid response: JSON containing a username was expected, but not received.
 
                             Make sure you have correctly set up:
-                            - Jira base URL: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/jira/#url
-                            - Jira authentication: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/authentication/#jira
+                            - Jira base URL: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/jira/#url
+                            - Jira authentication: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/authentication/#jira
 
-                            For more information, set the plugin to debug mode: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/plugin/#debug
+                            For more information, set the plugin to debug mode: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/plugin/#debug
                         `),
                     }
                 );
@@ -2027,11 +2027,11 @@ describe(relative(cwd(), __filename), async () => {
                               Xray did not return a valid response: JSON containing basic Xray license information was expected, but not received.
 
                             Make sure you have correctly set up:
-                            - Jira base URL: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/jira/#url
-                            - Xray server authentication: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/authentication/#xray-server
+                            - Jira base URL: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/jira/#url
+                            - Xray server authentication: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/authentication/#xray-server
                             - Xray itself: https://docs.getxray.app/display/XRAY/Installation
 
-                            For more information, set the plugin to debug mode: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/plugin/#debug
+                            For more information, set the plugin to debug mode: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/plugin/#debug
                         `),
                     }
                 );
@@ -2083,11 +2083,11 @@ describe(relative(cwd(), __filename), async () => {
                               The Xray license is not active
 
                             Make sure you have correctly set up:
-                            - Jira base URL: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/jira/#url
-                            - Xray server authentication: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/authentication/#xray-server
+                            - Jira base URL: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/jira/#url
+                            - Xray server authentication: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/authentication/#xray-server
                             - Xray itself: https://docs.getxray.app/display/XRAY/Installation
 
-                            For more information, set the plugin to debug mode: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/plugin/#debug
+                            For more information, set the plugin to debug mode: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/plugin/#debug
                         `),
                     }
                 );
@@ -2148,10 +2148,10 @@ describe(relative(cwd(), __filename), async () => {
                               Failed to authenticate
 
                             Make sure you have correctly set up:
-                            - Xray cloud authentication: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/authentication/#xray-cloud
+                            - Xray cloud authentication: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/authentication/#xray-cloud
                             - Xray itself: https://docs.getxray.app/display/XRAYCLOUD/Installation
 
-                            For more information, set the plugin to debug mode: https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/configuration/plugin/#debug
+                            For more information, set the plugin to debug mode: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/plugin/#debug
                         `),
                     }
                 );

@@ -15,13 +15,13 @@ describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () =>
     for (const testCase of [
         {
             expectedScreenshots: [
-                "CYP-2414 screenshot #1.png",
-                "CYP-2414 screenshot #2.png",
-                "CYP-2414 screenshot #3.png",
+                "CXP-14 screenshot #1.png",
+                "CXP-14 screenshot #2.png",
+                "CXP-14 screenshot #3.png",
             ],
-            linkedTest: "CYP-2414",
+            linkedTest: "CXP-14",
             projectDirectory: join(import.meta.dirname, "cloud"),
-            projectKey: "CYP",
+            projectKey: "CXP",
             service: "cloud",
             title: "evidence uploads can be split into multiple requests (cloud)",
         },

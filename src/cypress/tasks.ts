@@ -40,7 +40,7 @@ export const PluginTask = {
  * @param filename - the name of the evidence file to save the request data to
  * @param request - the request data
  *
- * @see https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/uploadRequestData/
+ * @see https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/uploadRequestData/
  */
 export function enqueueTask(
     task: "cypress-xray-plugin:task:request",
@@ -56,7 +56,7 @@ export function enqueueTask(
  * @param filename - the name of the evidence file to save the response data to
  * @param response - the response data
  *
- * @see https://qytera-gmbh.github.io/projects/cypress-xray-plugin/section/guides/uploadRequestData/
+ * @see https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/uploadRequestData/
  */
 export function enqueueTask(
     task: "cypress-xray-plugin:task:response",
