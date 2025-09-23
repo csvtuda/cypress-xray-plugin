@@ -14,10 +14,10 @@ describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () =>
     for (const testCase of [
         {
             projectDirectory: join(import.meta.dirname, "cloud"),
-            projectKey: "CYP",
-            scenarioIssueKey: "CYP-756",
+            projectKey: "CXP",
+            scenarioIssueKey: "CXP-4",
             service: "cloud",
-            testIssueKey: "CYP-757",
+            testIssueKey: "CXP-3",
             title: "results upload works for mixed cypress and cucumber projects (cloud)",
         },
         {

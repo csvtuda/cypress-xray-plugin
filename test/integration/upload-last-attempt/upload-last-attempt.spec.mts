@@ -14,9 +14,9 @@ import { getCreatedTestExecutionIssueKey } from "../util.mjs";
 describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () => {
     for (const testCase of [
         {
-            linkedTests: ["CYP-2432", "CYP-2434"],
+            linkedTests: ["CXP-17", "CXP-18"],
             projectDirectory: join(import.meta.dirname, "cloud"),
-            projectKey: "CYP",
+            projectKey: "CXP",
             service: "cloud",
             title: "only last attempts are uploaded (cloud)",
         },
@@ -85,7 +85,7 @@ describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () =>
                 assert.strictEqual(testResultsRetried.results[0].evidence?.length, 1);
                 assert.strictEqual(
                     testResultsRetried.results[0].evidence[0]?.filename,
-                    "CYP-2432 my screenshot (attempt 6).png"
+                    "CXP-17 my screenshot (attempt 6).png"
                 );
                 assert.deepStrictEqual(testResultsRetried.results[0].iterations, { results: [] });
                 const testResultsRetriedScreenshot = await XRAY_CLIENT_CLOUD.graphql.getTestRuns(
@@ -118,11 +118,11 @@ describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () =>
                 assert.strictEqual(testResultsRetriedScreenshot.results[0].evidence?.length, 2);
                 assert.strictEqual(
                     testResultsRetriedScreenshot.results[0].evidence[0]?.filename,
-                    "CYP-2434 my other screenshot (attempt 3).png"
+                    "CXP-18 my other screenshot (attempt 3).png"
                 );
                 assert.strictEqual(
                     testResultsRetriedScreenshot.results[0].evidence[1]?.filename,
-                    "template spec -- CYP-2434 manual screenshot (failed) (attempt 3).png"
+                    "template spec -- CXP-18 manual screenshot (failed) (attempt 3).png"
                 );
                 assert.deepStrictEqual(testResultsRetriedScreenshot.results[0].iterations, {
                     results: [],

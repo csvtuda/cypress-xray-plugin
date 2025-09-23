@@ -13,10 +13,10 @@ import { getCreatedTestExecutionIssueKey } from "../util.mjs";
 describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () => {
     for (const testCase of [
         {
-            cucumberTests: ["CYP-969", "CYP-970"],
-            manualTests: ["CYP-967", "CYP-968"],
+            cucumberTests: ["CXP-5", "CXP-6"],
+            manualTests: ["CXP-7", "CXP-8"],
             projectDirectory: join(import.meta.dirname, "cloud"),
-            projectKey: "CYP",
+            projectKey: "CXP",
             service: "cloud",
             title: "results upload works for tests with multiple issue keys (cloud)",
         },

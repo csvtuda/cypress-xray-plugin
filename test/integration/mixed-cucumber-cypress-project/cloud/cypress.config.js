@@ -17,7 +17,7 @@ module.exports = defineConfig({
             await preprocessor.addCucumberPreprocessorPlugin(fixedOn, config);
             await configureXrayPlugin(fixedOn, config, {
                 jira: {
-                    projectKey: "CYP",
+                    projectKey: "CXP",
                     testExecutionIssue: {
                         fields: {
                             summary: "Integration test mixed cucumber cypress project",

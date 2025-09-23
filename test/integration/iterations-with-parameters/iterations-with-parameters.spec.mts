@@ -14,9 +14,9 @@ import { getCreatedTestExecutionIssueKey } from "../util.mjs";
 describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () => {
     for (const testCase of [
         {
-            linkedTest: "CYP-2151",
+            linkedTest: "CXP-2",
             projectDirectory: join(import.meta.dirname, "cloud"),
-            projectKey: "CYP",
+            projectKey: "CXP",
             service: "cloud",
             title: "iteration parameters can be provided (cloud)",
         },
