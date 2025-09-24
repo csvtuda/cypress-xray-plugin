@@ -1,5 +1,17 @@
 # Changelog
 
+# `8.5.1`
+
+- Switched to new Jira cloud search endpoints
+- Added support for Cypress v15
+
+## Dependency updates
+
+- Bumped @cucumber/gherkin from 30.0.0 to 35.1.0
+- Bumped axios from 1.8.2 to 1.12.2
+- Bumped form-data from 4.0.2 to 4.0.4
+- Bumped semver from 7.6.3 to 7.7.1
+
 # `8.5.0`
 
 - Added `xray.url` option
