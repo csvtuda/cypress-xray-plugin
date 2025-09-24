@@ -1,4 +1,4 @@
-const { enqueueTask, PluginTask } = require("cypress-xray-plugin/commands/tasks");
+const { enqueueTask, PluginTask } = require("@csvtuda/cypress-xray-plugin/commands/tasks");
 
 describe("CYPLUG-1411 Test Suite Name", () => {
     for (const test of ["#1", "#2", "#3"]) {

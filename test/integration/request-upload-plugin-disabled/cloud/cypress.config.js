@@ -1,5 +1,5 @@
 const { defineConfig } = require("cypress");
-const { configureXrayPlugin } = require("cypress-xray-plugin");
+const { configureXrayPlugin } = require("@csvtuda/cypress-xray-plugin");
 
 async function setupNodeEvents(on, config) {
     await configureXrayPlugin(on, config, {

@@ -31,13 +31,13 @@ Features include:
 Run the following command to add the plugin to your project:
 
 ```sh
-npm install --save-dev cypress-xray-plugin
+npm install --save-dev @csvtuda/cypress-xray-plugin
 ```
 
 Then, configure the plugin in the Cypress project configuration:
 
 ```js
-import { configureXrayPlugin } from "cypress-xray-plugin";
+import { configureXrayPlugin } from "@csvtuda/cypress-xray-plugin";
 
 export default defineConfig({
     e2e: {

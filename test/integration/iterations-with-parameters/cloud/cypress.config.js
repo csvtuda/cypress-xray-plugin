@@ -1,6 +1,6 @@
 const { defineConfig } = require("cypress");
 const fix = require("cypress-on-fix");
-const { configureXrayPlugin } = require("cypress-xray-plugin");
+const { configureXrayPlugin } = require("@csvtuda/cypress-xray-plugin");
 
 module.exports = defineConfig({
     chromeWebSecurity: false,
