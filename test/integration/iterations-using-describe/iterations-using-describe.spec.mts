@@ -44,7 +44,7 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 const searchResult = await getIntegrationClient(
                     "jira",
                     testCase.service
-                ).issueSearch.searchForIssuesUsingJqlPost({
+                ).issueSearch.searchForIssuesUsingJqlEnhancedSearchPost({
                     fields: ["id"],
                     jql: `issue in (${testExecutionIssueKey}, ${testCase.linkedTest})`,
                 });
