@@ -48,7 +48,7 @@ void describe(relative(cwd(), __filename), () => {
                     }
 
                     More information
-                    - https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/jira/#issuetype
+                    - https://csvtuda.github.io/docs/cypress-xray-plugin/configuration/jira/#issuetype
                     - https://docs.getxray.app/display/XRAYCLOUD/Project+Settings%3A+Issue+Types+Mapping
                 `),
             ]);
@@ -77,7 +77,7 @@ void describe(relative(cwd(), __filename), () => {
                     }
 
                     More information
-                    - https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/jira/#issuetype
+                    - https://csvtuda.github.io/docs/cypress-xray-plugin/configuration/jira/#issuetype
                     - https://docs.getxray.app/display/XRAY/Configuring+a+Jira+project+to+be+used+as+an+Xray+Test+Project
                 `),
             ]);

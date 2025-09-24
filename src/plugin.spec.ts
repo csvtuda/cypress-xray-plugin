@@ -30,13 +30,13 @@ import { ExecutableGraph } from "./util/graph/executable-graph";
 import { CapturingLogger, LOG } from "./util/logging";
 
 void describe(relative(cwd(), __filename), () => {
-    let config: PluginConfigOptions<"14">;
+    let config: PluginConfigOptions<">=14">;
     let pluginContext: PluginContext;
 
     beforeEach(() => {
         config = JSON.parse(
             fs.readFileSync("./test/resources/cypress.config.json", "utf-8")
-        ) as PluginConfigOptions<"14">;
+        ) as PluginConfigOptions<">=14">;
         const jiraClient = new JiraClientServer(
             "http://localhost:1234",
             new PatCredentials("token"),
@@ -586,7 +586,7 @@ void describe(relative(cwd(), __filename), () => {
                               });
 
                             For more information, visit:
-                            - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                            - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
                 `),
             ]);
             assert.deepStrictEqual(message.mock.calls[2].arguments, [
@@ -609,7 +609,7 @@ void describe(relative(cwd(), __filename), () => {
                               });
 
                             For more information, visit:
-                            - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                            - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
                 `),
             ]);
             assert.deepStrictEqual(message.mock.calls[3].arguments, [
@@ -632,7 +632,7 @@ void describe(relative(cwd(), __filename), () => {
                               });
 
                             For more information, visit:
-                            - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                            - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
                 `),
             ]);
             assert.deepStrictEqual(message.mock.calls[4].arguments, [
@@ -801,7 +801,7 @@ void describe(relative(cwd(), __filename), () => {
 
                       Skipping file:preprocessor hook: Plugin misconfigured: configureXrayPlugin() was not called.
 
-                      Make sure your project is set up correctly: https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/introduction/
+                      Make sure your project is set up correctly: https://csvtuda.github.io/docs/cypress-xray-plugin/configuration/introduction/
                 `),
             ]);
         });

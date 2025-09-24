@@ -281,7 +281,7 @@ void describe(path.relative(process.cwd(), __filename), () => {
                             });
 
                           For more information, visit:
-                          - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                          - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
                 `),
             ]);
         });
@@ -336,7 +336,7 @@ void describe(path.relative(process.cwd(), __filename), () => {
                             });
 
                           For more information, visit:
-                          - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                          - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
                 `),
             ]);
         });
@@ -579,7 +579,7 @@ void describe(path.relative(process.cwd(), __filename), () => {
                             });
 
                           For more information, visit:
-                          - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                          - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
                 `),
             ]);
         });
@@ -649,7 +649,7 @@ void describe(path.relative(process.cwd(), __filename), () => {
                             });
 
                           For more information, visit:
-                          - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                          - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
                 `),
             ]);
         });
@@ -786,7 +786,7 @@ void describe(path.relative(process.cwd(), __filename), () => {
                             });
 
                           For more information, visit:
-                          - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                          - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
                 `),
             ]);
         });
@@ -833,7 +833,7 @@ void describe(path.relative(process.cwd(), __filename), () => {
                             });
 
                           For more information, visit:
-                          - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
+                          - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
                 `),
             ]);
         });
