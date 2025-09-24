@@ -11,8 +11,8 @@ import { BasicAuthCredentials } from "../authentication/credentials";
 import { AxiosRestClient } from "../https/requests";
 import { JiraClientServer } from "./jira-client-server";
 
-describe(relative(cwd(), __filename), () => {
-    describe(JiraClientServer.name, () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(JiraClientServer.name, () => {
         let client: JiraClientServer;
         let restClient: AxiosRestClient;
 
@@ -25,8 +25,8 @@ describe(relative(cwd(), __filename), () => {
             );
         });
 
-        describe("search", () => {
-            it("should return all issues without pagination", async (context) => {
+        void describe("search", () => {
+            void it("should return all issues without pagination", async (context) => {
                 const post = context.mock.method(restClient, "post", () => {
                     return {
                         config: {
@@ -55,7 +55,7 @@ describe(relative(cwd(), __filename), () => {
                 assert.strictEqual(response[3].key, "CYP-268");
             });
 
-            it("returns all issues with pagination", async (context) => {
+            void it("returns all issues with pagination", async (context) => {
                 const mockedData = JSON.parse(
                     readFileSync(
                         "./test/resources/fixtures/jira/responses/searchServer.json",
@@ -175,7 +175,7 @@ describe(relative(cwd(), __filename), () => {
                 assert.strictEqual(response[3].key, "CYP-268");
             });
 
-            it("handles bad responses", async (context) => {
+            void it("handles bad responses", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const logErrorToFile = context.mock.method(
                     LOG,

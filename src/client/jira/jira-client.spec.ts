@@ -13,8 +13,8 @@ import { BasicAuthCredentials } from "../authentication/credentials";
 import { AxiosRestClient } from "../https/requests";
 import { BaseJiraClient } from "./jira-client";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(BaseJiraClient.name, async () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(BaseJiraClient.name, () => {
         let client: BaseJiraClient;
         let restClient: AxiosRestClient;
 
@@ -27,8 +27,8 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await describe("add attachment", async () => {
-            await it("should use the correct headers", async (context) => {
+        void describe("add attachment", () => {
+            void it("should use the correct headers", async (context) => {
                 const post = context.mock.method(restClient, "post", () => {
                     return {
                         config: {
@@ -53,8 +53,8 @@ describe(relative(cwd(), __filename), async () => {
                 assert.match(headers["content-type"] as string, /multipart\/form-data; .+/);
             });
 
-            await describe("single file attachment", async () => {
-                await it("returns the correct values", async (context) => {
+            void describe("single file attachment", () => {
+                void it("returns the correct values", async (context) => {
                     const mockedData = JSON.parse(
                         readFileSync(
                             "./test/resources/fixtures/jira/responses/singleAttachment.json",
@@ -80,8 +80,8 @@ describe(relative(cwd(), __filename), async () => {
                 });
             });
 
-            await describe("multiple file attachment", async () => {
-                await it("returns the correct values", async (context) => {
+            void describe("multiple file attachment", () => {
+                void it("returns the correct values", async (context) => {
                     const mockedData = JSON.parse(
                         readFileSync(
                             "./test/resources/fixtures/jira/responses/multipleAttachments.json",
@@ -108,7 +108,7 @@ describe(relative(cwd(), __filename), async () => {
                 });
             });
 
-            await it("logs missing files", async (context) => {
+            void it("logs missing files", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
 
                 const mockedData = JSON.parse(
@@ -141,7 +141,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("skips missing files", async (context) => {
+            void it("skips missing files", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const mockedData = JSON.parse(
                     readFileSync(
@@ -169,7 +169,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(response, mockedData);
             });
 
-            await it("immediately returns an empty array when all files are missing", async (context) => {
+            void it("immediately returns an empty array when all files are missing", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
 
                 const response = await client.addAttachment(
@@ -184,7 +184,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("immediately returns an empty array when no files are provided", async (context) => {
+            void it("immediately returns an empty array when no files are provided", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 assert.deepStrictEqual(await client.addAttachment("CYP-123"), []);
                 assert.deepStrictEqual(message.mock.calls[0].arguments, [
@@ -193,7 +193,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("handles bad responses", async (context) => {
+            void it("handles bad responses", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const logErrorToFile = context.mock.method(
                     LOG,
@@ -233,8 +233,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("get issue types", async () => {
-            await it("returns issue types", async (context) => {
+        void describe("get issue types", () => {
+            void it("returns issue types", async (context) => {
                 const issueTypes = JSON.parse(
                     readFileSync(
                         "./test/resources/fixtures/jira/responses/getIssueTypes.json",
@@ -255,7 +255,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(await client.getIssueTypes(), issueTypes);
             });
 
-            await it("handles issues without name or id", async (context) => {
+            void it("handles issues without name or id", async (context) => {
                 const issueTypes: IssueTypeDetails[] = [
                     { id: "12345" },
                     { name: "Custom issue" },
@@ -275,7 +275,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(await client.getIssueTypes(), issueTypes);
             });
 
-            await it("handles bad responses", async (context) => {
+            void it("handles bad responses", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const logErrorToFile = context.mock.method(
                     LOG,
@@ -314,8 +314,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("get fields", async () => {
-            await it("returns the correct values", async (context) => {
+        void describe("get fields", () => {
+            void it("returns the correct values", async (context) => {
                 const mockedData = JSON.parse(
                     readFileSync("./test/resources/fixtures/jira/responses/getFields.json", "utf-8")
                 ) as unknown;
@@ -334,7 +334,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(fields, mockedData);
             });
 
-            await it("handles bad responses", async (context) => {
+            void it("handles bad responses", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const logErrorToFile = context.mock.method(
                     LOG,
@@ -371,8 +371,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("get myself", async () => {
-            await it("returns user details", async (context) => {
+        void describe("get myself", () => {
+            void it("returns user details", async (context) => {
                 const get = context.mock.method(restClient, "get", () => {
                     return {
                         config: {
@@ -400,7 +400,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("handles bad responses", async (context) => {
+            void it("handles bad responses", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const logErrorToFile = context.mock.method(
                     LOG,
@@ -437,8 +437,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("editIssue", async () => {
-            await it("edits issues", async (context) => {
+        void describe("editIssue", () => {
+            void it("edits issues", async (context) => {
                 const put = context.mock.method(restClient, "put", () => {
                     return {
                         config: {
@@ -466,7 +466,7 @@ describe(relative(cwd(), __filename), async () => {
                 });
             });
 
-            await it("handles bad responses", async (context) => {
+            void it("handles bad responses", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const logErrorToFile = context.mock.method(
                     LOG,
@@ -508,8 +508,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("transitionIssue", async () => {
-            await it("transitions issues", async (context) => {
+        void describe("transitionIssue", () => {
+            void it("transitions issues", async (context) => {
                 const post = context.mock.method(restClient, "post", () => {
                     return {
                         config: {
@@ -546,7 +546,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("handles bad responses", async (context) => {
+            void it("handles bad responses", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const logErrorToFile = context.mock.method(
                     LOG,

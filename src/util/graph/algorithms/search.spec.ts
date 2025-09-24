@@ -17,7 +17,7 @@ class Vertex {
     }
 }
 
-describe(relative(cwd(), __filename), async () => {
+void describe(relative(cwd(), __filename), () => {
     const graph = new SimpleDirectedGraph<Vertex>();
     const v0 = graph.place(new Vertex(0));
     const v1 = graph.place(new Vertex(1));
@@ -43,8 +43,8 @@ describe(relative(cwd(), __filename), async () => {
     graph.connect(v6, v9);
     graph.connect(v9, v7);
 
-    await describe(bfs.name, async () => {
-        await it("finds vertices by reference", () => {
+    void describe(bfs.name, () => {
+        void it("finds vertices by reference", () => {
             assert.strictEqual(
                 bfs(graph, {
                     destination: v9,
@@ -54,7 +54,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("does not find nonexistent vertices by reference", () => {
+        void it("does not find nonexistent vertices by reference", () => {
             assert.strictEqual(
                 bfs(graph, {
                     destination: new Vertex(17),
@@ -64,7 +64,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("does not find unreachable vertices by reference", () => {
+        void it("does not find unreachable vertices by reference", () => {
             assert.strictEqual(
                 bfs(graph, {
                     destination: v0,
@@ -74,7 +74,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("finds vertices by filtering", () => {
+        void it("finds vertices by filtering", () => {
             assert.strictEqual(
                 bfs(graph, {
                     filter: (vertex: Vertex) => vertex.id() === 6,
@@ -84,7 +84,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("does not find nonexistent vertices by filtering", () => {
+        void it("does not find nonexistent vertices by filtering", () => {
             assert.strictEqual(
                 bfs(graph, {
                     filter: (vertex: Vertex) => vertex.id() === 17,
@@ -94,7 +94,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("does not find unreachable vertices by filtering", () => {
+        void it("does not find unreachable vertices by filtering", () => {
             assert.strictEqual(
                 bfs(graph, {
                     filter: (vertex: Vertex) => vertex.id() === 0,
@@ -104,7 +104,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("finds vertices anywhere by reference", () => {
+        void it("finds vertices anywhere by reference", () => {
             assert.strictEqual(
                 dfs(graph, {
                     destination: v0,
@@ -113,7 +113,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("finds vertices anywhere by filtering", () => {
+        void it("finds vertices anywhere by filtering", () => {
             assert.strictEqual(
                 dfs(graph, {
                     filter: (vertex: Vertex) => vertex.id() === 0,
@@ -122,7 +122,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("finds the starting vertex by reference", () => {
+        void it("finds the starting vertex by reference", () => {
             assert.strictEqual(
                 dfs(graph, {
                     destination: v0,
@@ -132,7 +132,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("finds the starting vertex by filtering", () => {
+        void it("finds the starting vertex by filtering", () => {
             assert.strictEqual(
                 dfs(graph, {
                     filter: (vertex: Vertex) => vertex.id() === 0,
@@ -143,8 +143,8 @@ describe(relative(cwd(), __filename), async () => {
         });
     });
 
-    await describe(dfs.name, async () => {
-        await it("finds vertices by reference", () => {
+    void describe(dfs.name, () => {
+        void it("finds vertices by reference", () => {
             assert.strictEqual(
                 dfs(graph, {
                     destination: v9,
@@ -154,7 +154,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("does not find nonexistent vertices by reference", () => {
+        void it("does not find nonexistent vertices by reference", () => {
             assert.strictEqual(
                 dfs(graph, {
                     destination: new Vertex(17),
@@ -164,7 +164,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("does not find unreachable vertices by reference", () => {
+        void it("does not find unreachable vertices by reference", () => {
             assert.strictEqual(
                 dfs(graph, {
                     destination: v0,
@@ -174,7 +174,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("finds vertices by filtering", () => {
+        void it("finds vertices by filtering", () => {
             assert.strictEqual(
                 dfs(graph, {
                     filter: (vertex: Vertex) => vertex.id() === 6,
@@ -184,7 +184,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("does not find nonexistent vertices by filtering", () => {
+        void it("does not find nonexistent vertices by filtering", () => {
             assert.strictEqual(
                 dfs(graph, {
                     filter: (vertex: Vertex) => vertex.id() === 17,
@@ -194,7 +194,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("does not find unreachable vertices by filtering", () => {
+        void it("does not find unreachable vertices by filtering", () => {
             assert.strictEqual(
                 dfs(graph, {
                     filter: (vertex: Vertex) => vertex.id() === 0,
@@ -204,7 +204,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("finds vertices anywhere by reference", () => {
+        void it("finds vertices anywhere by reference", () => {
             assert.strictEqual(
                 dfs(graph, {
                     destination: v0,
@@ -213,7 +213,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("finds vertices anywhere by filtering", () => {
+        void it("finds vertices anywhere by filtering", () => {
             assert.strictEqual(
                 dfs(graph, {
                     filter: (vertex: Vertex) => vertex.id() === 0,
@@ -222,7 +222,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("finds the starting vertex by reference", () => {
+        void it("finds the starting vertex by reference", () => {
             assert.strictEqual(
                 dfs(graph, {
                     destination: v0,
@@ -232,7 +232,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("finds the starting vertex by filtering", () => {
+        void it("finds the starting vertex by filtering", () => {
             assert.strictEqual(
                 dfs(graph, {
                     filter: (vertex: Vertex) => vertex.id() === 0,

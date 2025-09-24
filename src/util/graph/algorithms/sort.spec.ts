@@ -5,9 +5,9 @@ import { describe, it } from "node:test";
 import { SimpleDirectedGraph } from "../graph";
 import { computeTopologicalOrder, traverse } from "./sort";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(computeTopologicalOrder.name, async () => {
-        await it("computes the order for directed graphs", () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(computeTopologicalOrder.name, () => {
+        void it("computes the order for directed graphs", () => {
             const graph = new SimpleDirectedGraph<number>();
             graph.place(0);
             graph.place(1);
@@ -50,8 +50,8 @@ describe(relative(cwd(), __filename), async () => {
         });
     });
 
-    await describe(traverse.name, async () => {
-        await it("traverses forests top-down", () => {
+    void describe(traverse.name, () => {
+        void it("traverses forests top-down", () => {
             const graph = new SimpleDirectedGraph<string>();
             graph.place("A");
             graph.place("B");
@@ -80,7 +80,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("traverses forests bottom-up", () => {
+        void it("traverses forests bottom-up", () => {
             const graph = new SimpleDirectedGraph<string>();
             graph.place("A");
             graph.place("B");

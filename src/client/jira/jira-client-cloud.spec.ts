@@ -11,8 +11,8 @@ import { BasicAuthCredentials } from "../authentication/credentials";
 import { AxiosRestClient } from "../https/requests";
 import { JiraClientCloud } from "./jira-client-cloud";
 
-describe(relative(cwd(), __filename), () => {
-    describe(JiraClientCloud.name, () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(JiraClientCloud.name, () => {
         let client: JiraClientCloud;
         let restClient: AxiosRestClient;
 
@@ -25,8 +25,8 @@ describe(relative(cwd(), __filename), () => {
             );
         });
 
-        describe("search", () => {
-            it("should return all issues without pagination", async (context) => {
+        void describe("search", () => {
+            void it("should return all issues without pagination", async (context) => {
                 const post = context.mock.method(restClient, "post", () => {
                     return {
                         config: {
@@ -56,7 +56,7 @@ describe(relative(cwd(), __filename), () => {
                 assert.strictEqual(response[4].key, "CXP-1");
             });
 
-            it("returns all issues with pagination", async (context) => {
+            void it("returns all issues with pagination", async (context) => {
                 let i = 0;
                 const post = context.mock.method(restClient, "post", () => {
                     switch (i++) {
@@ -142,7 +142,7 @@ describe(relative(cwd(), __filename), () => {
                 assert.strictEqual(response[14].key, "CXP-1");
             });
 
-            it("handles bad responses", async (context) => {
+            void it("handles bad responses", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 const logErrorToFile = context.mock.method(
                     LOG,

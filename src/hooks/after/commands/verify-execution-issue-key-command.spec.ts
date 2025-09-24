@@ -7,9 +7,9 @@ import { LOG } from "../../../util/logging";
 import { ConstantCommand } from "../../util/commands/constant-command";
 import { VerifyExecutionIssueKeyCommand } from "./verify-execution-issue-key-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(VerifyExecutionIssueKeyCommand.name, async () => {
-        await it("verifies without warning", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(VerifyExecutionIssueKeyCommand.name, () => {
+        void it("verifies without warning", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const command = new VerifyExecutionIssueKeyCommand(
                 {
@@ -25,7 +25,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(message.mock.callCount(), 0);
         });
 
-        await it("prints a warning for cypress import failures", async (context) => {
+        void it("prints a warning for cypress import failures", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const command = new VerifyExecutionIssueKeyCommand(
                 {
@@ -54,7 +54,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("prints a warning for cucumber import failures", async (context) => {
+        void it("prints a warning for cucumber import failures", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const command = new VerifyExecutionIssueKeyCommand(
                 {

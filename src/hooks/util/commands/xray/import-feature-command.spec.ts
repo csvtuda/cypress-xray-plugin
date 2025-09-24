@@ -11,9 +11,9 @@ import { dedent } from "../../../../util/dedent";
 import { LOG } from "../../../../util/logging";
 import { ImportFeatureCommand } from "./import-feature-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(ImportFeatureCommand.name, async () => {
-        await it("imports features", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(ImportFeatureCommand.name, () => {
+        void it("imports features", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const xrayClient = new ServerClient(
                 "http://localhost:1234",
@@ -47,7 +47,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("warns about import errors", async (context) => {
+        void it("warns about import errors", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             const xrayClient = new ServerClient(
                 "http://localhost:1234",

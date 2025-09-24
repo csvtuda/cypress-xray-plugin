@@ -32,9 +32,9 @@ class ComputableVertex implements Computable<unknown>, Stateful<ComputableState>
     }
 }
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(ExecutableGraph.name, async () => {
-        await it("executes vertices in post-order", async () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(ExecutableGraph.name, () => {
+        void it("executes vertices in post-order", async () => {
             const messages: string[] = [];
             const logger = (message: string) => messages.push(message);
 
@@ -53,7 +53,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(messages, ["vertex 2", "vertex 4", "vertex 1", "vertex 3"]);
         });
 
-        await it("does not execute successors on partial failure", async () => {
+        void it("does not execute successors on partial failure", async () => {
             const messages: string[] = [];
             const logger = (message: string) => {
                 if (message === "vertex 1") {
@@ -76,7 +76,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(messages, ["vertex 2", "vertex 4"]);
         });
 
-        await it("does not execute successors on full failure", async () => {
+        void it("does not execute successors on full failure", async () => {
             const messages: string[] = [];
             const logger = (message: string) => {
                 if (message === "vertex 1" || message === "vertex 4") {
@@ -99,7 +99,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(messages, ["vertex 2"]);
         });
 
-        await it("does not execute successors on skip", async () => {
+        void it("does not execute successors on skip", async () => {
             const messages: string[] = [];
             const logger = (message: string) => {
                 if (message === "vertex 1") {
@@ -122,7 +122,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(messages, ["vertex 2", "vertex 4"]);
         });
 
-        await it("still executes successors on failure if marked as optional", async () => {
+        void it("still executes successors on failure if marked as optional", async () => {
             const messages: string[] = [];
             const logger = (message: string) => {
                 if (message === "vertex 1") {
@@ -146,7 +146,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(messages, ["vertex 2", "vertex 4", "vertex 3"]);
         });
 
-        await it("still executes successors on skip if marked as optional", async () => {
+        void it("still executes successors on skip if marked as optional", async () => {
             const messages: string[] = [];
             const logger = (message: string) => {
                 if (message === "vertex 1") {

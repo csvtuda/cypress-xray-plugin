@@ -6,8 +6,8 @@ import type { RunResult, ScreenshotDetails } from "../../../../../../types/cypre
 import { CypressStatus } from "../../../../../../types/cypress/status";
 import { RunConverterLatest, RunConverterV12 } from "./converter";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(RunConverterV12.name, async () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(RunConverterV12.name, () => {
         const passedResult: RunResult<"<13"> = {
             error: null,
             hooks: [],
@@ -466,7 +466,7 @@ describe(relative(cwd(), __filename), async () => {
             video: "~/repositories/xray/cypress/videos/example.cy.ts.mp4",
         };
 
-        await it("returns test data for valid runs", () => {
+        void it("returns test data for valid runs", () => {
             const converter = new RunConverterV12("CYP", [passedResult]);
             const conversions = converter.getConversions({ onlyLastAttempt: false });
             assert.deepStrictEqual(conversions, [
@@ -484,7 +484,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("omits retries", () => {
+        void it("omits retries", () => {
             const converter = new RunConverterV12("CYP", [retriedResult]);
             const conversions = converter.getConversions({ onlyLastAttempt: true });
             assert.deepStrictEqual(conversions, [
@@ -524,7 +524,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("includes screenshots in runs", () => {
+        void it("includes screenshots in runs", () => {
             const converter = new RunConverterV12("CYP", [failedResult]);
             const screenshots = converter.getScreenshots("CYP-123", { onlyLastAttempt: false });
             assert.deepStrictEqual(screenshots, [
@@ -533,7 +533,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("includes screenshots of retries", () => {
+        void it("includes screenshots of retries", () => {
             const converter = new RunConverterV12("CYP", [retriedResult]);
             const screenshots = converter.getScreenshots("CYP-123", { onlyLastAttempt: false });
             assert.deepStrictEqual(screenshots, [
@@ -545,7 +545,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("omits screenshots of retries", () => {
+        void it("omits screenshots of retries", () => {
             const converter = new RunConverterV12("CYP", [retriedResult]);
             const screenshots = converter.getScreenshots("CYP-456", { onlyLastAttempt: true });
             assert.deepStrictEqual(screenshots, [
@@ -554,19 +554,19 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("does not return non-attributable screenshots", () => {
+        void it("does not return non-attributable screenshots", () => {
             const converter = new RunConverterV12("CYP", [retriedResult]);
             const screenshots = converter.getNonAttributableScreenshots();
             assert.deepStrictEqual(screenshots, []);
         });
 
-        await it("does not return screenshots of unkeyed tests", () => {
+        void it("does not return screenshots of unkeyed tests", () => {
             const converter = new RunConverterV12("CYP", [unkeyedResult]);
             const screenshots = converter.getScreenshots("CYP-123", { onlyLastAttempt: false });
             assert.deepStrictEqual(screenshots, []);
         });
 
-        await it("rejects invalid runs", () => {
+        void it("rejects invalid runs", () => {
             const converter = new RunConverterV12("CYP", [invalidResult]);
             const conversions = converter.getConversions({ onlyLastAttempt: false });
             assert.strictEqual(conversions[0].kind, "error");
@@ -575,7 +575,7 @@ describe(relative(cwd(), __filename), async () => {
         });
     });
 
-    await describe(RunConverterLatest.name, async () => {
+    void describe(RunConverterLatest.name, () => {
         const passedResult: RunResult<"13" | "14"> = {
             error: null,
             reporter: "spec",
@@ -2147,7 +2147,7 @@ describe(relative(cwd(), __filename), async () => {
             },
         ];
 
-        await it("returns test data for valid runs", () => {
+        void it("returns test data for valid runs", () => {
             const converter = new RunConverterLatest("CYP", [passedResult], []);
             const conversions = converter.getConversions({ onlyLastAttempt: false });
             assert.deepStrictEqual(conversions, [
@@ -2176,7 +2176,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("omits retries", () => {
+        void it("omits retries", () => {
             const converter = new RunConverterLatest("CYP", [retriedResult], []);
             const conversions = converter.getConversions({ onlyLastAttempt: true });
             assert.deepStrictEqual(conversions, [
@@ -2205,7 +2205,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("omits retries of iterated results", () => {
+        void it("omits retries of iterated results", () => {
             const converter = new RunConverterLatest("CYP", [retriedIteratedResult], []);
             const conversions = converter.getConversions({ onlyLastAttempt: true });
             assert.deepStrictEqual(conversions, [
@@ -2267,7 +2267,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("includes relevant screenshots in runs", () => {
+        void it("includes relevant screenshots in runs", () => {
             const converter = new RunConverterLatest(
                 "CYP",
                 [failedResult],
@@ -2309,7 +2309,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("includes relevant screenshots in runs if no retries occurred", () => {
+        void it("includes relevant screenshots in runs if no retries occurred", () => {
             const converter = new RunConverterLatest(
                 "CYP",
                 [failedResult],
@@ -2351,7 +2351,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("omits screenshots of retries", () => {
+        void it("omits screenshots of retries", () => {
             const converter = new RunConverterLatest(
                 "CYP",
                 [retriedResult],
@@ -2366,7 +2366,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("omits screenshots of iterated retries", () => {
+        void it("omits screenshots of iterated retries", () => {
             const converter = new RunConverterLatest(
                 "CYP",
                 [retriedIteratedResult],
@@ -2380,7 +2380,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("omits screenshots of retries with respect to filenames", () => {
+        void it("omits screenshots of retries with respect to filenames", () => {
             const converter = new RunConverterLatest(
                 "CYP",
                 [
@@ -2539,7 +2539,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("correctly handles custom screenshots in retry situations", () => {
+        void it("correctly handles custom screenshots in retry situations", () => {
             const converter = new RunConverterLatest(
                 "CYP",
                 [
@@ -2689,7 +2689,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("returns all non-attributable screenshots", () => {
+        void it("returns all non-attributable screenshots", () => {
             const converter = new RunConverterLatest(
                 "CYP",
                 [unkeyedResult],
@@ -2717,7 +2717,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("returns non-attributable screenshots of last attempts only", () => {
+        void it("returns non-attributable screenshots of last attempts only", () => {
             const converter = new RunConverterLatest(
                 "CYP",
                 [unkeyedResult],
@@ -2731,7 +2731,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("rejects invalid runs", () => {
+        void it("rejects invalid runs", () => {
             const converter = new RunConverterLatest("CYP", [invalidResult], []);
             const conversions = converter.getConversions({ onlyLastAttempt: false });
             assert.strictEqual(conversions[0].kind, "error");

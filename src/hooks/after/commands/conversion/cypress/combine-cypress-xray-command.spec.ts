@@ -6,9 +6,9 @@ import { LOG } from "../../../../../util/logging";
 import { ConstantCommand } from "../../../../util/commands/constant-command";
 import { CombineCypressJsonCommand } from "./combine-cypress-xray-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(CombineCypressJsonCommand.name, async () => {
-        await it("combines cucumber multipart data", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(CombineCypressJsonCommand.name, () => {
+        void it("combines cucumber multipart data", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new CombineCypressJsonCommand(
                 { testExecutionIssueKey: "CYP-123" },

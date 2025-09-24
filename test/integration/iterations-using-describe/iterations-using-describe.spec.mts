@@ -11,7 +11,7 @@ import { getCreatedTestExecutionIssueKey } from "../util.mjs";
 // https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues/421
 // ============================================================================================== //
 
-describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () => {
+void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => {
     for (const testCase of [
         {
             linkedTest: "CXP-1",
@@ -28,7 +28,7 @@ describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () =>
             title: "issue keys defined in describe titles (server)",
         },
     ] as const) {
-        await it(testCase.title, async () => {
+        void it(testCase.title, async () => {
             const output = runCypress(testCase.projectDirectory, {
                 expectedStatusCode: 1,
                 includeDefaultEnv: testCase.service,

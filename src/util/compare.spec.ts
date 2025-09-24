@@ -4,82 +4,82 @@ import { cwd } from "node:process";
 import { describe, it } from "node:test";
 import { contains } from "./compare";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(contains.name, async () => {
-        await describe("primitive types", async () => {
-            await it("bigint", () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(contains.name, () => {
+        void describe("primitive types", () => {
+            void it("bigint", () => {
                 assert.strictEqual(contains(BigInt(200), BigInt(200)), true);
             });
-            await it("bigint (negative)", () => {
+            void it("bigint (negative)", () => {
                 assert.strictEqual(contains(BigInt(200), BigInt(500)), false);
             });
-            await it("boolean", () => {
+            void it("boolean", () => {
                 assert.strictEqual(contains(true, true), true);
             });
-            await it("boolean (negative)", () => {
+            void it("boolean (negative)", () => {
                 assert.strictEqual(contains(true, false), false);
             });
-            await it("function", () => {
+            void it("function", () => {
                 assert.strictEqual(contains(console.log, console.log), true);
             });
-            await it("function (negative)", () => {
+            void it("function (negative)", () => {
                 assert.strictEqual(contains(console.log, console.info), false);
             });
-            await it("number", () => {
+            void it("number", () => {
                 assert.strictEqual(contains(42, 42), true);
             });
-            await it("number (negative)", () => {
+            void it("number (negative)", () => {
                 assert.strictEqual(contains(42, 1000), false);
             });
-            await it("string", () => {
+            void it("string", () => {
                 assert.strictEqual(contains("hello", "hello"), true);
             });
-            await it("string (negative)", () => {
+            void it("string (negative)", () => {
                 assert.strictEqual(contains("hello", "bye"), false);
             });
-            await it("symbol", () => {
+            void it("symbol", () => {
                 assert.strictEqual(contains(Symbol.for("abc"), Symbol.for("abc")), true);
             });
-            await it("symbol (negative)", () => {
+            void it("symbol (negative)", () => {
                 assert.strictEqual(contains(Symbol.for("abc"), Symbol.for("def")), false);
             });
-            await it("undefined", () => {
+            void it("undefined", () => {
                 assert.strictEqual(contains(undefined, undefined), true);
             });
-            await it("undefined (negative)", () => {
+            void it("undefined (negative)", () => {
                 assert.strictEqual(contains(undefined, 42), false);
             });
         });
 
-        await describe("arrays", async () => {
-            await it("equal", () => {
+        void describe("arrays", () => {
+            void it("equal", () => {
                 assert.strictEqual(
                     contains([1, 2, 3, "hello", false], [1, 2, 3, "hello", false]),
                     true
                 );
             });
-            await it("partially equal", () => {
+            void it("partially equal", () => {
                 assert.strictEqual(contains([1, 2, 3, "hello", false], [false, "hello", 3]), true);
             });
-            await it("not equal", () => {
+            void it("not equal", () => {
                 assert.strictEqual(contains([1, 2, 3, "hello", false], [true, "bye", 17]), false);
             });
-            await it("not equal and no array", () => {
+            void it("not equal and no array", () => {
                 assert.strictEqual(contains(null, [1, 2, 3]), false);
             });
         });
 
-        await describe("objects", async () => {
-            await it("equal", () => {
+        void describe("objects", () => {
+            void it("equal", () => {
                 assert.strictEqual(
                     contains({ a: "b", c: 5, d: false }, { a: "b", c: 5, d: false }),
                     true
                 );
             });
-            await it("partially equal", () => {
+            void it("partially equal", () => {
                 assert.strictEqual(contains({ a: "b", c: 5, d: false }, { c: 5, d: false }), true);
             });
-            await it("not equal", () => {
+            void it("not equal", () => {
                 assert.strictEqual(
                     contains({ a: "b", c: 5, d: false }, { [5]: "oh no", x: "y" }),
                     false
@@ -87,8 +87,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("complex", async () => {
-            await it("partially equal", () => {
+        void describe("complex", () => {
+            void it("partially equal", () => {
                 assert.strictEqual(
                     contains(
                         {

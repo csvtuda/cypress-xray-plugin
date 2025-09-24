@@ -6,17 +6,18 @@ import { describe, it } from "node:test";
 import { PatCredentials } from "../../../../client/authentication/credentials";
 import { AxiosRestClient } from "../../../../client/https/requests";
 import type { JiraClient } from "../../../../client/jira/jira-client";
-import { BaseJiraClient } from "../../../../client/jira/jira-client";
+import { JiraClientCloud } from "../../../../client/jira/jira-client-cloud";
+import { JiraClientServer } from "../../../../client/jira/jira-client-server";
 import { dedent } from "../../../../util/dedent";
 import { LOG } from "../../../../util/logging";
 import { ConstantCommand } from "../constant-command";
 import { EditIssueFieldCommand } from "./edit-issue-field-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(EditIssueFieldCommand.name, async () => {
-        await it("edits issues", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(EditIssueFieldCommand.name, () => {
+        void it("edits issues", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
-            const jiraClient = new BaseJiraClient(
+            const jiraClient = new JiraClientServer(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 new AxiosRestClient(axios)
@@ -58,9 +59,9 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(message.mock.callCount(), 0);
         });
 
-        await it("logs errors for unsuccessful edits", async (context) => {
+        void it("logs errors for unsuccessful edits", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
-            const jiraClient = new BaseJiraClient(
+            const jiraClient = new JiraClientCloud(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 new AxiosRestClient(axios)
@@ -110,9 +111,9 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("returns empty arrays", async (context) => {
+        void it("returns empty arrays", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
-            const jiraClient = new BaseJiraClient(
+            const jiraClient = new JiraClientCloud(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 new AxiosRestClient(axios)

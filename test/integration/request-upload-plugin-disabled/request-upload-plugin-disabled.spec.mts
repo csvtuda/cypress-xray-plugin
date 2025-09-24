@@ -9,7 +9,7 @@ import { runCypress } from "../../sh.mjs";
 // https://github.com/Qytera-Gmbh/cypress-xray-plugin/pull/339
 // ============================================================================================== //
 
-describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () => {
+void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => {
     for (const test of [
         {
             logDirectory: join(import.meta.dirname, "server", "logs"),
@@ -24,7 +24,7 @@ describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () =>
             title: "the cy.request task does not do anything if disabled (server)",
         },
     ] as const) {
-        await it(test.title, () => {
+        void it(test.title, () => {
             runCypress(test.projectDirectory, {
                 includeDefaultEnv: test.service,
             });

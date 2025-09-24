@@ -8,9 +8,9 @@ import { LOG } from "../../../util/logging";
 import { ConstantCommand } from "../../util/commands/constant-command";
 import { ExtractVideoFilesCommand } from "./extract-video-files-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(ExtractVideoFilesCommand.name, async () => {
-        await it("extracts video files", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(ExtractVideoFilesCommand.name, () => {
+        void it("extracts video files", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const runResults = JSON.parse(
                 fs.readFileSync("./test/resources/runResult.json", "utf-8")
@@ -21,7 +21,7 @@ describe(relative(cwd(), __filename), async () => {
             ]);
         });
 
-        await it("skips null paths", async (context) => {
+        void it("skips null paths", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const runResults = JSON.parse(
                 fs.readFileSync("./test/resources/runResult_13_0_0.json", "utf-8")

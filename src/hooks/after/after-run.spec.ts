@@ -7,7 +7,7 @@ import { beforeEach, describe, it } from "node:test";
 import { assertIsInstanceOf } from "../../../test/util";
 import { PatCredentials } from "../../client/authentication/credentials";
 import { AxiosRestClient } from "../../client/https/requests";
-import { BaseJiraClient } from "../../client/jira/jira-client";
+import { JiraClientCloud } from "../../client/jira/jira-client-cloud";
 import { ServerClient } from "../../client/xray/xray-client-server";
 import globalContext, {
     PluginEventEmitter,
@@ -55,7 +55,7 @@ import { ExtractVideoFilesCommand } from "./commands/extract-video-files-command
 import { VerifyExecutionIssueKeyCommand } from "./commands/verify-execution-issue-key-command";
 import { VerifyResultsUploadCommand } from "./commands/verify-results-upload-command";
 
-describe(relative(cwd(), __filename), async () => {
+void describe(relative(cwd(), __filename), () => {
     let clients: ClientCombination;
     let options: InternalCypressXrayPluginOptions;
     beforeEach(async () => {
@@ -91,7 +91,7 @@ describe(relative(cwd(), __filename), async () => {
         };
         const restClient = new AxiosRestClient(axios);
         clients = {
-            jiraClient: new BaseJiraClient(
+            jiraClient: new JiraClientCloud(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 restClient
@@ -105,8 +105,8 @@ describe(relative(cwd(), __filename), async () => {
         };
     });
 
-    await describe(afterRun.addUploadCommands.name, async () => {
-        await describe("cypress", async () => {
+    void describe(afterRun.addUploadCommands.name, () => {
+        void describe("cypress", () => {
             let result: CypressRunResult;
 
             beforeEach(() => {
@@ -115,7 +115,7 @@ describe(relative(cwd(), __filename), async () => {
                 ) as CypressRunResult;
             });
 
-            await it("adds commands necessary for cypress results upload", async () => {
+            void it("adds commands necessary for cypress results upload", async () => {
                 const emitter = new PluginEventEmitter();
                 const graph = new ExecutableGraph<Command>();
                 await afterRun.addUploadCommands(
@@ -245,7 +245,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(graph.size("edges"), 11);
             });
 
-            await it("uses configured test execution issue keys", async () => {
+            void it("uses configured test execution issue keys", async () => {
                 const graph = new ExecutableGraph<Command>();
                 options.jira.testExecutionIssue = {
                     key: "CYP-415",
@@ -312,7 +312,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(graph.size("edges"), 15);
             });
 
-            await it("uses configured test execution issue data with known fields", async () => {
+            void it("uses configured test execution issue data with known fields", async () => {
                 const graph = new ExecutableGraph<Command>();
                 options.jira.testExecutionIssue = {
                     fields: {
@@ -354,7 +354,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(graph.size("edges"), 15);
             });
 
-            await it("uses configured summaries", async () => {
+            void it("uses configured summaries", async () => {
                 const graph = new ExecutableGraph<Command>();
                 options.jira.testExecutionIssue = {
                     fields: {
@@ -390,7 +390,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(graph.size("edges"), 12);
             });
 
-            await it("uses configured custom issue data", async () => {
+            void it("uses configured custom issue data", async () => {
                 const graph = new ExecutableGraph<Command>();
                 options.jira.testExecutionIssue = {
                     fields: {
@@ -425,7 +425,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(graph.size("edges"), 12);
             });
 
-            await it("attaches videos", async () => {
+            void it("attaches videos", async () => {
                 const graph = new ExecutableGraph<Command>();
                 options.jira.attachVideos = true;
                 await afterRun.addUploadCommands(
@@ -469,7 +469,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(graph.size("edges"), 14);
             });
 
-            await it("explicitly transitions issues in server environments", async () => {
+            void it("explicitly transitions issues in server environments", async () => {
                 const graph = new ExecutableGraph<Command>();
                 options.jira.testExecutionIssue = {
                     transition: {
@@ -511,7 +511,7 @@ describe(relative(cwd(), __filename), async () => {
                 assert.strictEqual(graph.size("edges"), 13);
             });
 
-            await it("does not explicitly transition issues in cloud environments", async () => {
+            void it("does not explicitly transition issues in cloud environments", async () => {
                 const graph = new ExecutableGraph<Command>();
                 options.jira.testExecutionIssue = {
                     transition: {
@@ -542,7 +542,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("cucumber", async () => {
+        void describe("cucumber", () => {
             let cypressResult: CypressRunResult;
             let cucumberResult: CucumberMultipartFeature[];
 
@@ -570,8 +570,8 @@ describe(relative(cwd(), __filename), async () => {
                 ) as CucumberMultipartFeature[];
             });
 
-            await describe("server", async () => {
-                await it("adds commands necessary for cucumber results upload", async (context) => {
+            void describe("server", () => {
+                void it("adds commands necessary for cucumber results upload", async (context) => {
                     context.mock.timers.enable({ apis: ["Date"] });
                     context.mock.timers.tick(12345);
                     const emitter = new PluginEventEmitter();
@@ -725,7 +725,7 @@ describe(relative(cwd(), __filename), async () => {
                     assert.strictEqual(graph.size("edges"), 11);
                 });
 
-                await it("uses configured test plan data", async () => {
+                void it("uses configured test plan data", async () => {
                     options.jira.testPlanIssueKey = "CYP-42";
                     const graph = new ExecutableGraph<Command>();
                     await afterRun.addUploadCommands(
@@ -767,7 +767,7 @@ describe(relative(cwd(), __filename), async () => {
                     assert.strictEqual(graph.size("edges"), 13);
                 });
 
-                await it("uses configured test plan data with hardcoded test plan ids", async () => {
+                void it("uses configured test plan data with hardcoded test plan ids", async () => {
                     options.jira.testPlanIssueKey = "CYP-42";
                     options.jira.fields.testPlan = "customfield_12345";
                     const graph = new ExecutableGraph<Command>();
@@ -799,7 +799,7 @@ describe(relative(cwd(), __filename), async () => {
                     assert.strictEqual(graph.size("edges"), 12);
                 });
 
-                await it("uses configured test environment data", async () => {
+                void it("uses configured test environment data", async () => {
                     options.xray.testEnvironments = ["DEV"];
                     const graph = new ExecutableGraph<Command>();
                     await afterRun.addUploadCommands(
@@ -841,7 +841,7 @@ describe(relative(cwd(), __filename), async () => {
                     assert.strictEqual(graph.size("edges"), 13);
                 });
 
-                await it("uses configured test environment data with hardcoded test environment ids", async () => {
+                void it("uses configured test environment data with hardcoded test environment ids", async () => {
                     options.xray.testEnvironments = ["DEV"];
                     options.jira.fields.testEnvironments = "customfield_67890";
                     const graph = new ExecutableGraph<Command>();
@@ -873,7 +873,7 @@ describe(relative(cwd(), __filename), async () => {
                     assert.strictEqual(graph.size("edges"), 12);
                 });
 
-                await it("uses configured test plan and environment data", async () => {
+                void it("uses configured test plan and environment data", async () => {
                     options.jira.testPlanIssueKey = "CYP-42";
                     options.xray.testEnvironments = ["DEV"];
                     const graph = new ExecutableGraph<Command>();
@@ -915,7 +915,7 @@ describe(relative(cwd(), __filename), async () => {
                     assert.strictEqual(graph.size("edges"), 15);
                 });
 
-                await it("uses configured test plan and environment data with hardcoded ids", async () => {
+                void it("uses configured test plan and environment data with hardcoded ids", async () => {
                     options.jira.testPlanIssueKey = "CYP-42";
                     options.jira.fields.testPlan = "customfield_12345";
                     options.xray.testEnvironments = ["DEV"];
@@ -957,12 +957,12 @@ describe(relative(cwd(), __filename), async () => {
                 });
             });
 
-            await describe("cloud", async () => {
+            void describe("cloud", () => {
                 beforeEach(() => {
                     clients.kind = "cloud";
                 });
 
-                await it("adds commands necessary for cucumber results upload", async () => {
+                void it("adds commands necessary for cucumber results upload", async () => {
                     const graph = new ExecutableGraph<Command>();
                     await afterRun.addUploadCommands(
                         cypressResult,
@@ -1025,7 +1025,7 @@ describe(relative(cwd(), __filename), async () => {
                     assert.strictEqual(graph.size("vertices"), 11);
                 });
 
-                await it("uses configured test execution issue data", async () => {
+                void it("uses configured test execution issue data", async () => {
                     const emitter = new PluginEventEmitter();
                     const graph = new ExecutableGraph<Command>();
                     options.jira.testExecutionIssue = {
@@ -1230,7 +1230,7 @@ describe(relative(cwd(), __filename), async () => {
                 });
             });
 
-            await it("throws if the cucumber report was not configured", async () => {
+            void it("throws if the cucumber report was not configured", async () => {
                 const graph = new ExecutableGraph<Command>();
                 const preprocessorOptions = options.cucumber as InternalCucumberOptions;
                 preprocessorOptions.preprocessor = undefined;
@@ -1254,7 +1254,7 @@ describe(relative(cwd(), __filename), async () => {
                 );
             });
 
-            await it("does not add any commands if neither cypress nor cucumber results exist", async (context) => {
+            void it("does not add any commands if neither cypress nor cucumber results exist", async (context) => {
                 const message = context.mock.method(LOG, "message", context.mock.fn());
                 cypressResult.runs = [];
                 const graph = new ExecutableGraph<Command>();
@@ -1278,7 +1278,7 @@ describe(relative(cwd(), __filename), async () => {
                 ]);
             });
 
-            await it("adds connections from feature file imports to execution uploads", async (context) => {
+            void it("adds connections from feature file imports to execution uploads", async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 options.cucumber = {
                     downloadFeatures: false,
@@ -1354,7 +1354,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("mixed", async () => {
+        void describe("mixed", () => {
             let cypressResult: CypressRunResult;
             let cucumberResult: CucumberMultipart;
 
@@ -1382,7 +1382,7 @@ describe(relative(cwd(), __filename), async () => {
                 };
             });
 
-            await it("adds commands necessary for mixed results upload", async (context) => {
+            void it("adds commands necessary for mixed results upload", async (context) => {
                 context.mock.timers.enable({ apis: ["Date"] });
                 context.mock.timers.tick(12345);
                 const graph = new ExecutableGraph<Command>();

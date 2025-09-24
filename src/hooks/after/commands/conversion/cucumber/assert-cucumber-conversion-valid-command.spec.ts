@@ -12,9 +12,9 @@ import { LOG } from "../../../../../util/logging";
 import { ConstantCommand } from "../../../../util/commands/constant-command";
 import { AssertCucumberConversionValidCommand } from "./assert-cucumber-conversion-valid-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(AssertCucumberConversionValidCommand.name, async () => {
-        await it("correctly verifies cucumber multipart data", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(AssertCucumberConversionValidCommand.name, () => {
+        void it("correctly verifies cucumber multipart data", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const cucumberFeatures: CucumberMultipartFeature[] = JSON.parse(
                 readFileSync(
@@ -40,7 +40,7 @@ describe(relative(cwd(), __filename), async () => {
             await assert.doesNotReject(command.compute());
         });
 
-        await it("throws for empty feature arrays", async (context) => {
+        void it("throws for empty feature arrays", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const cucumberInfo: MultipartInfo = JSON.parse(
                 readFileSync(

@@ -8,9 +8,9 @@ import { LOG } from "../../../../../util/logging";
 import { ConstantCommand } from "../../../../util/commands/constant-command";
 import { AssertCypressConversionValidCommand } from "./assert-cypress-conversion-valid-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(AssertCypressConversionValidCommand.name, async () => {
-        await it("correctly verifies xray json data", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(AssertCypressConversionValidCommand.name, () => {
+        void it("correctly verifies xray json data", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const xrayJson: Parameters<XrayClient["importExecutionMultipart"]> = [
                 {
@@ -35,7 +35,7 @@ describe(relative(cwd(), __filename), async () => {
             await assert.doesNotReject(command.compute());
         });
 
-        await it("throws for missing xray test arrays", async (context) => {
+        void it("throws for missing xray test arrays", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const xrayJson: Parameters<XrayClient["importExecutionMultipart"]> = [
                 { testExecutionKey: "CYP-123" },
@@ -59,7 +59,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("throws for empty xray test arrays", async (context) => {
+        void it("throws for empty xray test arrays", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const xrayJson: Parameters<XrayClient["importExecutionMultipart"]> = [
                 {

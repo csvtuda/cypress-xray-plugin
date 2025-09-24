@@ -4,27 +4,27 @@ import { cwd } from "node:process";
 import { describe, it } from "node:test";
 import { getXrayStatus } from "./status";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(getXrayStatus.name, async () => {
-        await it("uses passed as default status name for passed tests", () => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(getXrayStatus.name, () => {
+        void it("uses passed as default status name for passed tests", () => {
             assert.strictEqual(getXrayStatus("passed"), "passed");
         });
-        await it("uses failed as default status name for failed tests", () => {
+        void it("uses failed as default status name for failed tests", () => {
             assert.strictEqual(getXrayStatus("failed"), "failed");
         });
-        await it("uses pending as default status name for pending tests", () => {
+        void it("uses pending as default status name for pending tests", () => {
             assert.strictEqual(getXrayStatus("pending"), "pending");
         });
-        await it("uses skipped as default status name for skipped tests", () => {
+        void it("uses skipped as default status name for skipped tests", () => {
             assert.strictEqual(getXrayStatus("skipped"), "skipped");
         });
-        await it("uses unknown as default status name for unknown tests", () => {
+        void it("uses unknown as default status name for unknown tests", () => {
             assert.strictEqual(getXrayStatus("unknown"), "unknown");
         });
-        await it("uses undefined as default status name for undefined tests", () => {
+        void it("uses undefined as default status name for undefined tests", () => {
             assert.strictEqual(getXrayStatus("undefined"), "undefined");
         });
-        await it("prefers custom passed statuses", () => {
+        void it("prefers custom passed statuses", () => {
             assert.strictEqual(
                 getXrayStatus("passed", {
                     passed: "OK",
@@ -32,7 +32,7 @@ describe(relative(cwd(), __filename), async () => {
                 "OK"
             );
         });
-        await it("prefers custom failed statuses", () => {
+        void it("prefers custom failed statuses", () => {
             assert.strictEqual(
                 getXrayStatus("failed", {
                     failed: "NO",
@@ -40,7 +40,7 @@ describe(relative(cwd(), __filename), async () => {
                 "NO"
             );
         });
-        await it("prefers custom pending statuses", () => {
+        void it("prefers custom pending statuses", () => {
             assert.strictEqual(
                 getXrayStatus("pending", {
                     pending: "WIP",
@@ -48,7 +48,7 @@ describe(relative(cwd(), __filename), async () => {
                 "WIP"
             );
         });
-        await it("prefers custom skipped statuses", () => {
+        void it("prefers custom skipped statuses", () => {
             assert.strictEqual(
                 getXrayStatus("skipped", {
                     skipped: "SKIP",
@@ -56,7 +56,7 @@ describe(relative(cwd(), __filename), async () => {
                 "SKIP"
             );
         });
-        await it("does not modify unknown statuses", () => {
+        void it("does not modify unknown statuses", () => {
             assert.strictEqual(
                 getXrayStatus("unknown", {
                     failed: "FAILING",
@@ -67,7 +67,7 @@ describe(relative(cwd(), __filename), async () => {
                 "unknown"
             );
         });
-        await it("does not modify undefined statuses", () => {
+        void it("does not modify undefined statuses", () => {
             assert.strictEqual(
                 getXrayStatus("undefined", {
                     failed: "FAILING",
@@ -78,7 +78,7 @@ describe(relative(cwd(), __filename), async () => {
                 "undefined"
             );
         });
-        await it("throws for unexpected statuses", () => {
+        void it("throws for unexpected statuses", () => {
             assert.throws(() => getXrayStatus("abc bla bla"), {
                 message: "Unknown status: abc bla bla",
             });

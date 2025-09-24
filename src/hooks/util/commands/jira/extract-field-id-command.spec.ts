@@ -7,9 +7,9 @@ import { LOG } from "../../../../util/logging";
 import { ConstantCommand } from "../constant-command";
 import { ExtractFieldIdCommand, JiraField } from "./extract-field-id-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(ExtractFieldIdCommand.name, async () => {
-        await it("extracts fields case-insensitively", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(ExtractFieldIdCommand.name, () => {
+        void it("extracts fields case-insensitively", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new ExtractFieldIdCommand(
                 { field: JiraField.TEST_PLAN },
@@ -46,7 +46,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.strictEqual(await command.compute(), "customfield_12345");
         });
 
-        await it("throws for missing fields", async (context) => {
+        void it("throws for missing fields", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new ExtractFieldIdCommand(
                 { field: JiraField.TEST_PLAN },
@@ -86,8 +86,8 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await describe("throws for missing fields and displays a hint", async () => {
-            await it(JiraField.TEST_ENVIRONMENTS, async (context) => {
+        void describe("throws for missing fields and displays a hint", () => {
+            void it(JiraField.TEST_ENVIRONMENTS, async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const command = new ExtractFieldIdCommand(
                     { field: JiraField.TEST_ENVIRONMENTS },
@@ -110,7 +110,7 @@ describe(relative(cwd(), __filename), async () => {
                 });
             });
 
-            await it(JiraField.TEST_PLAN, async (context) => {
+            void it(JiraField.TEST_PLAN, async (context) => {
                 context.mock.method(LOG, "message", context.mock.fn());
                 const command = new ExtractFieldIdCommand(
                     { field: JiraField.TEST_PLAN },
@@ -134,7 +134,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("throws for multiple fields", async (context) => {
+        void it("throws for multiple fields", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new ExtractFieldIdCommand(
                 { field: JiraField.TEST_PLAN },

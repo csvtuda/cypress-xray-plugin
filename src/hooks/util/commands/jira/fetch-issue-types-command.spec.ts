@@ -6,13 +6,13 @@ import { describe, it } from "node:test";
 import { PatCredentials } from "../../../../client/authentication/credentials";
 import { AxiosRestClient } from "../../../../client/https/requests";
 import type { JiraClient } from "../../../../client/jira/jira-client";
-import { BaseJiraClient } from "../../../../client/jira/jira-client";
+import { JiraClientServer } from "../../../../client/jira/jira-client-server";
 import { LOG } from "../../../../util/logging";
 import { FetchIssueTypesCommand } from "./fetch-issue-types-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(FetchIssueTypesCommand.name, async () => {
-        await it("fetches issue types", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(FetchIssueTypesCommand.name, () => {
+        void it("fetches issue types", async (context) => {
             const types = [
                 {
                     avatarId: 10314,
@@ -45,7 +45,7 @@ describe(relative(cwd(), __filename), async () => {
                     untranslatedName: "Story",
                 },
             ];
-            const jiraClient = new BaseJiraClient(
+            const jiraClient = new JiraClientServer(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 new AxiosRestClient(axios)

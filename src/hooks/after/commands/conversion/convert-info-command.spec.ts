@@ -6,9 +6,9 @@ import { LOG } from "../../../../util/logging";
 import { ConstantCommand } from "../../../util/commands/constant-command";
 import { ConvertInfoCloudCommand, ConvertInfoServerCommand } from "./convert-info-command";
 
-describe(relative(cwd(), __filename), async () => {
-    await describe(ConvertInfoServerCommand.name, async () => {
-        await it("converts cucumber results into server cucumber info data", async (context) => {
+void describe(relative(cwd(), __filename), () => {
+    void describe(ConvertInfoServerCommand.name, () => {
+        void it("converts cucumber results into server cucumber info data", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new ConvertInfoServerCommand(
                 {
@@ -47,7 +47,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("includes configured test plan issue keys", async (context) => {
+        void it("includes configured test plan issue keys", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new ConvertInfoServerCommand(
                 {
@@ -77,7 +77,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(info.fields.customfield_12345, ["CYP-123"]);
         });
 
-        await it("includes configured test environments", async (context) => {
+        void it("includes configured test environments", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new ConvertInfoServerCommand(
                 {
@@ -106,7 +106,7 @@ describe(relative(cwd(), __filename), async () => {
             assert.deepStrictEqual(info.fields.customfield_45678, ["DEV", "PROD"]);
         });
 
-        await it("throws if no test plan id is supplied", (context) => {
+        void it("throws if no test plan id is supplied", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             assert.throws(
                 () =>
@@ -138,7 +138,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("throws if no test environments id is supplied", (context) => {
+        void it("throws if no test environments id is supplied", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             assert.throws(
                 () =>
@@ -169,7 +169,7 @@ describe(relative(cwd(), __filename), async () => {
             );
         });
 
-        await it("returns parameters", (context) => {
+        void it("returns parameters", (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new ConvertInfoServerCommand(
                 {
@@ -200,8 +200,8 @@ describe(relative(cwd(), __filename), async () => {
         });
     });
 
-    await describe(ConvertInfoCloudCommand.name, async () => {
-        await it("converts cucumber results into cucumber info data", async (context) => {
+    void describe(ConvertInfoCloudCommand.name, () => {
+        void it("converts cucumber results into cucumber info data", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new ConvertInfoCloudCommand(
                 {
@@ -244,7 +244,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("includes configured test plan issue keys", async (context) => {
+        void it("includes configured test plan issue keys", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new ConvertInfoCloudCommand(
                 {
@@ -274,7 +274,7 @@ describe(relative(cwd(), __filename), async () => {
             });
         });
 
-        await it("includes configured test environments", async (context) => {
+        void it("includes configured test environments", async (context) => {
             context.mock.method(LOG, "message", context.mock.fn());
             const command = new ConvertInfoCloudCommand(
                 {

@@ -10,7 +10,7 @@ import { getCreatedTestExecutionIssueKey } from "../util.mjs";
 // https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues/282
 // ============================================================================================== //
 
-describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () => {
+void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => {
     for (const testCase of [
         {
             projectDirectory: join(import.meta.dirname, "cloud"),
@@ -29,7 +29,7 @@ describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, async () =>
             title: "results upload works for mixed cypress and cucumber projects (server)",
         },
     ] as const) {
-        await it(testCase.title, async () => {
+        void it(testCase.title, async () => {
             const output = runCypress(testCase.projectDirectory, {
                 includeDefaultEnv: testCase.service,
             });
