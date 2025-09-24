@@ -1,4 +1,4 @@
-import { enqueueTask, PluginTask } from "cypress-xray-plugin/commands/tasks";
+import { enqueueTask, PluginTask } from "@csvtuda/cypress-xray-plugin/commands/tasks";
 
 Cypress.Commands.overwrite("request", (originalFn, options) => {
     return enqueueTask(PluginTask.OUTGOING_REQUEST, "request.json", options)

@@ -3,7 +3,7 @@ const createEsbuildPlugin = require("@badeball/cypress-cucumber-preprocessor/esb
 const createBundler = require("@bahmutov/cypress-esbuild-preprocessor");
 const { defineConfig } = require("cypress");
 const fix = require("cypress-on-fix");
-const { configureXrayPlugin, syncFeatureFile } = require("cypress-xray-plugin");
+const { configureXrayPlugin, syncFeatureFile } = require("@csvtuda/cypress-xray-plugin");
 
 module.exports = defineConfig({
     video: false,

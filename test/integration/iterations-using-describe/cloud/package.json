@@ -12,6 +12,6 @@
     "devDependencies": {
         "cypress": "file:../../../../node_modules/cypress",
         "cypress-on-fix": "file:../../../../node_modules/cypress-on-fix",
-        "cypress-xray-plugin": "file:../../../../dist"
+        "@csvtuda/cypress-xray-plugin": "file:../../../../dist"
     }
 }

@@ -193,7 +193,7 @@
 
 ```ts
 // cypress.config.js
-import { configureXrayPlugin, addXrayResultUpload } from "cypress-xray-plugin";
+import { configureXrayPlugin, addXrayResultUpload } from "@csvtuda/cypress-xray-plugin";
 
 async setupNodeEvents(on, config) {
   await configureXrayPlugin(
@@ -214,7 +214,7 @@ async setupNodeEvents(on, config) {
 
 ```ts
 // cypress.config.js
-import { configureXrayPlugin } from "cypress-xray-plugin";
+import { configureXrayPlugin } from "@csvtuda/cypress-xray-plugin";
 
 async setupNodeEvents(on, config) {
   await configureXrayPlugin(
@@ -254,7 +254,7 @@ async setupNodeEvents(on, config) {
 
 ```ts
 // cypress.config.js
-import { configureXrayPlugin } from "cypress-xray-plugin";
+import { configureXrayPlugin } from "@csvtuda/cypress-xray-plugin";
 import { constants } from "node:crypto";
 
 async setupNodeEvents(on, config) {
@@ -275,7 +275,7 @@ async setupNodeEvents(on, config) {
 
 ```ts
 // cypress.config.js
-import { configureXrayPlugin } from "cypress-xray-plugin";
+import { configureXrayPlugin } from "@csvtuda/cypress-xray-plugin";
 import { constants } from "node:crypto";
 import { Agent } from "node:https";
 
@@ -319,7 +319,7 @@ async setupNodeEvents(on, config) {
 
 ```ts
 // cypress/support/e2e.js
-import "cypress-xray-plugin/register";
+import "@csvtuda/cypress-xray-plugin/register";
 ```
 
 </td>
@@ -327,7 +327,7 @@ import "cypress-xray-plugin/register";
 
 ```ts
 // cypress/support/e2e.js
-import "cypress-xray-plugin/commands";
+import "@csvtuda/cypress-xray-plugin/commands";
 ```
 
 </td>
@@ -632,14 +632,18 @@ import {
     addXrayResultUpload,
     configureXrayPlugin,
     syncFeatureFile,
-} from "cypress-xray-plugin/plugin";
+} from "@csvtuda/cypress-xray-plugin/plugin";
 ```
 
 </td>
 <td>
 
 ```ts
-import { addXrayResultUpload, configureXrayPlugin, syncFeatureFile } from "cypress-xray-plugin";
+import {
+    addXrayResultUpload,
+    configureXrayPlugin,
+    syncFeatureFile,
+} from "@csvtuda/cypress-xray-plugin";
 ```
 
 </td>

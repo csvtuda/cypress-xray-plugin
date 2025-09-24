@@ -1,1 +1,1 @@
-import "cypress-xray-plugin/commands";
+import "@csvtuda/cypress-xray-plugin/commands";
