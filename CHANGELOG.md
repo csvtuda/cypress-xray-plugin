@@ -1,5 +1,9 @@
 # Changelog
 
+# `8.5.2`
+
+- Updated all mentions of package to new @csvtuda scope
+
 # `8.5.1`
 
 - Switched to new Jira cloud search endpoints
