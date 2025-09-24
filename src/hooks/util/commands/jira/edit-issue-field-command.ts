@@ -1,4 +1,4 @@
-import type { JiraClient } from "../../../../client/jira/jira-client";
+import type { HasEditIssueEndpoint } from "../../../../client/jira/jira-client";
 import type { StringMap } from "../../../../types/util";
 import { dedent } from "../../../../util/dedent";
 import type { Logger } from "../../../../util/logging";
@@ -7,8 +7,8 @@ import type { Computable } from "../../../command";
 import { Command } from "../../../command";
 
 interface Parameters {
+    client: HasEditIssueEndpoint;
     fieldId: string;
-    jiraClient: JiraClient;
 }
 
 export class EditIssueFieldCommand<FieldValue> extends Command<string[], Parameters> {
@@ -33,7 +33,7 @@ export class EditIssueFieldCommand<FieldValue> extends Command<string[], Paramet
             const fields = { [fieldId]: newValue };
             try {
                 successfullyEditedIssues.push(
-                    await this.parameters.jiraClient.editIssue(issueKey, { fields: fields })
+                    await this.parameters.client.editIssue(issueKey, { fields: fields })
                 );
                 // Error are logged in editIssue.
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars

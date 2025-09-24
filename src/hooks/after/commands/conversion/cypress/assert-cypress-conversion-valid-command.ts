@@ -1,4 +1,4 @@
-import type { XrayClient } from "../../../../../client/xray/xray-client";
+import type { HasImportExecutionMultipartEndpoint } from "../../../../../client/xray/xray-client";
 import { SkippedError } from "../../../../../util/errors";
 import type { Logger } from "../../../../../util/logging";
 import type { Computable } from "../../../../command";
@@ -6,12 +6,14 @@ import { Command } from "../../../../command";
 
 export class AssertCypressConversionValidCommand extends Command<void, null> {
     private readonly xrayTestExecutionResults: Computable<
-        Parameters<XrayClient["importExecutionMultipart"]>
+        Parameters<HasImportExecutionMultipartEndpoint["importExecutionMultipart"]>
     >;
 
     constructor(
         logger: Logger,
-        xrayTestExecutionResults: Computable<Parameters<XrayClient["importExecutionMultipart"]>>
+        xrayTestExecutionResults: Computable<
+            Parameters<HasImportExecutionMultipartEndpoint["importExecutionMultipart"]>
+        >
     ) {
         super(null, logger);
         this.xrayTestExecutionResults = xrayTestExecutionResults;

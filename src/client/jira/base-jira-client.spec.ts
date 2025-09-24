@@ -11,7 +11,7 @@ import type { Logger } from "../../util/logging";
 import { LOG } from "../../util/logging";
 import { BasicAuthCredentials } from "../authentication/credentials";
 import { AxiosRestClient } from "../https/requests";
-import { BaseJiraClient } from "./jira-client";
+import { BaseJiraClient } from "./base-jira-client";
 
 void describe(relative(cwd(), __filename), () => {
     void describe(BaseJiraClient.name, () => {

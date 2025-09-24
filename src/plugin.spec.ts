@@ -7,9 +7,8 @@ import { beforeEach, describe, it } from "node:test";
 import { mockedCypressEventEmitter } from "../test/util";
 import { PatCredentials } from "./client/authentication/credentials";
 import { AxiosRestClient } from "./client/https/requests";
-import { type JiraClient } from "./client/jira/jira-client";
 import { JiraClientServer } from "./client/jira/jira-client-server";
-import { ServerClient } from "./client/xray/xray-client-server";
+import { XrayClientServer } from "./client/xray/xray-client-server";
 import globalContext, {
     PluginContext,
     SimpleEvidenceCollection,
@@ -31,7 +30,6 @@ import { ExecutableGraph } from "./util/graph/executable-graph";
 import { CapturingLogger, LOG } from "./util/logging";
 
 void describe(relative(cwd(), __filename), () => {
-    let jiraClient: JiraClient;
     let config: PluginConfigOptions<"14">;
     let pluginContext: PluginContext;
 
@@ -39,12 +37,12 @@ void describe(relative(cwd(), __filename), () => {
         config = JSON.parse(
             fs.readFileSync("./test/resources/cypress.config.json", "utf-8")
         ) as PluginConfigOptions<"14">;
-        jiraClient = new JiraClientServer(
+        const jiraClient = new JiraClientServer(
             "http://localhost:1234",
             new PatCredentials("token"),
             new AxiosRestClient(axios)
         );
-        const xrayClient = new ServerClient(
+        const xrayClient = new XrayClientServer(
             "http://localhost:1234",
             new PatCredentials("token"),
             new AxiosRestClient(axios)
@@ -546,7 +544,9 @@ void describe(relative(cwd(), __filename), () => {
         void it("displays a warning if there are failed vertices", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
             context.mock.method(globalContext, "initClients", () => pluginContext.getClients());
-            context.mock.method(jiraClient, "getIssueTypes", () => [{ name: "Test Execution" }]);
+            context.mock.method(pluginContext.getClients().jiraClient, "getIssueTypes", () => [
+                { name: "Test Execution" },
+            ]);
             const afterRunResult: CypressRunResult = JSON.parse(
                 fs.readFileSync("./test/resources/runResult.json", "utf-8")
             ) as CypressRunResult;
@@ -652,7 +652,12 @@ void describe(relative(cwd(), __filename), () => {
 
     void it("displays warning and errors after other log messages", async (context) => {
         const message = context.mock.method(LOG, "message", context.mock.fn());
-        const xrayClient = new ServerClient(
+        const jiraClient = new JiraClientServer(
+            "http://localhost:1234",
+            new PatCredentials("token"),
+            new AxiosRestClient(axios)
+        );
+        const xrayClient = new XrayClientServer(
             "http://localhost:1234",
             new PatCredentials("token"),
             new AxiosRestClient(axios)

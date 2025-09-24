@@ -1,4 +1,4 @@
-import type { JiraClient } from "../../../../client/jira/jira-client";
+import type { HasSearchEndpoint } from "../../../../client/jira/jira-client";
 import type { Issue } from "../../../../types/jira/responses/issue";
 import type { StringMap } from "../../../../types/util";
 import { dedent } from "../../../../util/dedent";
@@ -8,7 +8,7 @@ import type { Computable } from "../../../command";
 import { Command } from "../../../command";
 
 interface Parameters {
-    jiraClient: JiraClient;
+    client: HasSearchEndpoint;
 }
 
 export abstract class GetFieldValuesCommand<FieldValue> extends Command<
@@ -33,7 +33,7 @@ export abstract class GetFieldValuesCommand<FieldValue> extends Command<
     ): Promise<StringMap<FieldValue>> {
         const fieldId = await this.fieldId.compute();
         const issueKeys = await this.issueKeys.compute();
-        const issues: Issue[] = await this.parameters.jiraClient.search({
+        const issues: Issue[] = await this.parameters.client.search({
             fields: [fieldId],
             jql: `issue in (${issueKeys.join(",")})`,
         });

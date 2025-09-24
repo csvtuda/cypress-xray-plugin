@@ -1,11 +1,11 @@
-import type { JiraClient } from "../../../../client/jira/jira-client";
+import type { HasAddAttachmentEndpoint } from "../../../../client/jira/jira-client";
 import type { Attachment } from "../../../../types/jira/responses/attachment";
 import type { Logger } from "../../../../util/logging";
 import type { Computable } from "../../../command";
 import { Command } from "../../../command";
 
 interface Parameters {
-    jiraClient: JiraClient;
+    client: HasAddAttachmentEndpoint;
 }
 
 export class AttachFilesCommand extends Command<Attachment[], Parameters> {
@@ -32,6 +32,6 @@ export class AttachFilesCommand extends Command<Attachment[], Parameters> {
             "info",
             `Attaching files to test execution issue ${resolvedExecutionIssueKey}`
         );
-        return await this.parameters.jiraClient.addAttachment(resolvedExecutionIssueKey, ...files);
+        return await this.parameters.client.addAttachment(resolvedExecutionIssueKey, ...files);
     }
 }

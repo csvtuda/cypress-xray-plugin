@@ -1,13 +1,12 @@
-import axios from "axios";
 import assert from "node:assert";
 import fs from "node:fs";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { PatCredentials } from "../../../../client/authentication/credentials";
-import { AxiosRestClient } from "../../../../client/https/requests";
-import type { XrayClient } from "../../../../client/xray/xray-client";
-import { ServerClient } from "../../../../client/xray/xray-client-server";
+import type {
+    HasImportExecutionCucumberMultipartEndpoint,
+    HasImportExecutionMultipartEndpoint,
+} from "../../../../client/xray/xray-client";
 import { PluginEventEmitter } from "../../../../context";
 import type { CucumberMultipartFeature } from "../../../../types/xray/requests/import-execution-cucumber-multipart";
 import type { MultipartInfo } from "../../../../types/xray/requests/import-execution-multipart-info";
@@ -19,11 +18,6 @@ void describe(relative(cwd(), __filename), () => {
     void describe(ImportExecutionCucumberCommand.name, () => {
         void it("imports cucumber multipart", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
-            const xrayClient = new ServerClient(
-                "http://localhost:1234",
-                new PatCredentials("token"),
-                new AxiosRestClient(axios)
-            );
             const multipart = {
                 features: JSON.parse(
                     fs.readFileSync(
@@ -38,25 +32,18 @@ void describe(relative(cwd(), __filename), () => {
                     )
                 ) as MultipartInfo,
             };
-            context.mock.method(
-                xrayClient,
-                "importExecutionCucumberMultipart",
-                context.mock.fn<XrayClient["importExecutionCucumberMultipart"]>(
-                    (cucumberJson, cucumberInfo) => {
-                        if (
-                            cucumberJson === multipart.features &&
-                            cucumberInfo === multipart.info
-                        ) {
-                            return Promise.resolve("CYP-123");
-                        }
-                        return Promise.reject(new Error("Mock called unexpectedly"));
+            const client: HasImportExecutionCucumberMultipartEndpoint = {
+                importExecutionCucumberMultipart(cucumberJson, cucumberInfo) {
+                    if (cucumberJson === multipart.features && cucumberInfo === multipart.info) {
+                        return Promise.resolve("CYP-123");
                     }
-                )
-            );
+                    return Promise.reject(new Error("Mock called unexpectedly"));
+                },
+            };
             const command = new ImportExecutionCucumberCommand(
                 {
+                    client: client,
                     emitter: new PluginEventEmitter(),
-                    xrayClient: xrayClient,
                 },
                 LOG,
                 new ConstantCommand(LOG, multipart)
@@ -65,7 +52,7 @@ void describe(relative(cwd(), __filename), () => {
             assert.strictEqual(message.mock.callCount(), 0);
         });
 
-        void it("emits the upload event", async (context) => {
+        void it("emits the upload event", async () => {
             const multipart = {
                 features: JSON.parse(
                     fs.readFileSync(
@@ -80,34 +67,24 @@ void describe(relative(cwd(), __filename), () => {
                     )
                 ) as MultipartInfo,
             };
-            const xrayClient = new ServerClient(
-                "http://localhost:1234",
-                new PatCredentials("token"),
-                new AxiosRestClient(axios)
-            );
-            context.mock.method(
-                xrayClient,
-                "importExecutionMultipart",
-                context.mock.fn<ServerClient["importExecutionMultipart"]>(() => {
+            const client: HasImportExecutionMultipartEndpoint &
+                HasImportExecutionCucumberMultipartEndpoint = {
+                importExecutionCucumberMultipart() {
                     return Promise.resolve("CYP-123");
-                })
-            );
+                },
+                importExecutionMultipart() {
+                    return Promise.resolve("CYP-123");
+                },
+            };
             const emitter = new PluginEventEmitter();
             let payload = {};
             emitter.on("upload:cucumber", (data) => {
                 payload = data;
             });
-            context.mock.method(
-                xrayClient,
-                "importExecutionCucumberMultipart",
-                context.mock.fn<XrayClient["importExecutionCucumberMultipart"]>(() => {
-                    return Promise.resolve("CYP-123");
-                })
-            );
             const command = new ImportExecutionCucumberCommand(
                 {
+                    client: client,
                     emitter: emitter,
-                    xrayClient: xrayClient,
                 },
                 LOG,
                 new ConstantCommand(LOG, multipart)

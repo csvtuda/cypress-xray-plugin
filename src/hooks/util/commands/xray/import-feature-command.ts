@@ -1,20 +1,20 @@
-import type { XrayClient } from "../../../../client/xray/xray-client";
+import type { HasImportFeatureEndpoint } from "../../../../client/xray/xray-client";
 import type { ImportFeatureResponse } from "../../../../types/xray/responses/import-feature";
 import { dedent } from "../../../../util/dedent";
 import { Command } from "../../../command";
 
 interface Parameters {
+    client: HasImportFeatureEndpoint;
     filePath: string;
     projectId?: string;
     projectKey?: string;
     source?: string;
-    xrayClient: XrayClient;
 }
 
 export class ImportFeatureCommand extends Command<ImportFeatureResponse, Parameters> {
     protected async computeResult(): Promise<ImportFeatureResponse> {
         this.logger.message("info", `Importing feature file to Xray: ${this.parameters.filePath}`);
-        const importResponse = await this.parameters.xrayClient.importFeature(
+        const importResponse = await this.parameters.client.importFeature(
             this.parameters.filePath,
             {
                 projectId: this.parameters.projectId,

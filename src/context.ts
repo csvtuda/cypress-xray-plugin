@@ -6,12 +6,10 @@ import {
     PatCredentials,
 } from "./client/authentication/credentials";
 import { AxiosRestClient } from "./client/https/requests";
-import type { JiraClient } from "./client/jira/jira-client";
 import { JiraClientCloud } from "./client/jira/jira-client-cloud";
 import { JiraClientServer } from "./client/jira/jira-client-server";
 import { XrayClientCloud } from "./client/xray/xray-client-cloud";
-import type { XrayClientServer } from "./client/xray/xray-client-server";
-import { ServerClient } from "./client/xray/xray-client-server";
+import { XrayClientServer } from "./client/xray/xray-client-server";
 import { ENV_NAMES } from "./env";
 import type { Command } from "./hooks/command";
 import type { ObjectLike, PluginConfigOptions, ScreenshotDetails } from "./types/cypress";
@@ -719,7 +717,7 @@ async function getXrayServerClient(
     credentials: BasicAuthCredentials | PatCredentials,
     httpClient: AxiosRestClient
 ): Promise<XrayClientServer> {
-    const xrayClient = new ServerClient(url, credentials, httpClient);
+    const xrayClient = new XrayClientServer(url, credentials, httpClient);
     try {
         const license = await xrayClient.getXrayLicense();
         if (typeof license === "object" && "active" in license) {
@@ -764,12 +762,12 @@ async function getXrayServerClient(
     }
 }
 
-async function getJiraClient(
+async function getJiraClient<K extends "cloud" | "server">(
     url: string,
     credentials: HttpCredentials,
     httpClient: AxiosRestClient,
-    kind: "cloud" | "server"
-): Promise<JiraClient> {
+    kind: K
+): Promise<K extends "cloud" ? JiraClientCloud : JiraClientServer> {
     const jiraClient =
         kind === "server"
             ? new JiraClientServer(url, credentials, httpClient)

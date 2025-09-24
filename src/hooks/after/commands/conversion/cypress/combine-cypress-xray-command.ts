@@ -1,4 +1,4 @@
-import type { XrayClient } from "../../../../../client/xray/xray-client";
+import type { HasImportExecutionMultipartEndpoint } from "../../../../../client/xray/xray-client";
 import type { XrayTest } from "../../../../../types/xray/import-test-execution-results";
 import type { MultipartInfo } from "../../../../../types/xray/requests/import-execution-multipart-info";
 import type { Logger } from "../../../../../util/logging";
@@ -10,7 +10,7 @@ interface CommandParameters {
 }
 
 export class CombineCypressJsonCommand extends Command<
-    Parameters<XrayClient["importExecutionMultipart"]>,
+    Parameters<HasImportExecutionMultipartEndpoint["importExecutionMultipart"]>,
     CommandParameters
 > {
     private readonly cypressTestsJson: Computable<[XrayTest, ...XrayTest[]]>;
@@ -27,7 +27,9 @@ export class CombineCypressJsonCommand extends Command<
         this.info = info;
     }
 
-    protected async computeResult(): Promise<Parameters<XrayClient["importExecutionMultipart"]>> {
+    protected async computeResult(): Promise<
+        Parameters<HasImportExecutionMultipartEndpoint["importExecutionMultipart"]>
+    > {
         const results = await this.cypressTestsJson.compute();
         const info = await this.info.compute();
         return [

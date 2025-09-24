@@ -5,13 +5,13 @@ import type { SearchResultsServer } from "../../types/jira/responses/search-resu
 import type { StringMap } from "../../types/util";
 import { LOG } from "../../util/logging";
 import { loggedRequest } from "../util";
-import type { JiraClient } from "./jira-client";
-import { BaseJiraClient } from "./jira-client";
+import { BaseJiraClient } from "./base-jira-client";
+import type { HasSearchEndpoint } from "./jira-client";
 
 /**
  * A Jira client class for communicating with Jira instances.
  */
-export class JiraClientServer extends BaseJiraClient implements JiraClient {
+export class JiraClientServer extends BaseJiraClient implements HasSearchEndpoint {
     @loggedRequest({ purpose: "search issues" })
     public async search(request: SearchRequestServer): Promise<Issue[]> {
         const header = await this.credentials.getAuthorizationHeader();

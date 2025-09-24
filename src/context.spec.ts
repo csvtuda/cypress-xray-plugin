@@ -12,7 +12,7 @@ import { AxiosRestClient } from "./client/https/requests";
 import { JiraClientCloud } from "./client/jira/jira-client-cloud";
 import { JiraClientServer } from "./client/jira/jira-client-server";
 import { XrayClientCloud } from "./client/xray/xray-client-cloud";
-import { ServerClient } from "./client/xray/xray-client-server";
+import { XrayClientServer } from "./client/xray/xray-client-server";
 import globalContext, {
     PluginContext,
     SimpleEvidenceCollection,
@@ -1758,13 +1758,13 @@ void describe(relative(cwd(), __filename), () => {
                     httpClients
                 );
                 assert.strictEqual(jiraClient instanceof JiraClientServer, true);
-                assert.strictEqual(xrayClient instanceof ServerClient, true);
+                assert.strictEqual(xrayClient instanceof XrayClientServer, true);
                 assert.strictEqual(
                     (jiraClient as JiraClientServer).getCredentials() instanceof PatCredentials,
                     true
                 );
                 assert.strictEqual(
-                    (xrayClient as ServerClient).getCredentials() instanceof PatCredentials,
+                    (xrayClient as XrayClientServer).getCredentials() instanceof PatCredentials,
                     true
                 );
                 assert.strictEqual(getJira.mock.callCount(), 1);
@@ -1817,14 +1817,15 @@ void describe(relative(cwd(), __filename), () => {
                     httpClients
                 );
                 assert.strictEqual(jiraClient instanceof JiraClientServer, true);
-                assert.strictEqual(xrayClient instanceof ServerClient, true);
+                assert.strictEqual(xrayClient instanceof XrayClientServer, true);
                 assert.strictEqual(
                     (jiraClient as JiraClientServer).getCredentials() instanceof
                         BasicAuthCredentials,
                     true
                 );
                 assert.strictEqual(
-                    (xrayClient as ServerClient).getCredentials() instanceof BasicAuthCredentials,
+                    (xrayClient as XrayClientServer).getCredentials() instanceof
+                        BasicAuthCredentials,
                     true
                 );
                 assert.strictEqual(getJira.mock.callCount(), 1);
@@ -2238,7 +2239,7 @@ void describe(relative(cwd(), __filename), () => {
                 new PatCredentials("token"),
                 new AxiosRestClient(axios)
             );
-            const xrayClient = new ServerClient(
+            const xrayClient = new XrayClientServer(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 new AxiosRestClient(axios)

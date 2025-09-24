@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import type { XrayClient } from "../../client/xray/xray-client";
+import type { HasImportExecutionMultipartEndpoint } from "../../client/xray/xray-client";
 import type {
     EvidenceCollection,
     IterationParameterCollection,
@@ -420,7 +420,9 @@ class AfterRunBuilder {
     }
 
     public addAssertCypressConversionValidCommand(parameters: {
-        xrayTestExecutionResults: Command<Parameters<XrayClient["importExecutionMultipart"]>>;
+        xrayTestExecutionResults: Command<
+            Parameters<HasImportExecutionMultipartEndpoint["importExecutionMultipart"]>
+        >;
     }) {
         const command = this.graph.place(
             new AssertCypressConversionValidCommand(
@@ -433,14 +435,16 @@ class AfterRunBuilder {
     }
 
     public addImportExecutionCypressCommand(parameters: {
-        execution: Command<Parameters<XrayClient["importExecutionMultipart"]>>;
+        execution: Command<
+            Parameters<HasImportExecutionMultipartEndpoint["importExecutionMultipart"]>
+        >;
     }) {
         const command = this.graph.place(
             new ImportExecutionCypressCommand(
                 {
+                    client: this.clients.xrayClient,
                     emitter: this.eventEmitter,
                     splitUpload: this.options.plugin.splitUpload,
-                    xrayClient: this.clients.xrayClient,
                 },
                 this.logger,
                 parameters.execution
@@ -663,8 +667,8 @@ class AfterRunBuilder {
         const command = this.graph.place(
             new ImportExecutionCucumberCommand(
                 {
+                    client: this.clients.xrayClient,
                     emitter: this.eventEmitter,
-                    xrayClient: this.clients.xrayClient,
                 },
                 this.logger,
                 parameters.cucumberMultipart
@@ -729,7 +733,7 @@ class AfterRunBuilder {
         this.graph.connect(resultsCommand, extractVideoFilesCommand);
         const command = this.graph.place(
             new AttachFilesCommand(
-                { jiraClient: this.clients.jiraClient },
+                { client: this.clients.jiraClient },
                 this.logger,
                 extractVideoFilesCommand,
                 parameters.resolvedExecutionIssueKey
@@ -747,7 +751,7 @@ class AfterRunBuilder {
         const command = this.graph.place(
             new TransitionIssueCommand(
                 {
-                    jiraClient: this.clients.jiraClient,
+                    client: this.clients.jiraClient,
                     transition: parameters.transition,
                 },
                 this.logger,
@@ -790,7 +794,7 @@ class AfterRunBuilder {
                         () => {
                             const command = this.graph.place(
                                 new GetSummaryValuesCommand(
-                                    { jiraClient: this.clients.jiraClient },
+                                    { client: this.clients.jiraClient },
                                     this.logger,
                                     issueKeysCommand
                                 )

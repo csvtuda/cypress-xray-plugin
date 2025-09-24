@@ -52,28 +52,20 @@ function addSynchronizationCommands(
     // See: https://docs.getxray.app/display/XRAY/Importing+Cucumber+Tests+-+REST
     // See: https://docs.getxray.app/display/XRAYCLOUD/Importing+Cucumber+Tests+-+REST+v2
     const getCurrentSummariesCommand = graph.place(
-        new GetSummaryValuesCommand(
-            { jiraClient: clients.jiraClient },
-            logger,
-            extractIssueKeysCommand
-        )
+        new GetSummaryValuesCommand({ client: clients.jiraClient }, logger, extractIssueKeysCommand)
     );
     graph.connect(extractIssueKeysCommand, getCurrentSummariesCommand);
     const getCurrentLabelsCommand = graph.place(
-        new GetLabelValuesCommand(
-            { jiraClient: clients.jiraClient },
-            logger,
-            extractIssueKeysCommand
-        )
+        new GetLabelValuesCommand({ client: clients.jiraClient }, logger, extractIssueKeysCommand)
     );
     graph.connect(extractIssueKeysCommand, getCurrentLabelsCommand);
     // Only import the feature once the backups have been created.
     const importFeatureCommand = graph.place(
         new ImportFeatureCommand(
             {
+                client: clients.xrayClient,
                 filePath: file.filePath,
                 projectKey: options.jira.projectKey,
-                xrayClient: clients.xrayClient,
             },
             logger
         )
@@ -92,20 +84,12 @@ function addSynchronizationCommands(
     graph.connect(extractIssueKeysCommand, getUpdatedIssuesCommand);
     graph.connect(importFeatureCommand, getUpdatedIssuesCommand);
     const getNewSummariesCommand = graph.place(
-        new GetSummaryValuesCommand(
-            { jiraClient: clients.jiraClient },
-            logger,
-            extractIssueKeysCommand
-        )
+        new GetSummaryValuesCommand({ client: clients.jiraClient }, logger, extractIssueKeysCommand)
     );
     graph.connect(extractIssueKeysCommand, getNewSummariesCommand);
     graph.connect(getUpdatedIssuesCommand, getNewSummariesCommand);
     const getNewLabelsCommand = graph.place(
-        new GetLabelValuesCommand(
-            { jiraClient: clients.jiraClient },
-            logger,
-            extractIssueKeysCommand
-        )
+        new GetLabelValuesCommand({ client: clients.jiraClient }, logger, extractIssueKeysCommand)
     );
     graph.connect(extractIssueKeysCommand, getNewLabelsCommand);
     graph.connect(getUpdatedIssuesCommand, getNewLabelsCommand);
@@ -121,7 +105,7 @@ function addSynchronizationCommands(
     graph.connect(getNewLabelsCommand, getLabelsToResetCommand);
     const editSummariesCommand = graph.place(
         new EditIssueFieldCommand(
-            { fieldId: "summary", jiraClient: clients.jiraClient },
+            { client: clients.jiraClient, fieldId: "summary" },
             logger,
             new ConstantCommand(logger, "summary"),
             getSummariesToResetCommand
@@ -130,7 +114,7 @@ function addSynchronizationCommands(
     graph.connect(getSummariesToResetCommand, editSummariesCommand);
     const editLabelsCommand = graph.place(
         new EditIssueFieldCommand(
-            { fieldId: "labels", jiraClient: clients.jiraClient },
+            { client: clients.jiraClient, fieldId: "labels" },
             logger,
             new ConstantCommand(logger, "labels"),
             getLabelsToResetCommand
