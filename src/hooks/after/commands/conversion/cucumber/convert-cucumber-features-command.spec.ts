@@ -492,8 +492,8 @@ void describe(relative(cwd(), __filename), () => {
                                   ...
 
                             For more information, visit:
-                            - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
-                            - https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/cucumber/#prefixes
+                            - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
+                            - https://csvtuda.github.io/docs/cypress-xray-plugin/configuration/cucumber/#prefixes
                             - https://docs.getxray.app/display/XRAY/Importing+Cucumber+Tests+-+REST
                 `),
             ]);
@@ -560,8 +560,8 @@ void describe(relative(cwd(), __filename), () => {
                                   ...
 
                             For more information, visit:
-                            - https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/
-                            - https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/cucumber/#prefixes
+                            - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
+                            - https://csvtuda.github.io/docs/cypress-xray-plugin/configuration/cucumber/#prefixes
                             - https://docs.getxray.app/display/XRAY/Importing+Cucumber+Tests+-+REST
                 `),
             ]);

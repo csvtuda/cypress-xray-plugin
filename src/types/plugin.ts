@@ -22,7 +22,7 @@ export interface CypressXrayPluginOptions {
      * When Cucumber is enabled, you can use these options to configure how the plugin works with
      * your feature files.
      *
-     * @see https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/cucumber/
+     * @see https://csvtuda.github.io/docs/cypress-xray-plugin/configuration/cucumber/
      */
     cucumber?: CucumberOptions;
     /**
@@ -49,25 +49,25 @@ export interface CypressXrayPluginOptions {
      * }
      * ```
      *
-     * @see https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/http
+     * @see https://csvtuda.github.io/docs/cypress-xray-plugin/configuration/http
      */
     http?: HttpOptions;
     /**
      * Defines Jira-specific options that control how the plugin interacts with Jira.
      *
-     * @see https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/jira/
+     * @see https://csvtuda.github.io/docs/cypress-xray-plugin/configuration/jira/
      */
     jira: JiraOptions;
     /**
      * Options for configuring the general behaviour of the plugin.
      *
-     * @see https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/plugin/
+     * @see https://csvtuda.github.io/docs/cypress-xray-plugin/configuration/plugin/
      */
     plugin?: PluginOptions;
     /**
      * Xray settings that may be required depending on your project configuration.
      *
-     * @see https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/xray/
+     * @see https://csvtuda.github.io/docs/cypress-xray-plugin/configuration/xray/
      */
     xray?: XrayOptions;
 }
@@ -379,7 +379,7 @@ export interface XrayOptions {
          *
          * Please note that tests are grouped by the issue keys present in their `describe()` and
          * `it()` titles as described
-         * [here](https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/#reuse-cypress-issues).
+         * [here](https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/#reuse-cypress-issues).
          *
          * By default, the aggregation works as follows in order of mention:
          *
@@ -525,7 +525,7 @@ export interface XrayOptions {
      *
      * *Note: For this option to work properly, you need to overwrite the `cy.request` command.*
      *
-     * @see https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/uploadRequestData/
+     * @see https://csvtuda.github.io/docs/cypress-xray-plugin/guides/uploadRequestData/
      *
      * @defaultValue false
      */
@@ -610,7 +610,7 @@ export interface CucumberOptions {
      * imported results altogether.
      *
      * More information:
-     * - {@link https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/cucumber/#prefixes | Plugin documentation for `prefixes`}
+     * - {@link https://csvtuda.github.io/docs/cypress-xray-plugin/configuration/cucumber/#prefixes | Plugin documentation for `prefixes`}
      * - Xray feature tagging
      *   - {@link https://docs.getxray.app/display/XRAY/Export+Cucumber+Features | Xray server}
      *   - {@link https://docs.getxray.app/display/XRAYCLOUD/Generate+Cucumber+Features | Xray cloud}

@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://csvtuda.github.io/projects/cypress-xray-plugin">
+  <a href="https://csvtuda.github.io/docs/cypress-xray-plugin/">
   <img width="100%" src="logo.svg" alt="Cypress Xray Plugin">
 </h1>
 
@@ -53,9 +53,9 @@ export default defineConfig({
 });
 ```
 
-Make sure you also configure your [credentials](https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/authentication/#authentication) for Jira/Xray.
+Make sure you also configure your [credentials](https://csvtuda.github.io/docs/cypress-xray-plugin/configuration/authentication) for Jira/Xray.
 
-To have the plugin upload test results, [link your test cases](https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/targetingExistingIssues/) to Xray tests by specifying the corresponding issue keys in the test titles:
+To have the plugin upload test results, [link your test cases](https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues) to Xray tests by specifying the corresponding issue keys in the test titles:
 
 ```js
 it("PRJ-42 My test", () => {
@@ -68,7 +68,7 @@ it("PRJ-42 My test", () => {
 
 ## Documentation
 
-Please [visit the documentation](https://csvtuda.github.io/projects/cypress-xray-plugin) to find out how to fully setup the plugin, including a full list of options.
+Please [visit the documentation](https://csvtuda.github.io/docs/cypress-xray-plugin/) to find out how to fully setup the plugin, including a full list of options.
 
 ## Issues
 

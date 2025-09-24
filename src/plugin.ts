@@ -48,7 +48,7 @@ export function resetPlugin(): void {
  * @param config - the Cypress configuration
  * @param options - the plugin options
  *
- * @see https://csvtuda.github.io/projects/cypress-xray-plugin/section/guides/uploadTestResults/#setup
+ * @see https://csvtuda.github.io/docs/cypress-xray-plugin/guides/uploadTestResults/#setup
  */
 export async function configureXrayPlugin(
     on: Cypress.PluginEvents,
@@ -217,7 +217,7 @@ export async function configureXrayPlugin(
 
 /**
  * Attempts to synchronize the Cucumber feature file with Xray. If the filename does not end with
- * the configured {@link https://csvtuda.github.io/projects/cypress-xray-plugin/section/configuration/cucumber/#featurefileextension | feature file extension},
+ * the configured {@link https://csvtuda.github.io/docs/cypress-xray-plugin/configuration/cucumber/#featurefileextension | feature file extension},
  * this method will not upload anything to Xray.
  *
  * @param file - the Cypress file object
