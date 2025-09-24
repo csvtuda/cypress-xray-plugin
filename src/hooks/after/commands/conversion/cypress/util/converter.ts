@@ -197,8 +197,8 @@ export class RunConverterLatest implements RunConverter {
      */
     private static readonly REGEX_CONFLICT = /\s+(\d+)$/;
     private readonly projectKey: string;
-    private readonly runResults: readonly RunResult<"13" | "14">[];
-    private readonly screenshotDetails: readonly ScreenshotDetails<"13" | "14">[];
+    private readonly runResults: readonly RunResult<">=14" | "13">[];
+    private readonly screenshotDetails: readonly ScreenshotDetails<">=14" | "13">[];
 
     /**
      * Constructs a new converter for the specified run results.
@@ -209,8 +209,8 @@ export class RunConverterLatest implements RunConverter {
      */
     constructor(
         projectKey: string,
-        runResults: RunResult<"13" | "14">[],
-        screenshotDetails: ScreenshotDetails<"13" | "14">[]
+        runResults: RunResult<">=14" | "13">[],
+        screenshotDetails: ScreenshotDetails<">=14" | "13">[]
     ) {
         this.projectKey = projectKey;
         this.runResults = runResults;
@@ -299,12 +299,12 @@ export class RunConverterLatest implements RunConverter {
         return [...new Set([...screenshots.map((screenshot) => screenshot.path)])];
     }
 
-    private filterLastAttemptScreenshots(screenshots: readonly ScreenshotDetails<"13" | "14">[]) {
+    private filterLastAttemptScreenshots(screenshots: readonly ScreenshotDetails<">=14" | "13">[]) {
         // Group screenshots by their "basename", i.e. without the (attempt xxx) suffixes.
         const groups = this.groupScreenshots(screenshots);
         const lastScreenshots = [];
         for (const similarScreenshots of groups) {
-            const screenshotsByAttemptIndex = new Map<number, ScreenshotDetails<"13" | "14">[]>();
+            const screenshotsByAttemptIndex = new Map<number, ScreenshotDetails<">=14" | "13">[]>();
             for (const screenshot of similarScreenshots) {
                 const match = RunConverterLatest.REGEX_ATTEMPT.exec(screenshot.path);
                 if (match !== null) {
@@ -375,15 +375,15 @@ export class RunConverterLatest implements RunConverter {
      * @returns the grouped screenshots
      */
     private groupScreenshots(
-        screenshots: readonly ScreenshotDetails<"13" | "14">[]
-    ): ScreenshotDetails<"13" | "14">[][] {
-        const screenshotGroups: ScreenshotDetails<"13" | "14">[][] = [];
+        screenshots: readonly ScreenshotDetails<">=14" | "13">[]
+    ): ScreenshotDetails<">=14" | "13">[][] {
+        const screenshotGroups: ScreenshotDetails<">=14" | "13">[][] = [];
         // Reverse order because we're popping (order is important for upload order later on).
         let remainingScreenshots = [...screenshots].reverse();
         while (remainingScreenshots.length > 0) {
             // Cast valid: it cannot ever be undefined here.
-            const screenshot = remainingScreenshots.pop() as ScreenshotDetails<"13" | "14">;
-            const group: ScreenshotDetails<"13" | "14">[] = [screenshot];
+            const screenshot = remainingScreenshots.pop() as ScreenshotDetails<">=14" | "13">;
+            const group: ScreenshotDetails<">=14" | "13">[] = [screenshot];
             const name = basename(screenshot.path, extname(screenshot.path));
             // Try to find screenshots with possibly conflicting names.
             if (RunConverterLatest.REGEX_CONFLICT.exec(name) !== null) {

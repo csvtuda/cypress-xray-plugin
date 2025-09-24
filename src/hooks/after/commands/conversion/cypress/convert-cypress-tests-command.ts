@@ -102,7 +102,7 @@ export class ConvertCypressTestsCommand extends Command<[XrayTest, ...XrayTest[]
                 ? new RunConverterV12(this.parameters.projectKey, cypressRuns as RunResult<"<13">[])
                 : new RunConverterLatest(
                       this.parameters.projectKey,
-                      cypressRuns as RunResult<"13" | "14">[],
+                      cypressRuns as RunResult<">=14" | "13">[],
                       this.parameters.screenshotCollection.getScreenshots()
                   );
         const conversions = converter.getConversions({
