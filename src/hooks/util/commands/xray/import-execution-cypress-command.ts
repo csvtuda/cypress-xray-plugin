@@ -1,6 +1,12 @@
-import type { XrayClient } from "../../../../client/xray/xray-client";
-import { XrayClientCloud } from "../../../../client/xray/xray-client-cloud";
-import { ServerClient } from "../../../../client/xray/xray-client-server";
+import type { HasImportExecutionMultipartEndpoint } from "../../../../client/xray/xray-client";
+import type {
+    HasAddEvidenceToTestRunEndpoint,
+    HasGetTestRunResultsEndpoint,
+} from "../../../../client/xray/xray-client-cloud";
+import type {
+    HasAddEvidenceEndpoint,
+    HasGetTestRunEndpoint,
+} from "../../../../client/xray/xray-client-server";
 import type { PluginEventEmitter } from "../../../../context";
 import type { XrayEvidenceItem } from "../../../../types/xray/import-test-execution-results";
 import { dedent } from "../../../../util/dedent";
@@ -10,17 +16,25 @@ import type { Computable } from "../../../command";
 import { Command } from "../../../command";
 
 interface CommandParameters {
+    client: HasImportExecutionMultipartEndpoint &
+        (
+            | (HasGetTestRunEndpoint & HasAddEvidenceEndpoint)
+            | (HasGetTestRunResultsEndpoint & HasAddEvidenceToTestRunEndpoint)
+        );
     emitter: PluginEventEmitter;
     splitUpload: "sequential" | boolean;
-    xrayClient: XrayClient;
 }
 
 export class ImportExecutionCypressCommand extends Command<string, CommandParameters> {
-    private readonly execution: Computable<Parameters<XrayClient["importExecutionMultipart"]>>;
+    private readonly execution: Computable<
+        Parameters<HasImportExecutionMultipartEndpoint["importExecutionMultipart"]>
+    >;
     constructor(
         parameters: CommandParameters,
         logger: Logger,
-        execution: Computable<Parameters<XrayClient["importExecutionMultipart"]>>
+        execution: Computable<
+            Parameters<HasImportExecutionMultipartEndpoint["importExecutionMultipart"]>
+        >
     ) {
         super(parameters, logger);
         this.execution = execution;
@@ -39,7 +53,7 @@ export class ImportExecutionCypressCommand extends Command<string, CommandParame
                     }
                 }
             }
-            testExecutionIssueKey = await this.parameters.xrayClient.importExecutionMultipart(
+            testExecutionIssueKey = await this.parameters.client.importExecutionMultipart(
                 results,
                 info
             );
@@ -60,7 +74,7 @@ export class ImportExecutionCypressCommand extends Command<string, CommandParame
             });
             await Promise.all(uploadCallbacks);
         } else {
-            testExecutionIssueKey = await this.parameters.xrayClient.importExecutionMultipart(
+            testExecutionIssueKey = await this.parameters.client.importExecutionMultipart(
                 results,
                 info
             );
@@ -78,58 +92,18 @@ export class ImportExecutionCypressCommand extends Command<string, CommandParame
         testExecIssueKey: string,
         evidences: XrayEvidenceItem[]
     ) {
-        let uploadCallbacks: (() => Promise<void>)[] = [];
-        if (this.parameters.xrayClient instanceof ServerClient) {
-            const serverClient: ServerClient = this.parameters.xrayClient;
-            const testRun = await serverClient.getTestRun({
-                testExecIssueKey: testExecIssueKey,
-                testIssueKey: issueKey,
-            });
-            uploadCallbacks = evidences.map(
-                (evidence) => () =>
-                    this.uploadEvidenceServer(serverClient, {
-                        evidence,
-                        issueKey,
-                        testExecIssueKey,
-                        testRunId: testRun.id,
-                    })
-            );
-        } else if (this.parameters.xrayClient instanceof XrayClientCloud) {
-            const cloudClient: XrayClientCloud = this.parameters.xrayClient;
-            const testRuns = await cloudClient.getTestRunResults({
-                testExecIssueIds: [testExecIssueKey],
-                testIssueIds: [issueKey],
-            });
-            if (testRuns.length !== 1) {
-                throw new Error(
-                    `Failed to get test run for test execution ${testExecIssueKey} and test ${issueKey}`
-                );
-            }
-            if (!testRuns[0].id) {
-                throw new Error("Test run does not have an ID");
-            }
-            const id = testRuns[0].id;
-            uploadCallbacks = evidences.map(
-                (evidence) => () =>
-                    this.uploadEvidenceCloud(cloudClient, {
-                        evidence,
-                        issueKey,
-                        testExecIssueKey,
-                        testRunId: id,
-                    })
-            );
-        }
+        const uploadCallback = await this.getUploadCallback(testExecIssueKey, issueKey);
         if (this.parameters.splitUpload === "sequential") {
-            for (const uploadCallback of uploadCallbacks) {
-                await uploadCallback();
+            for (const evidence of evidences) {
+                await uploadCallback(evidence);
             }
         } else {
-            await Promise.all(uploadCallbacks.map((callback) => callback()));
+            await Promise.all(evidences.map(uploadCallback));
         }
     }
 
     private async uploadEvidenceServer(
-        serverClient: ServerClient,
+        client: HasGetTestRunEndpoint & HasAddEvidenceEndpoint,
         testRunConfig: {
             evidence: XrayEvidenceItem;
             issueKey: string;
@@ -138,7 +112,7 @@ export class ImportExecutionCypressCommand extends Command<string, CommandParame
         }
     ) {
         try {
-            await serverClient.addEvidence(testRunConfig.testRunId, testRunConfig.evidence);
+            await client.addEvidence(testRunConfig.testRunId, testRunConfig.evidence);
         } catch (error: unknown) {
             LOG.message(
                 "warning",
@@ -152,7 +126,7 @@ export class ImportExecutionCypressCommand extends Command<string, CommandParame
     }
 
     private async uploadEvidenceCloud(
-        cloudClient: XrayClientCloud,
+        client: HasGetTestRunResultsEndpoint & HasAddEvidenceToTestRunEndpoint,
         testRunConfig: {
             evidence: XrayEvidenceItem;
             issueKey: string;
@@ -161,7 +135,7 @@ export class ImportExecutionCypressCommand extends Command<string, CommandParame
         }
     ) {
         try {
-            await cloudClient.addEvidenceToTestRun({
+            await client.addEvidenceToTestRun({
                 evidence: [testRunConfig.evidence],
                 id: testRunConfig.testRunId,
             });
@@ -175,5 +149,58 @@ export class ImportExecutionCypressCommand extends Command<string, CommandParame
                 `)
             );
         }
+    }
+
+    private supportsServerEndpoints(
+        client: CommandParameters["client"]
+    ): client is HasImportExecutionMultipartEndpoint &
+        HasGetTestRunEndpoint &
+        HasAddEvidenceEndpoint {
+        return "getTestRun" in client && "addEvidence" in client;
+    }
+
+    private async getUploadCallback(
+        testExecIssueKey: string,
+        testIssueKey: string
+    ): Promise<(evidence: XrayEvidenceItem) => Promise<void>> {
+        if (this.supportsServerEndpoints(this.parameters.client)) {
+            const serverClient: HasImportExecutionMultipartEndpoint &
+                HasGetTestRunEndpoint &
+                HasAddEvidenceEndpoint = this.parameters.client;
+            const testRun = await serverClient.getTestRun({
+                testExecIssueKey: testExecIssueKey,
+                testIssueKey: testIssueKey,
+            });
+            return (evidence) =>
+                this.uploadEvidenceServer(serverClient, {
+                    evidence,
+                    issueKey: testIssueKey,
+                    testExecIssueKey,
+                    testRunId: testRun.id,
+                });
+        }
+        const cloudClient: HasImportExecutionMultipartEndpoint &
+            HasGetTestRunResultsEndpoint &
+            HasAddEvidenceToTestRunEndpoint = this.parameters.client;
+        const testRuns = await cloudClient.getTestRunResults({
+            testExecIssueIds: [testExecIssueKey],
+            testIssueIds: [testIssueKey],
+        });
+        return (evidence) => {
+            if (testRuns.length !== 1) {
+                throw new Error(
+                    `Failed to get test run for test execution ${testExecIssueKey} and test ${testIssueKey}`
+                );
+            }
+            if (!testRuns[0].id) {
+                throw new Error("Test run does not have an ID");
+            }
+            return this.uploadEvidenceCloud(cloudClient, {
+                evidence,
+                issueKey: testIssueKey,
+                testExecIssueKey,
+                testRunId: testRuns[0].id,
+            });
+        };
     }
 }

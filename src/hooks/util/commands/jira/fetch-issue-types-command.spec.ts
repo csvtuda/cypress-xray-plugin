@@ -1,18 +1,14 @@
-import axios from "axios";
 import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { PatCredentials } from "../../../../client/authentication/credentials";
-import { AxiosRestClient } from "../../../../client/https/requests";
-import type { JiraClient } from "../../../../client/jira/jira-client";
-import { JiraClientServer } from "../../../../client/jira/jira-client-server";
+import type { HasGetIssueTypesEndpoint } from "../../../../client/jira/jira-client";
 import { LOG } from "../../../../util/logging";
 import { FetchIssueTypesCommand } from "./fetch-issue-types-command";
 
 void describe(relative(cwd(), __filename), () => {
     void describe(FetchIssueTypesCommand.name, () => {
-        void it("fetches issue types", async (context) => {
+        void it("fetches issue types", async () => {
             const types = [
                 {
                     avatarId: 10314,
@@ -45,19 +41,12 @@ void describe(relative(cwd(), __filename), () => {
                     untranslatedName: "Story",
                 },
             ];
-            const jiraClient = new JiraClientServer(
-                "http://localhost:1234",
-                new PatCredentials("token"),
-                new AxiosRestClient(axios)
-            );
-            context.mock.method(
-                jiraClient,
-                "getIssueTypes",
-                context.mock.fn<JiraClient["getIssueTypes"]>(async () => {
+            const client: HasGetIssueTypesEndpoint = {
+                async getIssueTypes() {
                     return await Promise.resolve(types);
-                })
-            );
-            const command = new FetchIssueTypesCommand({ jiraClient: jiraClient }, LOG);
+                },
+            };
+            const command = new FetchIssueTypesCommand({ client: client }, LOG);
             assert.deepStrictEqual(await command.compute(), types);
         });
     });

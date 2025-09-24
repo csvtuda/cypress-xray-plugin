@@ -1,11 +1,8 @@
-import axios from "axios";
 import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { PatCredentials } from "../../../client/authentication/credentials";
-import { AxiosRestClient } from "../../../client/https/requests";
-import { ServerClient } from "../../../client/xray/xray-client-server";
+import type { HasImportFeatureEndpoint } from "../../../client/xray/xray-client";
 import { PluginEventEmitter } from "../../../context";
 import type { Failable } from "../../../hooks/command";
 import { Command, ComputableState } from "../../../hooks/command";
@@ -266,12 +263,12 @@ void describe(relative(cwd(), __filename), () => {
             const b = graph.place(
                 new ImportExecutionCucumberCommand(
                     {
+                        client: {
+                            importExecutionCucumberMultipart() {
+                                throw new Error("Mock called unexpectedly");
+                            },
+                        },
                         emitter: new PluginEventEmitter(),
-                        xrayClient: new ServerClient(
-                            "http://localhost:1234",
-                            new PatCredentials("token"),
-                            new AxiosRestClient(axios)
-                        ),
                     },
                     logger,
                     a
@@ -305,13 +302,19 @@ void describe(relative(cwd(), __filename), () => {
             const b = graph.place(
                 new ImportExecutionCypressCommand(
                     {
+                        client: {
+                            addEvidence() {
+                                throw new Error("Mock called unexpectedly");
+                            },
+                            getTestRun() {
+                                throw new Error("Mock called unexpectedly");
+                            },
+                            importExecutionMultipart() {
+                                throw new Error("Mock called unexpectedly");
+                            },
+                        },
                         emitter: new PluginEventEmitter(),
                         splitUpload: false,
-                        xrayClient: new ServerClient(
-                            "http://localhost:1234",
-                            new PatCredentials("token"),
-                            new AxiosRestClient(axios)
-                        ),
                     },
                     logger,
                     a
@@ -333,14 +336,13 @@ void describe(relative(cwd(), __filename), () => {
             ]);
         });
 
-        void it("adds additional information to feature file import command failures", async (context) => {
+        void it("adds additional information to feature file import command failures", async () => {
             const logger = new CapturingLogger();
-            const xrayClient = new ServerClient(
-                "http://localhost:1234",
-                new PatCredentials("token"),
-                new AxiosRestClient(axios)
-            );
-            context.mock.method(xrayClient, "importFeature", context.mock.fn());
+            const client: HasImportFeatureEndpoint = {
+                importFeature() {
+                    throw new Error("Mock called unexpectedly");
+                },
+            };
             const graph = new SimpleDirectedGraph<Command>();
             const a = graph.place(
                 new FailingCommand<XrayTestExecutionResults>(
@@ -350,7 +352,7 @@ void describe(relative(cwd(), __filename), () => {
             );
             const b = graph.place(
                 new ImportFeatureCommand(
-                    { filePath: "/path/to/file.feature", xrayClient: xrayClient },
+                    { client: client, filePath: "/path/to/file.feature" },
                     logger
                 )
             );

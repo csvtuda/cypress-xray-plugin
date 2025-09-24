@@ -1,13 +1,8 @@
-import axios from "axios";
 import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { PatCredentials } from "../../../../client/authentication/credentials";
-import { AxiosRestClient } from "../../../../client/https/requests";
-import type { JiraClient } from "../../../../client/jira/jira-client";
-import { JiraClientCloud } from "../../../../client/jira/jira-client-cloud";
-import { JiraClientServer } from "../../../../client/jira/jira-client-server";
+import type { HasEditIssueEndpoint } from "../../../../client/jira/jira-client";
 import { dedent } from "../../../../util/dedent";
 import { LOG } from "../../../../util/logging";
 import { ConstantCommand } from "../constant-command";
@@ -17,15 +12,8 @@ void describe(relative(cwd(), __filename), () => {
     void describe(EditIssueFieldCommand.name, () => {
         void it("edits issues", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
-            const jiraClient = new JiraClientServer(
-                "http://localhost:1234",
-                new PatCredentials("token"),
-                new AxiosRestClient(axios)
-            );
-            context.mock.method(
-                jiraClient,
-                "editIssue",
-                context.mock.fn<JiraClient["editIssue"]>((issueIdOrKey, issueUpdateData) => {
+            const client: HasEditIssueEndpoint = {
+                editIssue(issueIdOrKey, issueUpdateData) {
                     if (
                         issueIdOrKey === "CYP-123" &&
                         issueUpdateData.fields &&
@@ -41,12 +29,12 @@ void describe(relative(cwd(), __filename), () => {
                         return Promise.resolve("CYP-456");
                     }
                     throw new Error("Mock called unexpectedly");
-                })
-            );
+                },
+            };
             const command = new EditIssueFieldCommand(
                 {
+                    client: client,
                     fieldId: "summary",
-                    jiraClient: jiraClient,
                 },
                 LOG,
                 new ConstantCommand(LOG, "customfield_12345"),
@@ -61,15 +49,8 @@ void describe(relative(cwd(), __filename), () => {
 
         void it("logs errors for unsuccessful edits", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
-            const jiraClient = new JiraClientCloud(
-                "http://localhost:1234",
-                new PatCredentials("token"),
-                new AxiosRestClient(axios)
-            );
-            context.mock.method(
-                jiraClient,
-                "editIssue",
-                context.mock.fn<JiraClient["editIssue"]>((issueIdOrKey, issueUpdateData) => {
+            const client: HasEditIssueEndpoint = {
+                editIssue(issueIdOrKey, issueUpdateData) {
                     if (
                         issueIdOrKey === "CYP-123" &&
                         issueUpdateData.fields &&
@@ -86,12 +67,12 @@ void describe(relative(cwd(), __filename), () => {
                         new Error("No editing allowed");
                     }
                     throw new Error("Mock called unexpectedly");
-                })
-            );
+                },
+            };
             const command = new EditIssueFieldCommand(
                 {
+                    client: client,
                     fieldId: "labels",
-                    jiraClient: jiraClient,
                 },
                 LOG,
                 new ConstantCommand(LOG, "customfield_12345"),
@@ -113,32 +94,15 @@ void describe(relative(cwd(), __filename), () => {
 
         void it("returns empty arrays", async (context) => {
             const message = context.mock.method(LOG, "message", context.mock.fn());
-            const jiraClient = new JiraClientCloud(
-                "http://localhost:1234",
-                new PatCredentials("token"),
-                new AxiosRestClient(axios)
-            );
-            context.mock.method(
-                jiraClient,
-                "addAttachment",
-                context.mock.fn<JiraClient["addAttachment"]>((issueIdOrKey, ...files) => {
-                    if (
-                        issueIdOrKey === "CYP-123" &&
-                        files[0] === "image.jpg" &&
-                        files[1] === "something.mp4"
-                    ) {
-                        return Promise.resolve([
-                            { filename: "image.jpg", size: 12345 },
-                            { filename: "something.mp4", size: 54321 },
-                        ]);
-                    }
+            const client: HasEditIssueEndpoint = {
+                editIssue() {
                     throw new Error("Mock called unexpectedly");
-                })
-            );
+                },
+            };
             const command = new EditIssueFieldCommand(
                 {
+                    client: client,
                     fieldId: "labels",
-                    jiraClient: jiraClient,
                 },
                 LOG,
                 new ConstantCommand(LOG, "customfield_12345"),

@@ -11,17 +11,16 @@ import { dedent } from "../../util/dedent";
 import { LOG } from "../../util/logging";
 import { PatCredentials } from "../authentication/credentials";
 import { AxiosRestClient } from "../https/requests";
-import type { XrayClientServer } from "./xray-client-server";
-import { ServerClient } from "./xray-client-server";
+import { XrayClientServer } from "./xray-client-server";
 
 void describe(relative(cwd(), __filename), () => {
-    void describe(ServerClient.name, () => {
+    void describe(XrayClientServer.name, () => {
         let client: XrayClientServer;
         let restClient: AxiosRestClient;
 
         beforeEach(() => {
             restClient = new AxiosRestClient(axios);
-            client = new ServerClient(
+            client = new XrayClientServer(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 restClient

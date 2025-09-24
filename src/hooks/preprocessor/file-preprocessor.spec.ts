@@ -7,7 +7,7 @@ import { assertIsInstanceOf } from "../../../test/util";
 import { PatCredentials } from "../../client/authentication/credentials";
 import { AxiosRestClient } from "../../client/https/requests";
 import { JiraClientServer } from "../../client/jira/jira-client-server";
-import { ServerClient } from "../../client/xray/xray-client-server";
+import { XrayClientServer } from "../../client/xray/xray-client-server";
 import globalContext from "../../context";
 import type { FileObject } from "../../types/cypress";
 import type { ClientCombination, InternalCypressXrayPluginOptions } from "../../types/plugin";
@@ -69,7 +69,7 @@ void describe(relative(cwd(), __filename), () => {
                 restClient
             ),
             kind: "server",
-            xrayClient: new ServerClient(
+            xrayClient: new XrayClientServer(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 restClient
@@ -109,9 +109,9 @@ void describe(relative(cwd(), __filename), () => {
             assertIsInstanceOf(commands[4], GetLabelValuesCommand);
             assertIsInstanceOf(commands[5], ImportFeatureCommand);
             assert.deepStrictEqual(commands[5].getParameters(), {
+                client: clients.xrayClient,
                 filePath: "./path/to/file.feature",
                 projectKey: "CYP",
-                xrayClient: clients.xrayClient,
             });
             assertIsInstanceOf(commands[6], GetUpdatedIssuesCommand);
             assertIsInstanceOf(commands[7], GetSummaryValuesCommand);
@@ -120,13 +120,13 @@ void describe(relative(cwd(), __filename), () => {
             assertIsInstanceOf(commands[10], GetLabelsToResetCommand);
             assertIsInstanceOf(commands[11], EditIssueFieldCommand);
             assert.deepStrictEqual(commands[11].getParameters(), {
+                client: clients.jiraClient,
                 fieldId: "summary",
-                jiraClient: clients.jiraClient,
             });
             assertIsInstanceOf(commands[12], EditIssueFieldCommand);
             assert.deepStrictEqual(commands[12].getParameters(), {
+                client: clients.jiraClient,
                 fieldId: "labels",
-                jiraClient: clients.jiraClient,
             });
             assert.strictEqual(graph.size("vertices"), 13);
         });

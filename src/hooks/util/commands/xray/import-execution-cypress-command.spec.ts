@@ -1,13 +1,16 @@
-import axios from "axios";
 import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { JwtCredentials, PatCredentials } from "../../../../client/authentication/credentials";
-import { AxiosRestClient } from "../../../../client/https/requests";
-import type { XrayClient } from "../../../../client/xray/xray-client";
-import { XrayClientCloud } from "../../../../client/xray/xray-client-cloud";
-import { ServerClient } from "../../../../client/xray/xray-client-server";
+import type { HasImportExecutionMultipartEndpoint } from "../../../../client/xray/xray-client";
+import type {
+    HasAddEvidenceToTestRunEndpoint,
+    HasGetTestRunResultsEndpoint,
+} from "../../../../client/xray/xray-client-cloud";
+import type {
+    HasAddEvidenceEndpoint,
+    HasGetTestRunEndpoint,
+} from "../../../../client/xray/xray-client-server";
 import { PluginEventEmitter } from "../../../../context";
 import type { XrayTestExecutionResults } from "../../../../types/xray/import-test-execution-results";
 import type { MultipartInfo } from "../../../../types/xray/requests/import-execution-multipart-info";
@@ -42,28 +45,24 @@ void describe(relative(cwd(), __filename), () => {
                     summary: "Brand new Test execution",
                 },
             };
-            const xrayClient = new ServerClient(
-                "http://localhost:1234",
-                new PatCredentials("token"),
-                new AxiosRestClient(axios)
-            );
-            context.mock.method(
-                xrayClient,
-                "importExecutionMultipart",
-                context.mock.fn<XrayClient["importExecutionMultipart"]>(
-                    (executionResults, executionInfo) => {
-                        if (executionResults === results && executionInfo === info) {
-                            return Promise.resolve("CYP-123");
-                        }
-                        return Promise.reject(new Error("Mock called unexpectedly"));
-                    }
-                )
-            );
             const command = new ImportExecutionCypressCommand(
                 {
+                    client: {
+                        addEvidence() {
+                            throw new Error("Mock called unexpectedly");
+                        },
+                        getTestRun() {
+                            throw new Error("Mock called unexpectedly");
+                        },
+                        importExecutionMultipart(executionResults, executionInfo) {
+                            if (executionResults === results && executionInfo === info) {
+                                return Promise.resolve("CYP-123");
+                            }
+                            return Promise.reject(new Error("Mock called unexpectedly"));
+                        },
+                    },
                     emitter: new PluginEventEmitter(),
                     splitUpload: false,
-                    xrayClient: xrayClient,
                 },
                 LOG,
                 new ConstantCommand(LOG, [results, info])
@@ -113,52 +112,34 @@ void describe(relative(cwd(), __filename), () => {
                         summary: "Brand new Test execution",
                     },
                 };
-                const xrayClient = new ServerClient(
-                    "http://localhost:1234",
-                    new PatCredentials("token"),
-                    new AxiosRestClient(axios)
-                );
                 const importExecutionMultipartCallArgs: Parameters<
-                    ServerClient["importExecutionMultipart"]
+                    HasImportExecutionMultipartEndpoint["importExecutionMultipart"]
                 >[] = [];
-                context.mock.method(
-                    xrayClient,
-                    "importExecutionMultipart",
-                    context.mock.fn<ServerClient["importExecutionMultipart"]>(
-                        (executionResults, executionInfo) => {
-                            importExecutionMultipartCallArgs.push([
-                                executionResults,
-                                executionInfo,
-                            ]);
-                            return Promise.resolve("CYP-123");
-                        }
-                    )
-                );
-                const getTestRunCallArgs: Parameters<ServerClient["getTestRun"]>[] = [];
-                context.mock.method(
-                    xrayClient,
-                    "getTestRun",
-                    context.mock.fn<ServerClient["getTestRun"]>((args) => {
-                        getTestRunCallArgs.push([args]);
-                        return Promise.resolve({
-                            id: "123456789",
-                        } as unknown as GetTestRunResponseServer);
-                    })
-                );
-                const addEvidenceCallArgs: Parameters<ServerClient["addEvidence"]>[] = [];
-                context.mock.method(
-                    xrayClient,
-                    "addEvidence",
-                    context.mock.fn<ServerClient["addEvidence"]>((testRunId, body) => {
-                        addEvidenceCallArgs.push([testRunId, body]);
-                        return Promise.resolve();
-                    })
-                );
+                const getTestRunCallArgs: Parameters<HasGetTestRunEndpoint["getTestRun"]>[] = [];
+                const addEvidenceCallArgs: Parameters<HasAddEvidenceEndpoint["addEvidence"]>[] = [];
                 const command = new ImportExecutionCypressCommand(
                     {
+                        client: {
+                            addEvidence(testRunId, body) {
+                                addEvidenceCallArgs.push([testRunId, body]);
+                                return Promise.resolve();
+                            },
+                            getTestRun(testRun) {
+                                getTestRunCallArgs.push([testRun]);
+                                return Promise.resolve({
+                                    id: "123456789",
+                                } as unknown as GetTestRunResponseServer);
+                            },
+                            importExecutionMultipart(executionResults, executionInfo) {
+                                importExecutionMultipartCallArgs.push([
+                                    executionResults,
+                                    executionInfo,
+                                ]);
+                                return Promise.resolve("CYP-123");
+                            },
+                        },
                         emitter: new PluginEventEmitter(),
                         splitUpload: true,
-                        xrayClient: xrayClient,
                     },
                     LOG,
                     new ConstantCommand(LOG, [results, info])
@@ -240,64 +221,36 @@ void describe(relative(cwd(), __filename), () => {
                         summary: "Brand new Test execution",
                     },
                 };
-                const restClient = new AxiosRestClient(axios);
-                const credentials = new JwtCredentials(
-                    "abc",
-                    "xyz",
-                    "http://localhost:1234",
-                    restClient
-                );
-                context.mock.method(credentials, "getAuthorizationHeader", () => {
-                    return { ["Authorization"]: "ey12345" };
-                });
-                const xrayClient = new XrayClientCloud(
-                    "http://localhost:1234",
-                    credentials,
-                    restClient
-                );
                 const importExecutionMultipartCallArgs: Parameters<
-                    XrayClientCloud["importExecutionMultipart"]
+                    HasImportExecutionMultipartEndpoint["importExecutionMultipart"]
                 >[] = [];
-                context.mock.method(
-                    xrayClient,
-                    "importExecutionMultipart",
-                    context.mock.fn<XrayClientCloud["importExecutionMultipart"]>(
-                        (executionResults, executionInfo) => {
-                            importExecutionMultipartCallArgs.push([
-                                executionResults,
-                                executionInfo,
-                            ]);
-                            return Promise.resolve("CYP-123");
-                        }
-                    )
-                );
                 const getTestRunResultsCallArgs: Parameters<
-                    XrayClientCloud["getTestRunResults"]
+                    HasGetTestRunResultsEndpoint["getTestRunResults"]
                 >[] = [];
-                context.mock.method(
-                    xrayClient,
-                    "getTestRunResults",
-                    context.mock.fn<XrayClientCloud["getTestRunResults"]>((args) => {
-                        getTestRunResultsCallArgs.push([args]);
-                        return Promise.resolve([{ id: "123456789" }]);
-                    })
-                );
                 const addEvidenceToTestRunCallArgs: Parameters<
-                    XrayClientCloud["addEvidenceToTestRun"]
+                    HasAddEvidenceToTestRunEndpoint["addEvidenceToTestRun"]
                 >[] = [];
-                context.mock.method(
-                    xrayClient,
-                    "addEvidenceToTestRun",
-                    context.mock.fn<XrayClientCloud["addEvidenceToTestRun"]>((args) => {
-                        addEvidenceToTestRunCallArgs.push([args]);
-                        return Promise.resolve({ addedEvidence: [], warnings: [] });
-                    })
-                );
                 const command = new ImportExecutionCypressCommand(
                     {
+                        client: {
+                            addEvidenceToTestRun(variables) {
+                                addEvidenceToTestRunCallArgs.push([variables]);
+                                return Promise.resolve({ addedEvidence: [], warnings: [] });
+                            },
+                            getTestRunResults(options) {
+                                getTestRunResultsCallArgs.push([options]);
+                                return Promise.resolve([{ id: "123456789" }]);
+                            },
+                            importExecutionMultipart(executionResults, executionInfo) {
+                                importExecutionMultipartCallArgs.push([
+                                    executionResults,
+                                    executionInfo,
+                                ]);
+                                return Promise.resolve("CYP-123");
+                            },
+                        },
                         emitter: new PluginEventEmitter(),
                         splitUpload: true,
-                        xrayClient: xrayClient,
                     },
                     LOG,
                     new ConstantCommand(LOG, [results, info])
@@ -364,7 +317,7 @@ void describe(relative(cwd(), __filename), () => {
             });
         });
 
-        void it("emits the upload event", async (context) => {
+        void it("emits the upload event", async () => {
             const results: XrayTestExecutionResults = {
                 info: { description: "Hello", summary: "Test Execution Summary" },
                 testExecutionKey: "CYP-123",
@@ -377,18 +330,6 @@ void describe(relative(cwd(), __filename), () => {
                     summary: "Brand new Test execution",
                 },
             };
-            const xrayClient = new ServerClient(
-                "http://localhost:1234",
-                new PatCredentials("token"),
-                new AxiosRestClient(axios)
-            );
-            context.mock.method(
-                xrayClient,
-                "importExecutionMultipart",
-                context.mock.fn<ServerClient["importExecutionMultipart"]>(() => {
-                    return Promise.resolve("CYP-123");
-                })
-            );
             const emitter = new PluginEventEmitter();
             let payload = {};
             emitter.on("upload:cypress", (data) => {
@@ -396,9 +337,19 @@ void describe(relative(cwd(), __filename), () => {
             });
             const command = new ImportExecutionCypressCommand(
                 {
+                    client: {
+                        addEvidence() {
+                            throw new Error("Mock called unexpectedly");
+                        },
+                        getTestRun() {
+                            throw new Error("Mock called unexpectedly");
+                        },
+                        importExecutionMultipart() {
+                            return Promise.resolve("CYP-123");
+                        },
+                    },
                     emitter: emitter,
                     splitUpload: false,
-                    xrayClient: xrayClient,
                 },
                 LOG,
                 new ConstantCommand(LOG, [results, info])
@@ -462,52 +413,34 @@ void describe(relative(cwd(), __filename), () => {
                         summary: "Brand new Test execution",
                     },
                 };
-                const xrayClient = new ServerClient(
-                    "http://localhost:1234",
-                    new PatCredentials("token"),
-                    new AxiosRestClient(axios)
-                );
                 const importExecutionMultipartCallArgs: Parameters<
-                    ServerClient["importExecutionMultipart"]
+                    HasImportExecutionMultipartEndpoint["importExecutionMultipart"]
                 >[] = [];
-                context.mock.method(
-                    xrayClient,
-                    "importExecutionMultipart",
-                    context.mock.fn<ServerClient["importExecutionMultipart"]>(
-                        (executionResults, executionInfo) => {
-                            importExecutionMultipartCallArgs.push([
-                                executionResults,
-                                executionInfo,
-                            ]);
-                            return Promise.resolve("CYP-123");
-                        }
-                    )
-                );
-                const getTestRunCallArgs: Parameters<ServerClient["getTestRun"]>[] = [];
-                context.mock.method(
-                    xrayClient,
-                    "getTestRun",
-                    context.mock.fn<ServerClient["getTestRun"]>((args) => {
-                        getTestRunCallArgs.push([args]);
-                        return Promise.resolve({
-                            id: "123456789",
-                        } as unknown as GetTestRunResponseServer);
-                    })
-                );
-                const addEvidenceCallArgs: Parameters<ServerClient["addEvidence"]>[] = [];
-                context.mock.method(
-                    xrayClient,
-                    "addEvidence",
-                    context.mock.fn<ServerClient["addEvidence"]>((testRunId, body) => {
-                        addEvidenceCallArgs.push([testRunId, body]);
-                        return Promise.resolve();
-                    })
-                );
+                const getTestRunCallArgs: Parameters<HasGetTestRunEndpoint["getTestRun"]>[] = [];
+                const addEvidenceCallArgs: Parameters<HasAddEvidenceEndpoint["addEvidence"]>[] = [];
                 const command = new ImportExecutionCypressCommand(
                     {
+                        client: {
+                            addEvidence(testRunId, body) {
+                                addEvidenceCallArgs.push([testRunId, body]);
+                                return Promise.resolve();
+                            },
+                            getTestRun(testRun) {
+                                getTestRunCallArgs.push([testRun]);
+                                return Promise.resolve({
+                                    id: "123456789",
+                                } as unknown as GetTestRunResponseServer);
+                            },
+                            importExecutionMultipart(executionResults, executionInfo) {
+                                importExecutionMultipartCallArgs.push([
+                                    executionResults,
+                                    executionInfo,
+                                ]);
+                                return Promise.resolve("CYP-123");
+                            },
+                        },
                         emitter: new PluginEventEmitter(),
                         splitUpload: "sequential",
-                        xrayClient: xrayClient,
                     },
                     LOG,
                     new ConstantCommand(LOG, [results, info])
@@ -589,64 +522,36 @@ void describe(relative(cwd(), __filename), () => {
                         summary: "Brand new Test execution",
                     },
                 };
-                const restClient = new AxiosRestClient(axios);
-                const credentials = new JwtCredentials(
-                    "abc",
-                    "xyz",
-                    "http://localhost:1234",
-                    restClient
-                );
-                context.mock.method(credentials, "getAuthorizationHeader", () => {
-                    return { ["Authorization"]: "ey12345" };
-                });
-                const xrayClient = new XrayClientCloud(
-                    "http://localhost:1234",
-                    credentials,
-                    restClient
-                );
                 const importExecutionMultipartCallArgs: Parameters<
-                    XrayClientCloud["importExecutionMultipart"]
+                    HasImportExecutionMultipartEndpoint["importExecutionMultipart"]
                 >[] = [];
-                context.mock.method(
-                    xrayClient,
-                    "importExecutionMultipart",
-                    context.mock.fn<XrayClientCloud["importExecutionMultipart"]>(
-                        (executionResults, executionInfo) => {
-                            importExecutionMultipartCallArgs.push([
-                                executionResults,
-                                executionInfo,
-                            ]);
-                            return Promise.resolve("CYP-123");
-                        }
-                    )
-                );
                 const getTestRunResultsCallArgs: Parameters<
-                    XrayClientCloud["getTestRunResults"]
+                    HasGetTestRunResultsEndpoint["getTestRunResults"]
                 >[] = [];
-                context.mock.method(
-                    xrayClient,
-                    "getTestRunResults",
-                    context.mock.fn<XrayClientCloud["getTestRunResults"]>((args) => {
-                        getTestRunResultsCallArgs.push([args]);
-                        return Promise.resolve([{ id: "123456789" }]);
-                    })
-                );
                 const addEvidenceToTestRunCallArgs: Parameters<
-                    XrayClientCloud["addEvidenceToTestRun"]
+                    HasAddEvidenceToTestRunEndpoint["addEvidenceToTestRun"]
                 >[] = [];
-                context.mock.method(
-                    xrayClient,
-                    "addEvidenceToTestRun",
-                    context.mock.fn<XrayClientCloud["addEvidenceToTestRun"]>((args) => {
-                        addEvidenceToTestRunCallArgs.push([args]);
-                        return Promise.resolve({ addedEvidence: [], warnings: [] });
-                    })
-                );
                 const command = new ImportExecutionCypressCommand(
                     {
+                        client: {
+                            addEvidenceToTestRun(variables) {
+                                addEvidenceToTestRunCallArgs.push([variables]);
+                                return Promise.resolve({ addedEvidence: [], warnings: [] });
+                            },
+                            getTestRunResults(options) {
+                                getTestRunResultsCallArgs.push([options]);
+                                return Promise.resolve([{ id: "123456789" }]);
+                            },
+                            importExecutionMultipart(executionResults, executionInfo) {
+                                importExecutionMultipartCallArgs.push([
+                                    executionResults,
+                                    executionInfo,
+                                ]);
+                                return Promise.resolve("CYP-123");
+                            },
+                        },
                         emitter: new PluginEventEmitter(),
                         splitUpload: "sequential",
-                        xrayClient: xrayClient,
                     },
                     LOG,
                     new ConstantCommand(LOG, [results, info])

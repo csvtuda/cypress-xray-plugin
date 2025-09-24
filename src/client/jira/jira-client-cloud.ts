@@ -5,12 +5,13 @@ import type { SearchResultsCloud } from "../../types/jira/responses/search-resul
 import type { StringMap } from "../../types/util";
 import { LOG } from "../../util/logging";
 import { loggedRequest } from "../util";
-import { BaseJiraClient, type JiraClient } from "./jira-client";
+import { BaseJiraClient } from "./base-jira-client";
+import type { HasSearchEndpoint } from "./jira-client";
 
 /**
  * A Jira client class for communicating with Jira Cloud instances.
  */
-export class JiraClientCloud extends BaseJiraClient implements JiraClient {
+export class JiraClientCloud extends BaseJiraClient implements HasSearchEndpoint {
     @loggedRequest({ purpose: "search issues" })
     public async search(request: SearchRequestCloud): Promise<Issue[]> {
         const header = await this.credentials.getAuthorizationHeader();

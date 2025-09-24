@@ -8,7 +8,7 @@ import { assertIsInstanceOf } from "../../../test/util";
 import { PatCredentials } from "../../client/authentication/credentials";
 import { AxiosRestClient } from "../../client/https/requests";
 import { JiraClientCloud } from "../../client/jira/jira-client-cloud";
-import { ServerClient } from "../../client/xray/xray-client-server";
+import { XrayClientServer } from "../../client/xray/xray-client-server";
 import globalContext, {
     PluginEventEmitter,
     SimpleEvidenceCollection,
@@ -97,7 +97,7 @@ void describe(relative(cwd(), __filename), () => {
                 restClient
             ),
             kind: "server",
-            xrayClient: new ServerClient(
+            xrayClient: new XrayClientServer(
                 "http://localhost:1234",
                 new PatCredentials("token"),
                 restClient
@@ -197,9 +197,9 @@ void describe(relative(cwd(), __filename), () => {
                     testExecutionIssueKey: undefined,
                 });
                 assert.deepStrictEqual(importExecutionCypressCommand.getParameters(), {
+                    client: clients.xrayClient,
                     emitter: emitter,
                     splitUpload: false,
-                    xrayClient: clients.xrayClient,
                 });
                 assert.deepStrictEqual(fallbackCypressUploadCommand.getParameters(), {
                     fallbackOn: [ComputableState.FAILED, ComputableState.SKIPPED],
@@ -280,7 +280,7 @@ void describe(relative(cwd(), __filename), () => {
                 // Vertex data.
                 assert.deepStrictEqual(issueKeysCommand.getValue(), ["CYP-415"]);
                 assert.deepStrictEqual(getSummaryValuesCommand.getParameters(), {
-                    jiraClient: clients.jiraClient,
+                    client: clients.jiraClient,
                 });
                 assert.deepStrictEqual(destructureCommand.getParameters(), {
                     accessor: "CYP-415",
@@ -343,7 +343,7 @@ void describe(relative(cwd(), __filename), () => {
                 // Vertex data.
                 assert.deepStrictEqual(issueKeysCommand.getValue(), ["CYP-415"]);
                 assert.deepStrictEqual(getSummaryValuesCommand.getParameters(), {
-                    jiraClient: clients.jiraClient,
+                    client: clients.jiraClient,
                 });
                 // Edges.
                 assert.deepStrictEqual(
@@ -450,7 +450,7 @@ void describe(relative(cwd(), __filename), () => {
                 assertIsInstanceOf(attachVideosCommand, AttachFilesCommand);
                 // Vertex data.
                 assert.deepStrictEqual(attachVideosCommand.getParameters(), {
-                    jiraClient: clients.jiraClient,
+                    client: clients.jiraClient,
                 });
                 // Edges.
                 assert.ok(
@@ -496,7 +496,7 @@ void describe(relative(cwd(), __filename), () => {
                 assertIsInstanceOf(transitionIssueCommand, TransitionIssueCommand);
                 // Vertex data.
                 assert.deepStrictEqual(transitionIssueCommand.getParameters(), {
-                    jiraClient: clients.jiraClient,
+                    client: clients.jiraClient,
                     transition: {
                         id: "6",
                     },
@@ -672,8 +672,8 @@ void describe(relative(cwd(), __filename), () => {
                         },
                     });
                     assert.deepStrictEqual(importCucumberExecutionCommand.getParameters(), {
+                        client: clients.xrayClient,
                         emitter: emitter,
-                        xrayClient: clients.xrayClient,
                     });
                     assert.deepStrictEqual(fallbackCucumberUploadCommand.getParameters(), {
                         fallbackOn: [ComputableState.FAILED, ComputableState.SKIPPED],
@@ -749,7 +749,7 @@ void describe(relative(cwd(), __filename), () => {
                     assertIsInstanceOf(testPlanIdCommand, ExtractFieldIdCommand);
                     // Vertex data.
                     assert.deepStrictEqual(fetchAllFieldsCommand.getParameters(), {
-                        jiraClient: clients.jiraClient,
+                        client: clients.jiraClient,
                     });
                     assert.deepStrictEqual(testPlanIdCommand.getParameters(), {
                         field: JiraField.TEST_PLAN,
@@ -823,7 +823,7 @@ void describe(relative(cwd(), __filename), () => {
                     assertIsInstanceOf(testEnvironmentsIdCommand, ExtractFieldIdCommand);
                     // Vertex data.
                     assert.deepStrictEqual(fetchAllFieldsCommand.getParameters(), {
-                        jiraClient: clients.jiraClient,
+                        client: clients.jiraClient,
                     });
                     assert.deepStrictEqual(testEnvironmentsIdCommand.getParameters(), {
                         field: JiraField.TEST_ENVIRONMENTS,
@@ -1115,7 +1115,7 @@ void describe(relative(cwd(), __filename), () => {
                     });
                     assert.deepStrictEqual(issueKeysCommand.getValue(), ["CYP-42"]);
                     assert.deepStrictEqual(getSummaryValuesCommand.getParameters(), {
-                        jiraClient: clients.jiraClient,
+                        client: clients.jiraClient,
                     });
                     assert.deepStrictEqual(destructureCommand.getParameters(), {
                         accessor: "CYP-42",
@@ -1157,8 +1157,8 @@ void describe(relative(cwd(), __filename), () => {
                         },
                     });
                     assert.deepStrictEqual(importCucumberExecutionCommand.getParameters(), {
+                        client: clients.xrayClient,
                         emitter: emitter,
-                        xrayClient: clients.xrayClient,
                     });
                     assert.deepStrictEqual(verifyExecutionIssueKeyCommand.getParameters(), {
                         displayCloudHelp: true,
@@ -1296,8 +1296,8 @@ void describe(relative(cwd(), __filename), () => {
                 graph.place(
                     new ImportFeatureCommand(
                         {
+                            client: clients.xrayClient,
                             filePath: relative(".", "cypress/e2e/outline.cy.feature"),
-                            xrayClient: clients.xrayClient,
                         },
                         LOG
                     )
@@ -1305,8 +1305,8 @@ void describe(relative(cwd(), __filename), () => {
                 graph.place(
                     new ImportFeatureCommand(
                         {
+                            client: clients.xrayClient,
                             filePath: relative(".", "cypress/e2e/spec.cy.feature"),
-                            xrayClient: clients.xrayClient,
                         },
                         LOG
                     )
@@ -1314,8 +1314,8 @@ void describe(relative(cwd(), __filename), () => {
                 graph.place(
                     new ImportFeatureCommand(
                         {
+                            client: clients.xrayClient,
                             filePath: relative(".", "cypress/e2e/nonexistent.cy.feature"),
-                            xrayClient: clients.xrayClient,
                         },
                         LOG
                     )
@@ -1486,9 +1486,9 @@ void describe(relative(cwd(), __filename), () => {
                     testExecutionIssueKey: undefined,
                 });
                 assert.deepStrictEqual(importExecutionCypressCommand.getParameters(), {
+                    client: clients.xrayClient,
                     emitter: emitter,
                     splitUpload: false,
-                    xrayClient: clients.xrayClient,
                 });
                 assert.deepStrictEqual(cucumberResultsCommand.getValue(), cucumberResult);
                 assert.deepStrictEqual(fallbackCypressUploadCommand.getParameters(), {
@@ -1525,8 +1525,8 @@ void describe(relative(cwd(), __filename), () => {
                     },
                 });
                 assert.deepStrictEqual(importCucumberExecutionCommand.getParameters(), {
+                    client: clients.xrayClient,
                     emitter: emitter,
-                    xrayClient: clients.xrayClient,
                 });
                 assert.deepStrictEqual(fallbackCucumberUploadCommand.getParameters(), {
                     fallbackOn: [ComputableState.FAILED, ComputableState.SKIPPED],

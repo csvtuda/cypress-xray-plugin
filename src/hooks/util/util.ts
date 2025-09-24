@@ -1,4 +1,4 @@
-import type { JiraClient } from "../../client/jira/jira-client";
+import type { HasGetFieldsEndpoint } from "../../client/jira/jira-client";
 import type { ExecutableGraph } from "../../util/graph/executable-graph";
 import type { Logger } from "../../util/logging";
 import type { Command } from "../command";
@@ -25,12 +25,12 @@ export function getOrCreateConstantCommand<T>(
 
 export function getOrCreateExtractFieldIdCommand(
     field: JiraField,
-    jiraClient: JiraClient,
+    client: HasGetFieldsEndpoint,
     graph: ExecutableGraph<Command>,
     logger: Logger
 ): Command<string> {
     const fetchAllFieldsCommand = graph.findOrDefault(FetchAllFieldsCommand, () =>
-        graph.place(new FetchAllFieldsCommand({ jiraClient: jiraClient }, logger))
+        graph.place(new FetchAllFieldsCommand({ client: client }, logger))
     );
     const extractFieldIdCommand = graph.findOrDefault(
         ExtractFieldIdCommand,

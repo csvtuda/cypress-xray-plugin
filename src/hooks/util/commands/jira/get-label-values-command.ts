@@ -1,4 +1,4 @@
-import type { JiraClient } from "../../../../client/jira/jira-client";
+import type { HasSearchEndpoint } from "../../../../client/jira/jira-client";
 import type { Issue } from "../../../../types/jira/responses/issue";
 import type { StringMap } from "../../../../types/util";
 import { extractArrayOfStrings } from "../../../../util/extraction";
@@ -9,7 +9,7 @@ import { GetFieldValuesCommand } from "./get-field-values-command";
 
 export class GetLabelValuesCommand extends GetFieldValuesCommand<string[]> {
     constructor(
-        parameters: { jiraClient: JiraClient },
+        parameters: { client: HasSearchEndpoint },
         logger: Logger,
         issueKeys: Computable<string[]>
     ) {

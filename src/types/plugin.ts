@@ -1,8 +1,10 @@
 import type { IPreprocessorConfiguration } from "@badeball/cypress-cucumber-preprocessor";
 import type { AxiosRequestConfig } from "axios";
 import type { AxiosRestClient, RequestsOptions } from "../client/https/requests";
-import type { JiraClient } from "../client/jira/jira-client";
-import type { XrayClient } from "../client/xray/xray-client";
+import type { JiraClientCloud } from "../client/jira/jira-client-cloud";
+import type { JiraClientServer } from "../client/jira/jira-client-server";
+import type { XrayClientCloud } from "../client/xray/xray-client-cloud";
+import type { XrayClientServer } from "../client/xray/xray-client-server";
 import type { Level } from "../util/logging";
 import type { IssueUpdate } from "./jira/responses/issue-update";
 import type { XrayTestExecutionResults } from "./xray/import-test-execution-results";
@@ -937,11 +939,17 @@ export interface InternalCypressXrayPluginOptions {
 /**
  * Type describing the possible client combinations.
  */
-export interface ClientCombination {
-    jiraClient: JiraClient;
-    kind: "cloud" | "server";
-    xrayClient: XrayClient;
-}
+export type ClientCombination =
+    | {
+          jiraClient: JiraClientCloud;
+          kind: "cloud";
+          xrayClient: XrayClientCloud;
+      }
+    | {
+          jiraClient: JiraClientServer;
+          kind: "server";
+          xrayClient: XrayClientServer;
+      };
 
 /**
  * Wraps the REST clients used for HTTP requests directed at Jira and Xray.
