@@ -10,7 +10,7 @@ import type { Background, Comment } from "@cucumber/messages";
 export function getCucumberPreconditionIssueComments(
     background: Background,
     comments: readonly Comment[]
-): string[] {
+): Comment[] {
     if (background.steps.length === 0) {
         return [];
     }
@@ -18,20 +18,21 @@ export function getCucumberPreconditionIssueComments(
     const firstStepLine = background.steps[0].location.line;
     return comments
         .filter((comment: Comment) => comment.location.line > backgroundLine)
-        .filter((comment: Comment) => comment.location.line < firstStepLine)
-        .map((comment: Comment) => comment.text.trim());
+        .filter((comment: Comment) => comment.location.line < firstStepLine);
 }
 
 export function getCucumberPreconditionIssueTags(
     background: Background,
     projectKey: string,
-    comments: readonly string[],
+    comments: readonly Comment[],
     preconditionPrefix?: string
 ): string[] {
     const preconditionKeys: string[] = [];
     if (background.steps.length > 0) {
         for (const comment of comments) {
-            const matches = comment.match(getBackgroundTagRegex(projectKey, preconditionPrefix));
+            const matches = comment.text.match(
+                getBackgroundTagRegex(projectKey, preconditionPrefix)
+            );
             if (!matches) {
                 continue;
             }

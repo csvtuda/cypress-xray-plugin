@@ -46,27 +46,33 @@ export interface TestExecutionIssueDataServer extends TestExecutionIssueData {
  * Converts Cypress run data into Cucumber multipart information, which could be used when creating
  * new test executions on import or when updating existing ones.
  *
- * @param runData - Cypress run data
- * @param testExecutionIssueData - additional information to consider
+ * @param parameters - Cypress run data and test execution information to consider
  * @returns the Cucumber multipart information data for Xray server
  */
-export function buildMultipartInfoServer(
-    runData: RunData,
-    testExecutionIssueData: TestExecutionIssueDataServer
-): MultipartInfo {
-    const multipartInfo = getBaseInfo(runData, testExecutionIssueData);
-    if (testExecutionIssueData.testPlan) {
-        multipartInfo.fields[testExecutionIssueData.testPlan.fieldId] = [
-            testExecutionIssueData.testPlan.value,
+export function buildMultipartInfoServer(parameters: {
+    browserName: string;
+    browserVersion: string;
+    cypressVersion: string;
+    testExecutionIssueData: TestExecutionIssueDataServer;
+}): MultipartInfo {
+    const multipartInfo = getBaseInfo({
+        browserName: parameters.browserName,
+        browserVersion: parameters.browserVersion,
+        cypressVersion: parameters.cypressVersion,
+        testExecutionIssueData: parameters.testExecutionIssueData,
+    });
+    if (parameters.testExecutionIssueData.testPlan) {
+        multipartInfo.fields[parameters.testExecutionIssueData.testPlan.fieldId] = [
+            parameters.testExecutionIssueData.testPlan.value,
         ];
     }
-    if (testExecutionIssueData.testEnvironments) {
-        multipartInfo.fields[testExecutionIssueData.testEnvironments.fieldId] =
-            testExecutionIssueData.testEnvironments.value;
+    if (parameters.testExecutionIssueData.testEnvironments) {
+        multipartInfo.fields[parameters.testExecutionIssueData.testEnvironments.fieldId] =
+            parameters.testExecutionIssueData.testEnvironments.value;
     }
     multipartInfo.fields = {
         ...multipartInfo.fields,
-        ...testExecutionIssueData.testExecutionIssue.fields,
+        ...parameters.testExecutionIssueData.testExecutionIssue.fields,
     };
     return multipartInfo;
 }
@@ -75,49 +81,57 @@ export function buildMultipartInfoServer(
  * Converts Cypress run data into Cucumber multipart information, which could be used when creating
  * new test executions on import or when updating existing ones.
  *
- * @param runData - Cypress run data
- * @param testExecutionIssueData - additional information to consider
+ * @param parameters - Cypress run data and test execution information to consider
  * @returns the Cucumber multipart information data for Xray cloud
  */
-export function buildMultipartInfoCloud(
-    runData: RunData,
-    testExecutionIssueData: TestExecutionIssueData
-): MultipartInfoCloud {
+export function buildMultipartInfoCloud(parameters: {
+    browserName: string;
+    browserVersion: string;
+    cypressVersion: string;
+    testExecutionIssueData: TestExecutionIssueData;
+}): MultipartInfoCloud {
     const multipartInfo: MultipartInfoCloud = {
-        ...getBaseInfo(runData, testExecutionIssueData),
+        ...getBaseInfo({
+            browserName: parameters.browserName,
+            browserVersion: parameters.browserVersion,
+            cypressVersion: parameters.cypressVersion,
+            testExecutionIssueData: parameters.testExecutionIssueData,
+        }),
         xrayFields: {
-            environments: testExecutionIssueData.testEnvironments?.value,
-            testPlanKey: testExecutionIssueData.testPlan?.value,
+            environments: parameters.testExecutionIssueData.testEnvironments?.value,
+            testPlanKey: parameters.testExecutionIssueData.testPlan?.value,
         },
     };
     multipartInfo.fields = {
         ...multipartInfo.fields,
-        ...testExecutionIssueData.testExecutionIssue.fields,
+        ...parameters.testExecutionIssueData.testExecutionIssue.fields,
     };
     return multipartInfo;
 }
 
-function getBaseInfo(
-    runData: RunData,
-    testExecutionIssueData: TestExecutionIssueData
-): MultipartInfo {
+function getBaseInfo(parameters: {
+    browserName: string;
+    browserVersion: string;
+    cypressVersion: string;
+    testExecutionIssueData: TestExecutionIssueData;
+}): MultipartInfo {
     return {
         fields: {
             description:
-                testExecutionIssueData.testExecutionIssue.fields?.description ??
+                parameters.testExecutionIssueData.testExecutionIssue.fields?.description ??
                 dedent(`
-                    Cypress version: ${runData.cypressVersion}
-                    Browser: ${runData.browserName} (${runData.browserVersion})
+                    Cypress version: ${parameters.cypressVersion}
+                    Browser: ${parameters.browserName} (${parameters.browserVersion})
                 `),
-            issuetype: testExecutionIssueData.testExecutionIssue.fields?.issuetype,
+            issuetype: parameters.testExecutionIssueData.testExecutionIssue.fields?.issuetype,
             project: {
-                key: testExecutionIssueData.projectKey,
+                key: parameters.testExecutionIssueData.projectKey,
             },
-            summary: testExecutionIssueData.testExecutionIssue.fields?.summary,
+            summary: parameters.testExecutionIssueData.testExecutionIssue.fields?.summary,
         },
-        historyMetadata: testExecutionIssueData.testExecutionIssue.historyMetadata,
-        properties: testExecutionIssueData.testExecutionIssue.properties,
-        transition: testExecutionIssueData.testExecutionIssue.transition,
-        update: testExecutionIssueData.testExecutionIssue.update,
+        historyMetadata: parameters.testExecutionIssueData.testExecutionIssue.historyMetadata,
+        properties: parameters.testExecutionIssueData.testExecutionIssue.properties,
+        transition: parameters.testExecutionIssueData.testExecutionIssue.transition,
+        update: parameters.testExecutionIssueData.testExecutionIssue.update,
     };
 }

@@ -48,6 +48,7 @@ export class PluginContext
     private readonly eventEmitter: PluginEventEmitter;
     private readonly graph: ExecutableGraph<Command>;
     private readonly logger: Logger;
+    private readonly featureFiles: Set<string>;
 
     constructor(
         clients: ClientCombination,
@@ -68,6 +69,15 @@ export class PluginContext
         this.eventEmitter = new PluginEventEmitter();
         this.graph = graph;
         this.logger = logger;
+        this.featureFiles = new Set();
+    }
+
+    public addFeatureFile(filePath: string): void {
+        this.featureFiles.add(filePath);
+    }
+
+    public getFeatureFiles(): Iterable<string> {
+        return this.featureFiles;
     }
 
     public getClients(): ClientCombination {

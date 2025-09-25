@@ -7,8 +7,7 @@ import globalContext, {
 } from "./context";
 import type { PluginTaskParameterType } from "./cypress/tasks";
 import { CypressTaskListener } from "./cypress/tasks";
-import afterRun from "./hooks/after/after-run";
-import filePreprocessor from "./hooks/preprocessor/file-preprocessor";
+import { cypressXrayPlugin } from "./hooks/cypress-xray-plugin";
 import type { CypressFailedRunResult, CypressRunResult } from "./types/cypress";
 import type {
     CypressXrayPluginOptions,
@@ -16,8 +15,7 @@ import type {
     InternalPluginOptions,
 } from "./types/plugin";
 import { dedent } from "./util/dedent";
-import { ExecutableGraph } from "./util/graph/executable-graph";
-import { ChainingCommandGraphLogger } from "./util/graph/logging/graph-logger";
+import { getOrCall } from "./util/functions";
 import { HELP } from "./util/help";
 import { CapturingLogger, LOG } from "./util/logging";
 
@@ -109,7 +107,6 @@ export async function configureXrayPlugin(
         new SimpleEvidenceCollection(),
         new SimpleIterationParameterCollection(),
         new SimpleScreenshotCollection(),
-        new ExecutableGraph(),
         logger
     );
     globalContext.setGlobalContext(context);
@@ -151,41 +148,75 @@ export async function configureXrayPlugin(
         context.addScreenshot(screenshot);
     });
     on("after:run", async (results: CypressFailedRunResult | CypressRunResult) => {
-        if (context.getOptions().xray.uploadResults) {
-            if ("status" in results && results.status === "failed") {
-                const failedResult = results;
-                LOG.message(
-                    "error",
-                    dedent(`
-                        Skipping results upload: Failed to run ${failedResult.failures.toString()} tests.
-
-                          ${failedResult.message}
-                    `)
-                );
-            } else {
-                await afterRun.addUploadCommands(
-                    results,
-                    context.getCypressOptions().projectRoot,
-                    context.getOptions(),
-                    context.getClients(),
-                    context,
-                    context,
-                    context,
-                    context.getEventEmitter(),
-                    context.getGraph(),
-                    logger
-                );
-            }
-        } else {
-            LOG.message(
-                "info",
-                "Skipping results upload: Plugin is configured to not upload test results."
-            );
-        }
         try {
-            await context.getGraph().execute();
+            // We need to cast here because the options are typed to always use the installed Cypress results type and the plugin internally works with the intersection of result types of all Cypress versions.
+            // But there's basically no way for the results to not be the installed Cypress results type, so it should not be a problem.
+            const cypressRunResult = results as CypressCommandLine.CypressRunResult;
+            const resolvedTestExecutionIssueData = await getOrCall(
+                context.getOptions().jira.testExecutionIssue,
+                { results: cypressRunResult }
+            );
+            const resolvedTestPlanIssueKey = await getOrCall(options.jira.testPlanIssueKey, {
+                results: cypressRunResult,
+            });
+            await cypressXrayPlugin({
+                clients: {
+                    jira: context.getClients().jiraClient,
+                    xray: context.getClients().xrayClient,
+                },
+                context: {
+                    emitter: context.getEventEmitter(),
+                    evidenceCollection: context,
+                    featureFilePaths: context.getFeatureFiles(),
+                    iterationParameterCollection: context,
+                    screenshotCollection: context,
+                },
+                cypress: {
+                    config: config,
+                    results: cypressRunResult,
+                },
+                isCloudEnvironment: context.getClients().kind === "cloud",
+                logger: context.getLogger(),
+                options: {
+                    cucumber: context.getOptions().cucumber,
+                    jira: {
+                        attachVideos: context.getOptions().jira.attachVideos,
+                        fields: {
+                            testEnvironments: context.getOptions().jira.fields.testEnvironments,
+                            testPlan: context.getOptions().jira.fields.testPlan,
+                        },
+                        projectKey: context.getOptions().jira.projectKey,
+                        testExecutionIssue: {
+                            ...resolvedTestExecutionIssueData,
+                            fields: {
+                                issuetype: {
+                                    name: context.getOptions().jira.testExecutionIssueType,
+                                },
+                                summary: context.getOptions().jira.testExecutionIssueSummary,
+                                ...resolvedTestExecutionIssueData?.fields,
+                            },
+                            key:
+                                resolvedTestExecutionIssueData?.key ??
+                                context.getOptions().jira.testExecutionIssueKey,
+                            testEnvironments: context.getOptions().xray.testEnvironments,
+                            testPlan: resolvedTestPlanIssueKey,
+                        },
+                        url: context.getOptions().jira.url,
+                    },
+                    plugin: {
+                        normalizeScreenshotNames:
+                            context.getOptions().plugin.normalizeScreenshotNames,
+                        splitUpload: context.getOptions().plugin.splitUpload,
+                        uploadLastAttempt: context.getOptions().plugin.uploadLastAttempt,
+                    },
+                    xray: {
+                        status: context.getOptions().xray.status,
+                        uploadResults: context.getOptions().xray.uploadResults,
+                        uploadScreenshots: context.getOptions().xray.uploadScreenshots,
+                    },
+                },
+            });
         } finally {
-            new ChainingCommandGraphLogger(logger).logGraph(context.getGraph());
             const messages = logger.getMessages();
             messages.forEach(([level, text]) => {
                 if (["debug", "info", "notice"].includes(level)) {
@@ -257,13 +288,7 @@ export function syncFeatureFile(file: Cypress.FileObject): string {
         file.filePath.endsWith(cucumberOptions.featureFileExtension) &&
         cucumberOptions.uploadFeatures
     ) {
-        filePreprocessor.addSynchronizationCommands(
-            file,
-            context.getOptions(),
-            context.getClients(),
-            context.getGraph(),
-            context.getLogger()
-        );
+        context.addFeatureFile(file.filePath);
     }
     return file.filePath;
 }

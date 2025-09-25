@@ -86,6 +86,15 @@ export interface FailedConversion {
      */
     kind: "error";
     /**
+     * Information about the spec the test was run in.
+     */
+    spec: {
+        /**
+         * The spec's file path.
+         */
+        filepath: string;
+    };
+    /**
      * The test's title.
      */
     title: string;
@@ -138,7 +147,12 @@ export class RunConverterV12 implements RunConverter {
                                 title: title,
                             });
                         } catch (error: unknown) {
-                            conversions.push({ error, kind: "error", title });
+                            conversions.push({
+                                error,
+                                kind: "error",
+                                spec: { filepath: run.spec.absolute },
+                                title,
+                            });
                         }
                     }
                 }
@@ -261,7 +275,12 @@ export class RunConverterLatest implements RunConverter {
                                 title: title,
                             });
                         } catch (error: unknown) {
-                            conversions.push({ error, kind: "error", title });
+                            conversions.push({
+                                error,
+                                kind: "error",
+                                spec: { filepath: run.spec.absolute },
+                                title,
+                            });
                         }
                     }
                 }
