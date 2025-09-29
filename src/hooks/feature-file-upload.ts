@@ -1,4 +1,3 @@
-import type { HasEditIssueEndpoint, HasSearchEndpoint } from "../client/jira/jira-client";
 import type { HasImportFeatureEndpoint } from "../client/xray/xray-client";
 import { dedent } from "../util/dedent";
 import { errorMessage } from "../util/errors";
@@ -8,34 +7,42 @@ import { computeOverlap } from "../util/set";
 import type { FeatureFileData } from "./feature-file-processing";
 
 export async function uploadFeatureFiles(parameters: {
-    clients: {
-        jira: HasSearchEndpoint & HasEditIssueEndpoint;
-        xray: HasImportFeatureEndpoint;
-    };
+    clients: { xray: HasImportFeatureEndpoint };
     logger: Logger;
     options: {
         jira: {
             projectKey: string;
         };
     };
-    processedFeatureFiles: FeatureFileData[];
-}) {
-    const uploadAttempts = await Promise.allSettled(
+    processedFeatureFiles: Pick<FeatureFileData, "allIssueKeys" | "filePath">[];
+}): Promise<
+    {
+        affectedIssues: string[];
+        filePath: string;
+        mismatches: { onlyInFeatureFile: string[]; onlyInXray: string[] };
+    }[]
+> {
+    const uploadAttempts = await Promise.all(
         parameters.processedFeatureFiles.map((featureFile) =>
             importFeatureFile({
                 featureFile: featureFile,
-                jiraClient: parameters.clients.jira,
+                logger: parameters.logger,
                 projectKey: parameters.options.jira.projectKey,
                 xrayClient: parameters.clients.xray,
             })
         )
     );
-    for (const uploadAttempt of uploadAttempts.filter((attempt) => attempt.status === "rejected")) {
-        parameters.logger.message("error", errorMessage(uploadAttempt.reason));
+    for (const uploadAttempt of uploadAttempts.filter((attempt) => attempt.status === "failed")) {
+        parameters.logger.message(
+            "error",
+            dedent(`
+                Failed to upload feature file ${uploadAttempt.filePath}:
+
+                  ${errorMessage(uploadAttempt.error)}
+            `)
+        );
     }
-    const successfulUploads = uploadAttempts
-        .filter((result) => result.status === "fulfilled")
-        .map((attempt) => attempt.value);
+    const successfulUploads = uploadAttempts.filter((result) => result.status === "success");
     for (const brokenAttempt of successfulUploads.filter(
         (attempt) =>
             attempt.mismatches.onlyInFeatureFile.length > 0 ||
@@ -92,37 +99,52 @@ export async function uploadFeatureFiles(parameters: {
             `)
         );
     }
-    return successfulUploads;
+    return successfulUploads.map((attempt) => {
+        return {
+            affectedIssues: attempt.affectedIssues,
+            filePath: attempt.filePath,
+            mismatches: attempt.mismatches,
+        };
+    });
 }
 
 async function importFeatureFile(parameters: {
-    featureFile: FeatureFileData;
-    jiraClient: HasSearchEndpoint & HasEditIssueEndpoint;
+    featureFile: { allIssueKeys: string[]; filePath: string };
+    logger: Logger;
     projectKey: string;
     xrayClient: HasImportFeatureEndpoint;
 }) {
-    const importResult = await parameters.xrayClient.importFeature(
-        parameters.featureFile.filePath,
-        {
+    const [importResult] = await Promise.allSettled([
+        parameters.xrayClient.importFeature(parameters.featureFile.filePath, {
             projectKey: parameters.projectKey,
-        }
+        }),
+    ]);
+    if (importResult.status === "rejected") {
+        return {
+            error: importResult.reason as unknown,
+            filePath: parameters.featureFile.filePath,
+            status: "failed",
+        } as const;
+    }
+    if (importResult.value.errors.length > 0) {
+        parameters.logger.message(
+            "warning",
+            dedent(`
+                ${parameters.featureFile.filePath}
+
+                  Encountered errors during feature file import:
+                  ${importResult.value.errors.map((error) => `- ${error}`).join("\n")}
+            `)
+        );
+    }
+    const overlap = computeOverlap(
+        parameters.featureFile.allIssueKeys,
+        importResult.value.updatedOrCreatedIssues
     );
     return {
-        ...getAffectedIssues(
-            parameters.featureFile.allIssueKeys,
-            importResult.updatedOrCreatedIssues
-        ),
+        affectedIssues: overlap.intersection,
         filePath: parameters.featureFile.filePath,
-    };
-}
-
-function getAffectedIssues(expectedIssues: string[], actualIssues: string[]) {
-    const setOverlap = computeOverlap(expectedIssues, actualIssues);
-    return {
-        affectedIssues: setOverlap.intersection,
-        mismatches: {
-            onlyInFeatureFile: setOverlap.leftOnly,
-            onlyInXray: setOverlap.rightOnly,
-        },
-    };
+        mismatches: { onlyInFeatureFile: overlap.leftOnly, onlyInXray: overlap.rightOnly },
+        status: "success",
+    } as const;
 }

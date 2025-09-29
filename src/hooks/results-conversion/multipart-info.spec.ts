@@ -2,25 +2,21 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { dedent } from "../../../../../util/dedent";
+import { dedent } from "../../util/dedent";
 import { buildMultipartInfoCloud, buildMultipartInfoServer } from "./multipart-info";
 
 void describe(relative(cwd(), __filename), () => {
     void describe(buildMultipartInfoCloud.name, () => {
         void it("adds default information", () => {
-            const info = buildMultipartInfoCloud(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28T15:51:36.000Z",
-                },
-                {
+            const info = buildMultipartInfoCloud({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testExecutionIssue: {},
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.fields.project, { key: "CYP" });
             assert.deepStrictEqual(
                 info.fields.description,
@@ -33,49 +29,37 @@ void describe(relative(cwd(), __filename), () => {
         });
 
         void it("uses provided summaries", () => {
-            const info = buildMultipartInfoCloud(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28 17:51:36",
-                },
-                {
+            const info = buildMultipartInfoCloud({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testExecutionIssue: { fields: { summary: "Hello" } },
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.fields.summary, "Hello");
         });
 
         void it("uses provided descriptions", () => {
-            const info = buildMultipartInfoCloud(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28 17:51:36",
-                },
-                {
+            const info = buildMultipartInfoCloud({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testExecutionIssue: { fields: { description: "Hello There" } },
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.fields.description, "Hello There");
         });
 
         void it("uses provided test execution issue types", () => {
-            const info = buildMultipartInfoCloud(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28 17:51:36",
-                },
-                {
+            const info = buildMultipartInfoCloud({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testExecutionIssue: {
                         fields: {
@@ -85,30 +69,26 @@ void describe(relative(cwd(), __filename), () => {
                             projectKey: "CYP",
                         },
                     },
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.fields.issuetype, {
                 name: "Test Execution (QA)",
             });
         });
 
         void it("uses provided test plans", () => {
-            const info = buildMultipartInfoCloud(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28 17:51:36",
-                },
-                {
+            const info = buildMultipartInfoCloud({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testExecutionIssue: {},
                     testPlan: {
                         value: "CYP-123",
                     },
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.xrayFields, {
                 environments: undefined,
                 testPlanKey: "CYP-123",
@@ -116,22 +96,18 @@ void describe(relative(cwd(), __filename), () => {
         });
 
         void it("uses provided test environments", () => {
-            const info = buildMultipartInfoCloud(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28 17:51:36",
-                },
-                {
+            const info = buildMultipartInfoCloud({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testEnvironments: {
                         value: ["DEV", "TEST"],
                     },
                     testExecutionIssue: {},
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.xrayFields, {
                 environments: ["DEV", "TEST"],
                 testPlanKey: undefined,
@@ -139,15 +115,11 @@ void describe(relative(cwd(), __filename), () => {
         });
 
         void it("uses provided custom data", () => {
-            const info = buildMultipartInfoCloud(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28T15:51:36.000Z",
-                },
-                {
+            const info = buildMultipartInfoCloud({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testExecutionIssue: {
                         fields: { ["customfield_12345"]: [1, 2, 3, 4, 5] },
@@ -156,8 +128,8 @@ void describe(relative(cwd(), __filename), () => {
                         transition: { id: "15" },
                         update: { assignee: [{ edit: "Jeff" }] },
                     },
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info, {
                 fields: {
                     ["customfield_12345"]: [1, 2, 3, 4, 5],
@@ -183,15 +155,11 @@ void describe(relative(cwd(), __filename), () => {
         });
 
         void it("prefers custom data to plugin data", () => {
-            const info = buildMultipartInfoCloud(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28 17:51:36",
-                },
-                {
+            const info = buildMultipartInfoCloud({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testExecutionIssue: {
                         fields: {
@@ -201,8 +169,8 @@ void describe(relative(cwd(), __filename), () => {
                             summary: "My summary",
                         },
                     },
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.fields, {
                 description: "My description",
                 issuetype: { name: "Different Issue Type" },
@@ -214,19 +182,15 @@ void describe(relative(cwd(), __filename), () => {
 
     void describe(buildMultipartInfoServer.name, () => {
         void it("adds default information", () => {
-            const info = buildMultipartInfoServer(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28T15:51:36.000Z",
-                },
-                {
+            const info = buildMultipartInfoServer({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYPLUG",
                     testExecutionIssue: {},
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.fields.project, {
                 key: "CYPLUG",
             });
@@ -242,49 +206,37 @@ void describe(relative(cwd(), __filename), () => {
         });
 
         void it("uses provided summaries", () => {
-            const info = buildMultipartInfoServer(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28 17:51:36",
-                },
-                {
+            const info = buildMultipartInfoServer({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testExecutionIssue: { fields: { summary: "Hello" } },
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.fields.summary, "Hello");
         });
 
         void it("uses provided descriptions", () => {
-            const info = buildMultipartInfoServer(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28 17:51:36",
-                },
-                {
+            const info = buildMultipartInfoServer({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testExecutionIssue: { fields: { description: "Hello There" } },
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.fields.description, "Hello There");
         });
 
         void it("uses provided test execution issue types", () => {
-            const info = buildMultipartInfoServer(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28 17:51:36",
-                },
-                {
+            const info = buildMultipartInfoServer({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testExecutionIssue: {
                         fields: {
@@ -293,65 +245,53 @@ void describe(relative(cwd(), __filename), () => {
                             },
                         },
                     },
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.fields.issuetype, {
                 name: "Test Execution (QA)",
             });
         });
 
         void it("uses provided test plans", () => {
-            const info = buildMultipartInfoServer(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28 17:51:36",
-                },
-                {
+            const info = buildMultipartInfoServer({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testExecutionIssue: {},
                     testPlan: {
                         fieldId: "customField_12345",
                         value: "CYP-123",
                     },
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.fields.customField_12345, ["CYP-123"]);
         });
 
         void it("uses provided test environments", () => {
-            const info = buildMultipartInfoServer(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28 17:51:36",
-                },
-                {
+            const info = buildMultipartInfoServer({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testEnvironments: {
                         fieldId: "customField_12345",
                         value: ["DEV"],
                     },
                     testExecutionIssue: {},
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.fields.customField_12345, ["DEV"]);
         });
 
         void it("uses provided custom data", () => {
-            const info = buildMultipartInfoServer(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28T15:51:36.000Z",
-                },
-                {
+            const info = buildMultipartInfoServer({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testExecutionIssue: {
                         fields: { ["customfield_12345"]: [1, 2, 3, 4, 5] },
@@ -360,8 +300,8 @@ void describe(relative(cwd(), __filename), () => {
                         transition: { id: "15" },
                         update: { assignee: [{ edit: "Jeff" }] },
                     },
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info, {
                 fields: {
                     ["customfield_12345"]: [1, 2, 3, 4, 5],
@@ -383,15 +323,11 @@ void describe(relative(cwd(), __filename), () => {
         });
 
         void it("prefers custom data to plugin data", () => {
-            const info = buildMultipartInfoServer(
-                {
-                    browserName: "Chromium",
-                    browserVersion: "1.2.3",
-                    cypressVersion: "13.2.0",
-                    endedTestsAt: "2023-09-28 17:53:36",
-                    startedTestsAt: "2023-09-28 17:51:36",
-                },
-                {
+            const info = buildMultipartInfoServer({
+                browserName: "Chromium",
+                browserVersion: "1.2.3",
+                cypressVersion: "13.2.0",
+                testExecutionIssueData: {
                     projectKey: "CYP",
                     testEnvironments: { fieldId: "customfield_678", value: ["DEV", "TEST"] },
                     testExecutionIssue: {
@@ -405,8 +341,8 @@ void describe(relative(cwd(), __filename), () => {
                         },
                     },
                     testPlan: { fieldId: "customfield_999", value: "CYP-456" },
-                }
-            );
+                },
+            });
             assert.deepStrictEqual(info.fields, {
                 ["customfield_678"]: ["PROD"],
                 ["customfield_999"]: "CYP-111",

@@ -9,10 +9,11 @@ import type {
 } from "../types/xray/requests/import-execution-cucumber-multipart";
 import type { MultipartInfo } from "../types/xray/requests/import-execution-multipart-info";
 import { dedent } from "../util/dedent";
-import { errorMessage, missingTestKeyInCucumberScenarioError } from "../util/errors";
+import { errorMessage } from "../util/errors";
+import { HELP } from "../util/help";
 import type { Logger } from "../util/logging";
 import { getScenarioTagRegex } from "./feature-file-processing/scenario";
-import { getXrayStatus as getXrayCucumberStatus } from "./results-conversion/util/status";
+import { getXrayStatus as getXrayCucumberStatus } from "./results-conversion/cucumber-status";
 
 export async function uploadCucumberResults(parameters: {
     client: HasImportExecutionCucumberMultipartEndpoint;
@@ -224,17 +225,91 @@ function assertScenarioContainsIssueKey(parameters: {
         }
     }
     if (issueKeys.length === 0) {
-        throw missingTestKeyInCucumberScenarioError(
-            {
-                keyword: parameters.element.keyword,
-                name: parameters.element.name,
-                steps: parameters.element.steps.map((step: CucumberMultipartStep) => {
-                    return { keyword: step.keyword, text: step.name };
-                }),
-                tags: parameters.element.tags,
-            },
-            parameters.projectKey,
-            parameters.useCloudTags === true
+        const steps = parameters.element.steps.map((step: CucumberMultipartStep) => {
+            return { keyword: step.keyword, text: step.name };
+        });
+        const firstStepLine =
+            steps.length > 0 ? `${steps[0].keyword.trim()} ${steps[0].text}` : "Given A step";
+        if (parameters.element.tags && parameters.element.tags.length > 0) {
+            throw new Error(
+                dedent(`
+                    Scenario: ${parameters.element.name.length > 0 ? parameters.element.name : "<no name>"}
+
+                      No test issue keys found in tags:
+
+                        ${parameters.element.tags.map((tag) => tag.name).join("\n")}
+
+                      If a tag contains the test issue key already, specify a global prefix to align the plugin with Xray.
+
+                        For example, with the following plugin configuration:
+
+                          {
+                            cucumber: {
+                              prefixes: {
+                                test: "TestName:"
+                              }
+                            }
+                          }
+
+                        The following tag will be recognized as a test issue tag by the plugin:
+
+                          @TestName:${parameters.projectKey}-123
+                          ${parameters.element.keyword}: ${parameters.element.name}
+                            ${firstStepLine}
+                            ...
+
+                      For more information, visit:
+                      - ${HELP.plugin.guides.targetingExistingIssues}
+                      - ${HELP.plugin.configuration.cucumber.prefixes}
+                      - ${
+                          parameters.useCloudTags
+                              ? HELP.xray.importCucumberTests.cloud
+                              : HELP.xray.importCucumberTests.server
+                      }
+                `)
+            );
+        }
+        throw new Error(
+            dedent(`
+                Scenario: ${parameters.element.name.length > 0 ? parameters.element.name : "<no name>"}
+
+                  No test issue keys found in tags.
+
+                  You can target existing test issues by adding a corresponding tag:
+
+                    @${parameters.projectKey}-123
+                    ${parameters.element.keyword}: ${parameters.element.name}
+                      ${firstStepLine}
+                      ...
+
+                  You can also specify a prefix to match the tagging scheme configured in your Xray instance:
+
+                    Plugin configuration:
+
+                      {
+                        cucumber: {
+                          prefixes: {
+                            test: "TestName:"
+                          }
+                        }
+                      }
+
+                    Feature file:
+
+                      @TestName:${parameters.projectKey}-123
+                      ${parameters.element.keyword}: ${parameters.element.name}
+                        ${firstStepLine}
+                        ...
+
+                  For more information, visit:
+                  - ${HELP.plugin.guides.targetingExistingIssues}
+                  - ${HELP.plugin.configuration.cucumber.prefixes}
+                  - ${
+                      parameters.useCloudTags
+                          ? HELP.xray.importCucumberTests.cloud
+                          : HELP.xray.importCucumberTests.server
+                  }
+            `)
         );
     }
 }

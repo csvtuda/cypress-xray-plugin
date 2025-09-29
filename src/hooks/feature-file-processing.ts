@@ -36,17 +36,27 @@ export function processFeatureFiles(parameters: {
     displayCloudHelp: boolean;
     featureFilePaths: Iterable<string>;
     logger: Logger;
-    prefixes?: {
-        precondition?: string;
-        test?: string;
+    options: {
+        cucumber: {
+            prefixes?: {
+                precondition?: string;
+                test?: string;
+            };
+        };
+        jira: {
+            projectKey: string;
+        };
     };
-    projectKey: string;
 }) {
     const parsedFeatureFiles: FeatureFileData[] = [];
     for (const featureFilePath of parameters.featureFilePaths) {
         try {
             parsedFeatureFiles.push(
-                processFeatureFile(featureFilePath, parameters.projectKey, parameters.prefixes)
+                processFeatureFile(
+                    featureFilePath,
+                    parameters.options.jira.projectKey,
+                    parameters.options.cucumber.prefixes
+                )
             );
         } catch (error: unknown) {
             parameters.logger.message(
@@ -54,7 +64,7 @@ export function processFeatureFiles(parameters: {
                 dedent(`
                     ${featureFilePath}
 
-                      Failed to parse feature file.
+                      Failed to parse feature file:
 
                         ${errorMessage(error)}
                 `)
@@ -89,7 +99,7 @@ export function processFeatureFiles(parameters: {
                           The following comment will be recognized as a precondition issue tag by the plugin:
 
                             ${background.keyword}: ${background.name}
-                              #@Precondition:${parameters.projectKey}-123
+                              #@Precondition:${parameters.options.jira.projectKey}-123
                               ${
                                   background.steps.length > 0
                                       ? `${background.steps[0].keyword.trim()} ${background.steps[0].text}`
@@ -134,27 +144,68 @@ export function processFeatureFiles(parameters: {
             parameters.logger.message(
                 "error",
                 dedent(`
-                    Scenario: ${scenario.name.length > 0 ? scenario.name : "<no name>"}
+                    ${data.filePath}
 
-                      No test issue keys found in tags:
+                      Scenario: ${scenario.name.length > 0 ? scenario.name : "<no name>"}
 
-                        ${scenario.tags.map((tag) => tag.name).join("\n")}
+                        No test issue keys found in tags:
 
-                      If a tag contains the test issue key already, specify a global prefix to align the plugin with Xray.
+                          ${scenario.tags.map((tag) => tag.name).join("\n")}
 
-                        For example, with the following plugin configuration:
+                        If a tag contains the test issue key already, specify a global prefix to align the plugin with Xray.
 
-                          {
-                            cucumber: {
-                              prefixes: {
-                                test: "TestName:"
+                          For example, with the following plugin configuration:
+
+                            {
+                              cucumber: {
+                                prefixes: {
+                                  test: "TestName:"
+                                }
                               }
                             }
-                          }
 
-                        The following tag will be recognized as a test issue tag by the plugin:
+                          The following tag will be recognized as a test issue tag by the plugin:
 
-                          @TestName:${parameters.projectKey}-123
+                            @TestName:${parameters.options.jira.projectKey}-123
+                            ${scenario.keyword}: ${scenario.name}
+                              ${
+                                  scenario.steps.length > 0
+                                      ? `${scenario.steps[0].keyword.trim()} ${scenario.steps[0].text}`
+                                      : "Given A step"
+                              }
+                              ...
+
+                        For more information, visit:
+                        - ${HELP.plugin.guides.targetingExistingIssues}
+                        - ${HELP.plugin.configuration.cucumber.prefixes}
+                        - ${
+                            parameters.displayCloudHelp
+                                ? HELP.xray.importCucumberTests.cloud
+                                : HELP.xray.importCucumberTests.server
+                        }
+                  `)
+            );
+        }
+        for (const { issueKeys, scenario, tags } of data.scenarios.multipleIssueKeys) {
+            parameters.logger.message(
+                "error",
+                dedent(`
+                    ${data.filePath}
+
+                      Scenario: ${scenario.name.length > 0 ? scenario.name : "<no name>"}
+
+                        Multiple test issue keys found in the scenario's tags. Xray will only take one into account, you have to decide which one to use:
+
+                          ${tags.map((tag) => tag.name).join(" ")}
+                          ${tags
+                              .map((tag) => {
+                                  if (issueKeys.some((key) => tag.name.endsWith(key))) {
+                                      return "^".repeat(tag.name.length);
+                                  }
+                                  return " ".repeat(tag.name.length);
+                              })
+                              .join(" ")
+                              .trimEnd()}
                           ${scenario.keyword}: ${scenario.name}
                             ${
                                 scenario.steps.length > 0
@@ -163,58 +214,28 @@ export function processFeatureFiles(parameters: {
                             }
                             ...
 
-                      For more information, visit:
-                      - ${HELP.plugin.guides.targetingExistingIssues}
-                      - ${HELP.plugin.configuration.cucumber.prefixes}
-                      - ${
-                          parameters.displayCloudHelp
-                              ? HELP.xray.importCucumberTests.cloud
-                              : HELP.xray.importCucumberTests.server
-                      }
+                        For more information, visit:
+                        - ${
+                            parameters.displayCloudHelp
+                                ? HELP.xray.importCucumberTests.cloud
+                                : HELP.xray.importCucumberTests.server
+                        }
+                        - ${HELP.plugin.guides.targetingExistingIssues}
                 `)
             );
         }
-        for (const { issueKeys, scenario, tags } of data.scenarios.multipleIssueKeys) {
-            dedent(`
-                Scenario: ${scenario.name.length > 0 ? scenario.name : "<no name>"}
-
-                  Multiple test issue keys found in the scenario's tags. Xray will only take one into account, you have to decide which one to use:
-
-                    ${tags.map((tag) => tag.name).join(" ")}
-                    ${tags
-                        .map((tag) => {
-                            if (issueKeys.some((key) => tag.name.endsWith(key))) {
-                                return "^".repeat(tag.name.length);
-                            }
-                            return " ".repeat(tag.name.length);
-                        })
-                        .join(" ")
-                        .trimEnd()}
-                    ${scenario.keyword}: ${scenario.name}
-                      ${
-                          scenario.steps.length > 0
-                              ? `${scenario.steps[0].keyword.trim()} ${scenario.steps[0].text}`
-                              : "Given A step"
-                      }
-                      ...
-
-                  For more information, visit:
-                  - ${
-                      parameters.displayCloudHelp
-                          ? HELP.xray.importCucumberTests.cloud
-                          : HELP.xray.importCucumberTests.server
-                  }
-                  - ${HELP.plugin.guides.targetingExistingIssues}
-            `);
-        }
     }
-    return parsedFeatureFiles.filter(
-        (data) =>
-            data.backgrounds.multipleIssueKeys.length === 0 &&
-            data.backgrounds.withoutIssueKeys.length === 0 &&
-            data.scenarios.multipleIssueKeys.length === 0 &&
-            data.scenarios.withoutIssueKeys.length === 0
-    );
+    return parsedFeatureFiles
+        .filter(
+            (data) =>
+                data.backgrounds.multipleIssueKeys.length === 0 &&
+                data.backgrounds.withoutIssueKeys.length === 0 &&
+                data.scenarios.multipleIssueKeys.length === 0 &&
+                data.scenarios.withoutIssueKeys.length === 0
+        )
+        .map((data) => {
+            return { allIssueKeys: data.allIssueKeys, filePath: data.filePath };
+        });
 }
 
 function processFeatureFile(

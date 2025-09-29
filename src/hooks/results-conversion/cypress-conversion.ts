@@ -1,8 +1,8 @@
 import { basename, extname } from "node:path";
-import type { RunResult, ScreenshotDetails } from "../../../../types/cypress";
-import type { CypressStatus } from "../../../../types/cypress/status";
-import { getTestIssueKeys } from "../../util";
-import { toCypressStatus } from "./status-conversion";
+import type { RunResult, ScreenshotDetails } from "../../types/cypress";
+import type { CypressStatus } from "../../types/cypress/status";
+import { getTestIssueKeys } from "../cypress-test-processing/test-key-extraction";
+import { toCypressStatus } from "./cypress-status";
 
 export interface RunConverter {
     /**
@@ -100,12 +100,28 @@ export interface FailedConversion {
     title: string;
 }
 
+interface RunParametersV12 {
+    spec: Pick<RunResult<"<13">["spec"], "absolute">;
+    tests: {
+        attempts: {
+            duration: RunResult<"<13">["tests"][number]["attempts"][number]["duration"];
+            screenshots: Pick<
+                RunResult<"<13">["tests"][number]["attempts"][number]["screenshots"][number],
+                "path"
+            >[];
+            startedAt: RunResult<"<13">["tests"][number]["attempts"][number]["startedAt"];
+            state: RunResult<"<13">["tests"][number]["attempts"][number]["state"];
+        }[];
+        title: RunResult<"<13">["tests"][number]["title"];
+    }[];
+}
+
 /**
  * Converts Cypress test results for Cypress versions &lt;13.
  */
 export class RunConverterV12 implements RunConverter {
     private readonly projectKey: string;
-    private readonly runResults: RunResult<"<13">[];
+    private readonly runResults: RunParametersV12[];
 
     /**
      * Constructs a new converter for the specified run results.
@@ -113,7 +129,7 @@ export class RunConverterV12 implements RunConverter {
      * @param projectKey - the project key
      * @param runResults - the run results
      */
-    constructor(projectKey: string, runResults: RunResult<"<13">[]) {
+    constructor(projectKey: string, runResults: RunParametersV12[]) {
         this.projectKey = projectKey;
         this.runResults = runResults;
     }
@@ -191,6 +207,22 @@ export class RunConverterV12 implements RunConverter {
     }
 }
 
+interface RunParametersLatest {
+    spec: Pick<RunResult<"<13">["spec"], "absolute">;
+    stats: Pick<RunResult<">=14" | "13">["stats"], "startedAt">;
+    tests: {
+        attempts: Pick<RunResult<">=14" | "13">["tests"][number]["attempts"][number], "state">[];
+        duration: RunResult<">=14" | "13">["tests"][number]["duration"];
+        state: RunResult<">=14" | "13">["tests"][number]["state"];
+        title: RunResult<">=14" | "13">["tests"][number]["title"];
+    }[];
+}
+
+export type ScreenshotDetailsLatest = Pick<
+    ScreenshotDetails<">=14" | "13">,
+    "path" | "testFailure"
+>;
+
 /**
  * Converts Cypress test results for Cypress versions &ge;13.
  */
@@ -211,8 +243,8 @@ export class RunConverterLatest implements RunConverter {
      */
     private static readonly REGEX_CONFLICT = /\s+(\d+)$/;
     private readonly projectKey: string;
-    private readonly runResults: readonly RunResult<">=14" | "13">[];
-    private readonly screenshotDetails: readonly ScreenshotDetails<">=14" | "13">[];
+    private readonly runResults: readonly RunParametersLatest[];
+    private readonly screenshotDetails: readonly ScreenshotDetailsLatest[];
 
     /**
      * Constructs a new converter for the specified run results.
@@ -223,8 +255,8 @@ export class RunConverterLatest implements RunConverter {
      */
     constructor(
         projectKey: string,
-        runResults: RunResult<">=14" | "13">[],
-        screenshotDetails: ScreenshotDetails<">=14" | "13">[]
+        runResults: RunParametersLatest[],
+        screenshotDetails: ScreenshotDetailsLatest[]
     ) {
         this.projectKey = projectKey;
         this.runResults = runResults;
@@ -318,12 +350,12 @@ export class RunConverterLatest implements RunConverter {
         return [...new Set([...screenshots.map((screenshot) => screenshot.path)])];
     }
 
-    private filterLastAttemptScreenshots(screenshots: readonly ScreenshotDetails<">=14" | "13">[]) {
+    private filterLastAttemptScreenshots(screenshots: readonly ScreenshotDetailsLatest[]) {
         // Group screenshots by their "basename", i.e. without the (attempt xxx) suffixes.
         const groups = this.groupScreenshots(screenshots);
         const lastScreenshots = [];
         for (const similarScreenshots of groups) {
-            const screenshotsByAttemptIndex = new Map<number, ScreenshotDetails<">=14" | "13">[]>();
+            const screenshotsByAttemptIndex = new Map<number, ScreenshotDetailsLatest[]>();
             for (const screenshot of similarScreenshots) {
                 const match = RunConverterLatest.REGEX_ATTEMPT.exec(screenshot.path);
                 if (match !== null) {
@@ -394,15 +426,15 @@ export class RunConverterLatest implements RunConverter {
      * @returns the grouped screenshots
      */
     private groupScreenshots(
-        screenshots: readonly ScreenshotDetails<">=14" | "13">[]
-    ): ScreenshotDetails<">=14" | "13">[][] {
-        const screenshotGroups: ScreenshotDetails<">=14" | "13">[][] = [];
+        screenshots: readonly ScreenshotDetailsLatest[]
+    ): ScreenshotDetailsLatest[][] {
+        const screenshotGroups: ScreenshotDetailsLatest[][] = [];
         // Reverse order because we're popping (order is important for upload order later on).
         let remainingScreenshots = [...screenshots].reverse();
         while (remainingScreenshots.length > 0) {
             // Cast valid: it cannot ever be undefined here.
-            const screenshot = remainingScreenshots.pop() as ScreenshotDetails<">=14" | "13">;
-            const group: ScreenshotDetails<">=14" | "13">[] = [screenshot];
+            const screenshot = remainingScreenshots.pop() as ScreenshotDetailsLatest;
+            const group: ScreenshotDetailsLatest[] = [screenshot];
             const name = basename(screenshot.path, extname(screenshot.path));
             // Try to find screenshots with possibly conflicting names.
             if (RunConverterLatest.REGEX_CONFLICT.exec(name) !== null) {

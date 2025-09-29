@@ -166,10 +166,10 @@ export async function configureXrayPlugin(
                 },
                 context: {
                     emitter: context.getEventEmitter(),
-                    evidenceCollection: context,
                     featureFilePaths: context.getFeatureFiles(),
-                    iterationParameterCollection: context,
-                    screenshotCollection: context,
+                    getEvidence: context.getEvidence.bind(context),
+                    getIterationParameters: context.getIterationParameters.bind(context),
+                    screenshots: context.getScreenshots(),
                 },
                 cypress: {
                     config: config,

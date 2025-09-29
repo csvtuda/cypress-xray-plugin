@@ -1,8 +1,4 @@
-import type {
-    HasEditIssueEndpoint,
-    HasGetFieldsEndpoint,
-    HasSearchEndpoint,
-} from "../client/jira/jira-client";
+import type { HasGetFieldsEndpoint } from "../client/jira/jira-client";
 import type { FieldDetail } from "../types/jira/responses/field-detail";
 import type { JiraFieldIds, PluginIssueUpdate } from "../types/plugin";
 import { dedent } from "../util/dedent";
@@ -11,14 +7,13 @@ import { prettyPadObjects, prettyPadValues } from "../util/pretty";
 import type {
     TestExecutionIssueData,
     TestExecutionIssueDataServer,
-} from "./results-conversion/util/multipart-info";
+} from "./results-conversion/multipart-info";
 import {
     buildMultipartInfoCloud,
     buildMultipartInfoServer,
-} from "./results-conversion/util/multipart-info";
+} from "./results-conversion/multipart-info";
 
-export async function convertMultipartInfo(parameters: {
-    client: HasSearchEndpoint & HasEditIssueEndpoint & HasGetFieldsEndpoint;
+export function convertMultipartInfoCloud(parameters: {
     cypress: {
         config: {
             browserName: string;
@@ -26,7 +21,61 @@ export async function convertMultipartInfo(parameters: {
             cypressVersion: string;
         };
     };
-    isCloudTarget: boolean;
+    options: {
+        jira: {
+            projectKey: string;
+            testExecutionIssue?: PluginIssueUpdate & {
+                testEnvironments?: [string, ...string[]];
+                testPlan?: string;
+            };
+        };
+    };
+}) {
+    const errorMessages: string[] = [];
+    const testExecutionIssueData: TestExecutionIssueData = {
+        projectKey: parameters.options.jira.projectKey,
+        testExecutionIssue: {
+            fields: {
+                ...parameters.options.jira.testExecutionIssue?.fields,
+                issuetype: parameters.options.jira.testExecutionIssue?.fields?.issuetype,
+                summary: parameters.options.jira.testExecutionIssue?.fields?.summary,
+            },
+            historyMetadata: parameters.options.jira.testExecutionIssue?.historyMetadata,
+            properties: parameters.options.jira.testExecutionIssue?.properties,
+            transition: parameters.options.jira.testExecutionIssue?.transition,
+            update: parameters.options.jira.testExecutionIssue?.update,
+        },
+    };
+    if (parameters.options.jira.testExecutionIssue?.testPlan) {
+        testExecutionIssueData.testPlan = {
+            value: parameters.options.jira.testExecutionIssue.testPlan,
+        };
+    }
+    if (parameters.options.jira.testExecutionIssue?.testEnvironments) {
+        testExecutionIssueData.testEnvironments = {
+            value: parameters.options.jira.testExecutionIssue.testEnvironments,
+        };
+    }
+    return {
+        errorMessages: errorMessages,
+        multipartInfo: buildMultipartInfoCloud({
+            browserName: parameters.cypress.config.browserName,
+            browserVersion: parameters.cypress.config.browserVersion,
+            cypressVersion: parameters.cypress.config.cypressVersion,
+            testExecutionIssueData: testExecutionIssueData,
+        }),
+    };
+}
+
+export async function convertMultipartInfoServer(parameters: {
+    client: HasGetFieldsEndpoint;
+    cypress: {
+        config: {
+            browserName: string;
+            browserVersion: string;
+            cypressVersion: string;
+        };
+    };
     options: {
         jira: {
             fields: {
@@ -42,41 +91,6 @@ export async function convertMultipartInfo(parameters: {
     };
 }) {
     const errorMessages: string[] = [];
-    if (parameters.isCloudTarget) {
-        const testExecutionIssueData: TestExecutionIssueData = {
-            projectKey: parameters.options.jira.projectKey,
-            testExecutionIssue: {
-                fields: {
-                    ...parameters.options.jira.testExecutionIssue?.fields,
-                    issuetype: parameters.options.jira.testExecutionIssue?.fields?.issuetype,
-                    summary: parameters.options.jira.testExecutionIssue?.fields?.summary,
-                },
-                historyMetadata: parameters.options.jira.testExecutionIssue?.historyMetadata,
-                properties: parameters.options.jira.testExecutionIssue?.properties,
-                transition: parameters.options.jira.testExecutionIssue?.transition,
-                update: parameters.options.jira.testExecutionIssue?.update,
-            },
-        };
-        if (parameters.options.jira.testExecutionIssue?.testPlan) {
-            testExecutionIssueData.testPlan = {
-                value: parameters.options.jira.testExecutionIssue.testPlan,
-            };
-        }
-        if (parameters.options.jira.testExecutionIssue?.testEnvironments) {
-            testExecutionIssueData.testEnvironments = {
-                value: parameters.options.jira.testExecutionIssue.testEnvironments,
-            };
-        }
-        return {
-            errorMessages: errorMessages,
-            multipartInfo: buildMultipartInfoCloud({
-                browserName: parameters.cypress.config.browserName,
-                browserVersion: parameters.cypress.config.browserVersion,
-                cypressVersion: parameters.cypress.config.cypressVersion,
-                testExecutionIssueData: testExecutionIssueData,
-            }),
-        };
-    }
     const testExecutionIssueData: TestExecutionIssueDataServer = {
         projectKey: parameters.options.jira.projectKey,
         testExecutionIssue: {
@@ -107,15 +121,14 @@ export async function convertMultipartInfo(parameters: {
         };
     }
     // At least one of test plans or test environments is required.
+    let testPlanFieldId = parameters.options.jira.fields.testPlan;
+    let testEnvironmentsFieldId = parameters.options.jira.fields.testEnvironments;
     if (
-        !parameters.options.jira.fields.testPlan ||
-        !parameters.options.jira.fields.testEnvironments
+        (!testPlanFieldId && parameters.options.jira.testExecutionIssue.testPlan) ||
+        (!testEnvironmentsFieldId && parameters.options.jira.testExecutionIssue.testEnvironments)
     ) {
         const [allFields] = await Promise.allSettled([parameters.client.getFields()]);
-        if (
-            parameters.options.jira.testExecutionIssue.testPlan &&
-            !parameters.options.jira.fields.testPlan
-        ) {
+        if (!testPlanFieldId && parameters.options.jira.testExecutionIssue.testPlan) {
             if (allFields.status === "rejected") {
                 errorMessages.push(
                     dedent(`
@@ -126,38 +139,44 @@ export async function convertMultipartInfo(parameters: {
                 );
             } else {
                 try {
-                    testExecutionIssueData.testPlan = {
-                        fieldId: getFieldId("test plan", allFields.value),
-                        value: parameters.options.jira.testExecutionIssue.testPlan,
-                    };
+                    testPlanFieldId = getFieldId("test plan", allFields.value);
                 } catch (error: unknown) {
                     errorMessages.push(errorMessage(error));
                 }
             }
         }
         if (
-            parameters.options.jira.testExecutionIssue.testEnvironments &&
-            !parameters.options.jira.fields.testEnvironments
+            !testEnvironmentsFieldId &&
+            parameters.options.jira.testExecutionIssue.testEnvironments
         ) {
             if (allFields.status === "rejected") {
                 errorMessages.push(
                     dedent(`
-                        Failed to fetch all Jira fields for test environment field ID extraction, the test execution issue may not be assigned the desired test environment
+                        Failed to fetch all Jira fields for test environment field ID extraction, the test execution issue may not be assigned the desired test environments
 
                           ${errorMessage(allFields.reason)}
                     `)
                 );
             } else {
                 try {
-                    testExecutionIssueData.testEnvironments = {
-                        fieldId: getFieldId("test environments", allFields.value),
-                        value: parameters.options.jira.testExecutionIssue.testEnvironments,
-                    };
+                    testEnvironmentsFieldId = getFieldId("test environments", allFields.value);
                 } catch (error: unknown) {
                     errorMessages.push(errorMessage(error));
                 }
             }
         }
+    }
+    if (testPlanFieldId && parameters.options.jira.testExecutionIssue.testPlan) {
+        testExecutionIssueData.testPlan = {
+            fieldId: testPlanFieldId,
+            value: parameters.options.jira.testExecutionIssue.testPlan,
+        };
+    }
+    if (testEnvironmentsFieldId && parameters.options.jira.testExecutionIssue.testEnvironments) {
+        testExecutionIssueData.testEnvironments = {
+            fieldId: testEnvironmentsFieldId,
+            value: parameters.options.jira.testExecutionIssue.testEnvironments,
+        };
     }
     return {
         errorMessages: errorMessages,
