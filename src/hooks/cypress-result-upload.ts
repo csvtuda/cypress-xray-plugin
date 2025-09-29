@@ -37,9 +37,9 @@ import type {
     FailedConversion,
     RunConverter,
     SuccessfulConversion,
-} from "./results-conversion/cypress/util/converter";
-import { RunConverterLatest, RunConverterV12 } from "./results-conversion/cypress/util/converter";
-import { getXrayStatus as getXrayCypressStatus } from "./results-conversion/cypress/util/status-conversion";
+} from "./results-conversion/cypress-conversion";
+import { RunConverterLatest, RunConverterV12 } from "./results-conversion/cypress-conversion";
+import { getXrayStatus as getXrayCypressStatus } from "./results-conversion/cypress-status";
 
 export async function uploadCypressResults(parameters: {
     client: HasImportExecutionMultipartEndpoint &

@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { extractArrayOfStrings, extractNestedString, extractString } from "./extraction";
+import { extractArrayOfStrings, extractString } from "./extraction";
 
 void describe(relative(cwd(), __filename), () => {
     void describe("extractString", () => {
@@ -92,62 +92,6 @@ void describe(relative(cwd(), __filename), () => {
             assert.throws(() => extractArrayOfStrings(data, "x"), {
                 message:
                     'Value is not an array of type string: ["good","morning","my",42,"friends"]',
-            });
-        });
-    });
-
-    void describe("extractNestedString", () => {
-        void it("extracts nested string properties", () => {
-            const data = {
-                a: {
-                    b: {
-                        c: {
-                            d: "hello",
-                        },
-                    },
-                },
-            };
-            assert.strictEqual(extractNestedString(data, ["a", "b", "c", "d"]), "hello");
-        });
-        void it("throws if data is not an object", () => {
-            assert.throws(() => extractNestedString(5, ["x"]), {
-                message: "Expected an object containing property 'x', but got: 5",
-            });
-        });
-        void it("throws if data is null", () => {
-            assert.throws(() => extractNestedString(null, ["x"]), {
-                message: "Expected an object containing property 'x', but got: null",
-            });
-        });
-        void it("throws if data is undefined", () => {
-            assert.throws(() => extractNestedString(undefined, ["x"]), {
-                message: "Expected an object containing property 'x', but got: undefined",
-            });
-        });
-        void it("throws if a nested property is not an object value", () => {
-            const data = {
-                a: {
-                    b: {
-                        c: "surprise",
-                    },
-                },
-            };
-            assert.throws(() => extractNestedString(data, ["a", "b", "c", "d"]), {
-                message: "Expected an object containing property 'd', but got: \"surprise\"",
-            });
-        });
-        void it("throws if the final property is not a string value", () => {
-            const data = {
-                a: {
-                    b: {
-                        c: {
-                            d: 42,
-                        },
-                    },
-                },
-            };
-            assert.throws(() => extractNestedString(data, ["a", "b", "c", "d"]), {
-                message: "Value is not of type string: 42",
             });
         });
     });

@@ -1,8 +1,8 @@
 import { basename, extname } from "node:path";
-import type { RunResult, ScreenshotDetails } from "../../../../types/cypress";
-import type { CypressStatus } from "../../../../types/cypress/status";
-import { getTestIssueKeys } from "../../util";
-import { toCypressStatus } from "./status-conversion";
+import type { RunResult, ScreenshotDetails } from "../../types/cypress";
+import type { CypressStatus } from "../../types/cypress/status";
+import { getTestIssueKeys } from "../cypress-test-processing/test-key-extraction";
+import { toCypressStatus } from "./cypress-status";
 
 export interface RunConverter {
     /**

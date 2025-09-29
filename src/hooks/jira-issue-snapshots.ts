@@ -21,7 +21,6 @@ export async function getIssueSnapshots(parameters: {
     issues: IssueSnapshot[];
 }): Promise<JiraSnapshot> {
     const snapshot: JiraSnapshot = { errorMessages: [], issues: [] };
-    const errorMessages: string[] = [];
     const incompleteIssues: IssueSnapshot[] = [];
     for (const issue of parameters.issues) {
         if (issue.labels !== undefined && issue.summary !== undefined) {
@@ -43,18 +42,18 @@ export async function getIssueSnapshots(parameters: {
     });
     for (const issue of jiraIssues) {
         if (!issue.key) {
-            errorMessages.push(`Unknown: ${JSON.stringify(issue)}`);
+            snapshot.errorMessages.push(`Jira returned an unknown issue: ${JSON.stringify(issue)}`);
             continue;
         }
         const [summaryAttempt, labelsAttempt] = await Promise.allSettled([
-            extractString(issue.fields, "summary"),
-            extractArrayOfStrings(issue.fields, "labels"),
+            Promise.resolve().then(() => extractString(issue.fields, "summary")),
+            Promise.resolve().then(() => extractArrayOfStrings(issue.fields, "labels")),
         ]);
         if (summaryAttempt.status === "rejected") {
-            errorMessages.push(`${issue.key}: ${errorMessage(summaryAttempt.reason)}`);
+            snapshot.errorMessages.push(`${issue.key}: ${errorMessage(summaryAttempt.reason)}`);
         }
         if (labelsAttempt.status === "rejected") {
-            errorMessages.push(`${issue.key}: ${errorMessage(labelsAttempt.reason)}`);
+            snapshot.errorMessages.push(`${issue.key}: ${errorMessage(labelsAttempt.reason)}`);
         }
         if (summaryAttempt.status === "rejected" || labelsAttempt.status === "rejected") {
             continue;
@@ -130,7 +129,7 @@ function computeIssuesToRestore(parameters: {
         const isSameSummary = previousIssueData.summary === newIssueData.summary;
         const areSameLabels =
             previousIssueData.labels.length === newIssueData.labels.length &&
-            previousIssueData.labels.every((label) => label in newIssueData.labels);
+            previousIssueData.labels.every((label) => newIssueData.labels.includes(label));
         if (isSameSummary && areSameLabels) {
             continue;
         }

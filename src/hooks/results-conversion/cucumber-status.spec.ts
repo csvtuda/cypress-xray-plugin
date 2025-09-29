@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { getXrayStatus } from "./status";
+import { getXrayStatus } from "./cucumber-status";
 
 void describe(relative(cwd(), __filename), () => {
     void describe(getXrayStatus.name, () => {

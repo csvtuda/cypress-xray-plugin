@@ -44,7 +44,7 @@ import { uploadCypressResults } from "./cypress-result-upload";
 import { processFeatureFiles } from "./feature-file-processing";
 import { uploadFeatureFiles } from "./feature-file-upload";
 import { getIssueSnapshots, restoreIssueSnapshots } from "./jira-issue-snapshots";
-import { convertMultipartInfo } from "./multipart-info-conversion";
+import { convertMultipartInfoCloud, convertMultipartInfoServer } from "./multipart-info-conversion";
 import { validateUploads } from "./upload-validation";
 import { uploadVideos } from "./video-upload";
 
@@ -158,40 +158,69 @@ export async function cypressXrayPlugin(parameters: RuntimeParameters) {
         );
         return;
     }
-    const multipartInfoConversion = await convertMultipartInfo({
-        client: parameters.clients.jira,
-        cypress: {
-            config: {
-                browserName: results.browserName,
-                browserVersion: results.browserVersion,
-                cypressVersion: results.cypressVersion,
-            },
-        },
-        isCloudTarget: parameters.isCloudEnvironment,
-        options: {
-            jira: {
-                fields: {
-                    testEnvironments: parameters.options.jira.fields.testEnvironments,
-                    testPlan: parameters.options.jira.fields.testPlan,
-                },
-                projectKey: parameters.options.jira.projectKey,
-                testExecutionIssue: {
-                    ...parameters.options.jira.testExecutionIssue,
-                    fields: {
-                        ...parameters.options.jira.testExecutionIssue?.fields,
-                        summary:
-                            parameters.options.jira.testExecutionIssue?.fields?.summary ??
-                            issueSnapshot.issues.find(
-                                (data) =>
-                                    data.key === parameters.options.jira.testExecutionIssue?.key
-                            )?.summary ??
-                            `Execution Results [${results.startedTestsAt}]`,
-                    },
-                },
-            },
-        },
-    });
-    for (const message of multipartInfoConversion.errorMessages) {
+    const multipartInfoData = parameters.isCloudEnvironment
+        ? convertMultipartInfoCloud({
+              cypress: {
+                  config: {
+                      browserName: results.browserName,
+                      browserVersion: results.browserVersion,
+                      cypressVersion: results.cypressVersion,
+                  },
+              },
+              options: {
+                  jira: {
+                      projectKey: parameters.options.jira.projectKey,
+                      testExecutionIssue: {
+                          ...parameters.options.jira.testExecutionIssue,
+                          fields: {
+                              ...parameters.options.jira.testExecutionIssue?.fields,
+                              summary:
+                                  parameters.options.jira.testExecutionIssue?.fields?.summary ??
+                                  issueSnapshot.issues.find(
+                                      (data) =>
+                                          data.key ===
+                                          parameters.options.jira.testExecutionIssue?.key
+                                  )?.summary ??
+                                  `Execution Results [${results.startedTestsAt}]`,
+                          },
+                      },
+                  },
+              },
+          })
+        : await convertMultipartInfoServer({
+              client: parameters.clients.jira,
+              cypress: {
+                  config: {
+                      browserName: results.browserName,
+                      browserVersion: results.browserVersion,
+                      cypressVersion: results.cypressVersion,
+                  },
+              },
+              options: {
+                  jira: {
+                      fields: {
+                          testEnvironments: parameters.options.jira.fields.testEnvironments,
+                          testPlan: parameters.options.jira.fields.testPlan,
+                      },
+                      projectKey: parameters.options.jira.projectKey,
+                      testExecutionIssue: {
+                          ...parameters.options.jira.testExecutionIssue,
+                          fields: {
+                              ...parameters.options.jira.testExecutionIssue?.fields,
+                              summary:
+                                  parameters.options.jira.testExecutionIssue?.fields?.summary ??
+                                  issueSnapshot.issues.find(
+                                      (data) =>
+                                          data.key ===
+                                          parameters.options.jira.testExecutionIssue?.key
+                                  )?.summary ??
+                                  `Execution Results [${results.startedTestsAt}]`,
+                          },
+                      },
+                  },
+              },
+          });
+    for (const message of multipartInfoData.errorMessages) {
         parameters.logger.message("warning", message);
     }
     let cypressExecutionIssueKey: string | undefined = undefined;
@@ -210,7 +239,7 @@ export async function cypressXrayPlugin(parameters: RuntimeParameters) {
                 },
                 isCloudEnvironment: parameters.isCloudEnvironment,
                 logger: parameters.logger,
-                multipartInfo: multipartInfoConversion.multipartInfo,
+                multipartInfo: multipartInfoData.multipartInfo,
                 options: {
                     cucumber: {
                         featureFileExtension: parameters.options.cucumber?.featureFileExtension,
@@ -232,7 +261,7 @@ export async function cypressXrayPlugin(parameters: RuntimeParameters) {
             });
             cypressExecutionIssueKey = uploadAttempt.testExecutionIssueKey;
             await parameters.context.emitter.emit("upload:cypress", {
-                info: multipartInfoConversion.multipartInfo,
+                info: multipartInfoData.multipartInfo,
                 results: uploadAttempt.xrayJson,
                 testExecutionIssueKey: cypressExecutionIssueKey,
             });
@@ -250,7 +279,7 @@ export async function cypressXrayPlugin(parameters: RuntimeParameters) {
                 cypressExecutionIssueKey: cypressExecutionIssueKey,
                 isCloudEnvironment: parameters.isCloudEnvironment,
                 logger: parameters.logger,
-                multipartInfo: multipartInfoConversion.multipartInfo,
+                multipartInfo: multipartInfoData.multipartInfo,
                 options: {
                     cucumber: {
                         prefixes: {
@@ -279,7 +308,7 @@ export async function cypressXrayPlugin(parameters: RuntimeParameters) {
             await parameters.context.emitter.emit("upload:cucumber", {
                 results: {
                     features: uploadResult.features,
-                    info: multipartInfoConversion.multipartInfo,
+                    info: multipartInfoData.multipartInfo,
                 },
                 testExecutionIssueKey: cucumberExecutionIssueKey,
             });
@@ -295,7 +324,14 @@ export async function cypressXrayPlugin(parameters: RuntimeParameters) {
         if (finalTestExecutionIssueKey && parameters.options.jira.attachVideos) {
             await uploadVideos({
                 client: parameters.clients.jira,
-                cypress: { results: results },
+                cypress: {
+                    results: {
+                        videos: results.runs
+                            .map((run) => run.video)
+                            .filter((value) => value !== null),
+                    },
+                },
+                logger: parameters.logger,
                 options: {
                     jira: { testExecutionIssueKey: finalTestExecutionIssueKey },
                 },

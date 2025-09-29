@@ -2,9 +2,9 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import type { RunResult, ScreenshotDetails } from "../../../../../../types/cypress";
-import { CypressStatus } from "../../../../../../types/cypress/status";
-import { RunConverterLatest, RunConverterV12 } from "./converter";
+import type { RunResult, ScreenshotDetails } from "../../types/cypress";
+import { CypressStatus } from "../../types/cypress/status";
+import { RunConverterLatest, RunConverterV12 } from "./cypress-conversion";
 
 void describe(relative(cwd(), __filename), () => {
     void describe(RunConverterV12.name, () => {
@@ -576,7 +576,7 @@ void describe(relative(cwd(), __filename), () => {
     });
 
     void describe(RunConverterLatest.name, () => {
-        const passedResult: RunResult<"13" | "14"> = {
+        const passedResult: RunResult<">=14" | "13"> = {
             error: null,
             reporter: "spec",
             reporterStats: {
@@ -626,7 +626,7 @@ void describe(relative(cwd(), __filename), () => {
             ],
             video: null,
         };
-        const failedResult: RunResult<"13" | "14"> = {
+        const failedResult: RunResult<">=14" | "13"> = {
             error: null,
             reporter: "spec",
             reporterStats: {
@@ -691,7 +691,7 @@ void describe(relative(cwd(), __filename), () => {
             ],
             video: null,
         };
-        const invalidResult: RunResult<"13" | "14"> = {
+        const invalidResult: RunResult<">=14" | "13"> = {
             error: null,
             reporter: "spec",
             reporterStats: {
@@ -742,7 +742,7 @@ void describe(relative(cwd(), __filename), () => {
             ],
             video: null,
         };
-        const retriedResult: RunResult<"13" | "14"> = {
+        const retriedResult: RunResult<">=14" | "13"> = {
             error: null,
             reporter: "spec",
             reporterStats: {
@@ -802,7 +802,7 @@ void describe(relative(cwd(), __filename), () => {
             ],
             video: null,
         };
-        const retriedResultScreenshots: ScreenshotDetails<"13" | "14">[] = [
+        const retriedResultScreenshots: ScreenshotDetails<">=14" | "13">[] = [
             {
                 blackout: [],
                 dimensions: { height: 660, width: 1000, x: 0, y: 0 },
@@ -1042,7 +1042,7 @@ void describe(relative(cwd(), __filename), () => {
                 testFailure: true,
             },
         ];
-        const retriedIteratedResult: RunResult<"13" | "14"> = {
+        const retriedIteratedResult: RunResult<">=14" | "13"> = {
             error: null,
             reporter: "spec",
             reporterStats: {
@@ -1144,7 +1144,7 @@ void describe(relative(cwd(), __filename), () => {
             ],
             video: null,
         };
-        const retriedIteratedResultScreenshots: ScreenshotDetails<"13" | "14">[] = [
+        const retriedIteratedResultScreenshots: ScreenshotDetails<">=14" | "13">[] = [
             {
                 blackout: [],
                 dimensions: { height: 660, width: 1000, x: 0, y: 0 },
@@ -1846,7 +1846,7 @@ void describe(relative(cwd(), __filename), () => {
                 testFailure: true,
             },
         ];
-        const unkeyedResult: RunResult<"13" | "14"> = {
+        const unkeyedResult: RunResult<">=14" | "13"> = {
             error: null,
             reporter: "spec",
             reporterStats: {
@@ -1906,7 +1906,7 @@ void describe(relative(cwd(), __filename), () => {
             ],
             video: null,
         };
-        const unkeyedResultScreenshots: ScreenshotDetails<"13" | "14">[] = [
+        const unkeyedResultScreenshots: ScreenshotDetails<">=14" | "13">[] = [
             {
                 blackout: [],
                 dimensions: { height: 660, width: 1000, x: 0, y: 0 },

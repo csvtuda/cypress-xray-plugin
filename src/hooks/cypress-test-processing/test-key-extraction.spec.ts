@@ -3,7 +3,7 @@ import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
 import { dedent } from "../../util/dedent";
-import { getTestIssueKeys } from "./util";
+import { getTestIssueKeys } from "./test-key-extraction";
 
 void describe(relative(cwd(), __filename), () => {
     void describe(getTestIssueKeys.name, () => {

@@ -35,41 +35,6 @@ export function extractArrayOfStrings(data: unknown, propertyName: string): stri
     return value as string[];
 }
 
-/**
- * Recursively extracts a string property from an object. The array of property names is used to
- * recursively access the nested property values of the provided data object. The last nested
- * object must then contain a string property matching the last provided property name.
- *
- * @example
- * ```ts
- * const data = {
- *   a: {
- *     b: {
- *       c: {
- *         d: "hello"
- *       }
- *     }
- *   }
- * };
- * console.log(extractNestedString(data, ["a", "b", "c", "d"]));
- * // hello
- * ```
- *
- * @param data - the object
- * @param propertyNames - the properties to access
- * @returns the property's string value
- * @throws if `data` is not an object or does not contain a nested string property `propertyName`
- */
-export function extractNestedString(data: unknown, propertyNames: [string, ...string[]]): string {
-    let currentData: unknown = data;
-    for (let i = 0; i < propertyNames.length - 1; i++) {
-        const property = propertyNames[i];
-        verifyIsObjectWithProperty(currentData, property);
-        currentData = currentData[property];
-    }
-    return extractString(currentData, propertyNames[propertyNames.length - 1]);
-}
-
 function verifyIsObjectWithProperty(
     data: unknown,
     propertyName: string
