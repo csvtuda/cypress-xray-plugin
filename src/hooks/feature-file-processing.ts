@@ -4,12 +4,12 @@ import { dedent } from "../util/dedent";
 import { errorMessage } from "../util/errors";
 import { HELP } from "../util/help";
 import type { Logger } from "../util/logging";
-import { parseFeatureFile } from "./preprocessor/commands/parsing/gherkin";
+import { parseFeatureFile } from "./feature-file-processing/gherkin";
 import {
     getCucumberPreconditionIssueComments,
     getCucumberPreconditionIssueTags,
-} from "./preprocessor/commands/parsing/precondition";
-import { getCucumberScenarioIssueTags } from "./preprocessor/commands/parsing/scenario";
+} from "./feature-file-processing/precondition";
+import { getCucumberScenarioIssueTags } from "./feature-file-processing/scenario";
 
 export interface FeatureFileData {
     allIssueKeys: string[];

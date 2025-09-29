@@ -11,8 +11,8 @@ import type { MultipartInfo } from "../types/xray/requests/import-execution-mult
 import { dedent } from "../util/dedent";
 import { errorMessage, missingTestKeyInCucumberScenarioError } from "../util/errors";
 import type { Logger } from "../util/logging";
-import { getXrayStatus as getXrayCucumberStatus } from "./after/commands/conversion/util/status";
-import { getScenarioTagRegex } from "./preprocessor/commands/parsing/scenario";
+import { getScenarioTagRegex } from "./feature-file-processing/scenario";
+import { getXrayStatus as getXrayCucumberStatus } from "./results-conversion/util/status";
 
 export async function uploadCucumberResults(parameters: {
     client: HasImportExecutionCucumberMultipartEndpoint;

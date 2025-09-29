@@ -36,13 +36,10 @@ import { earliestDate, latestDate, truncateIsoTime } from "../util/time";
 import type {
     FailedConversion,
     RunConverter,
-} from "./after/commands/conversion/cypress/util/converter";
-import {
-    RunConverterLatest,
-    RunConverterV12,
-    type SuccessfulConversion,
-} from "./after/commands/conversion/cypress/util/converter";
-import { getXrayStatus as getXrayCypressStatus } from "./after/commands/conversion/cypress/util/status-conversion";
+    SuccessfulConversion,
+} from "./results-conversion/cypress/util/converter";
+import { RunConverterLatest, RunConverterV12 } from "./results-conversion/cypress/util/converter";
+import { getXrayStatus as getXrayCypressStatus } from "./results-conversion/cypress/util/status-conversion";
 
 export async function uploadCypressResults(parameters: {
     client: HasImportExecutionMultipartEndpoint &
