@@ -80,7 +80,7 @@
         "jira.js": "^5.2.2",
         "prettier": "^3.4.2",
         "shx": "^0.4.0",
-        "tsx": "^4.20.5",
+        "tsx": "^4.20.6",
         "typescript": "^5.8.3",
         "typescript-eslint": "^8.31.1"
     }
