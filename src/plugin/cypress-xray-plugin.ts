@@ -22,7 +22,9 @@ import type { PluginEventEmitter } from "../context";
 import type {
     CypressFailedRunResult,
     CypressRunResult,
+    CypressVersion,
     PluginConfigOptions,
+    RunResult,
     ScreenshotDetails,
 } from "../types/cypress";
 import type {
@@ -36,93 +38,14 @@ import type { XrayEvidenceItem } from "../types/xray/import-test-execution-resul
 import { dedent } from "../util/dedent";
 import { errorMessage } from "../util/errors";
 import type { Logger } from "../util/logging";
-import { convertCucumberFeatures, readCucumberReport } from "./cucumber-result-conversion";
-import { uploadCucumberResults } from "./cucumber-result-upload";
-import { convertCypressResults } from "./cypress-result-conversion";
-import { uploadCypressResults } from "./cypress-result-upload";
-import { processFeatureFiles } from "./feature-file-processing";
-import { uploadFeatureFiles } from "./feature-file-upload";
-import { getIssueSnapshots, restoreIssueSnapshots } from "./jira-issue-snapshots";
-import { convertMultipartInfoCloud, convertMultipartInfoServer } from "./multipart-info-conversion";
-import { validateUploads } from "./upload-validation";
-import { uploadVideos } from "./video-upload";
+import pluginPhases from "./plugin-phases";
+import multipartInfoConversion from "./results-conversion/multipart-info-conversion";
+import uploadValidation from "./results-upload/upload-validation";
+import videoUpload from "./results-upload/video-upload";
 
 export async function cypressXrayPlugin(parameters: RuntimeParameters) {
     // First, we upload all feature files to make sure the steps are up to date.
-    const processedFeatureFiles = processFeatureFiles({
-        displayCloudHelp: parameters.isCloudEnvironment,
-        featureFilePaths: parameters.context.featureFilePaths,
-        logger: parameters.logger,
-        options: {
-            cucumber: { prefixes: parameters.options.cucumber?.prefixes },
-            jira: { projectKey: parameters.options.jira.projectKey },
-        },
-    });
-    // Xray currently (almost) always overwrites issue data when importing feature files to
-    // existing issues. Therefore, we manually need to backup and reset the data once the
-    // import is done.
-    // See: https://docs.getxray.app/display/XRAY/Importing+Cucumber+Tests+-+REST
-    // See: https://docs.getxray.app/display/XRAYCLOUD/Importing+Cucumber+Tests+-+REST+v2
-    const issuesToSnapshot = new Set(
-        processedFeatureFiles.flatMap((featureFile) => featureFile.allIssueKeys)
-    );
-    // If we have a test execution issue key defined and no summary, we need to fetch the existing
-    // test execution issue summary so that we can later on restore it as well.
-    if (parameters.options.xray.uploadResults && parameters.options.jira.testExecutionIssue?.key) {
-        if (!parameters.options.jira.testExecutionIssue.fields?.summary) {
-            issuesToSnapshot.add(parameters.options.jira.testExecutionIssue.key);
-        }
-    }
-    const issueSnapshot = await getIssueSnapshots({
-        client: parameters.clients.jira,
-        issues: [...issuesToSnapshot].map((key) => {
-            return { key };
-        }),
-    });
-    if (issueSnapshot.errorMessages.length > 0) {
-        parameters.logger.message(
-            "warning",
-            dedent(`
-                Backing up Jira issue data failed for some issues, which may result in undesired data being displayed after the plugin has run:
-
-                  ${issueSnapshot.errorMessages.join("\n")}
-            `)
-        );
-    }
-    const successfulFeatureFileUploads = await uploadFeatureFiles({
-        clients: { xray: parameters.clients.xray },
-        logger: parameters.logger,
-        options: {
-            jira: {
-                projectKey: parameters.options.jira.projectKey,
-            },
-        },
-        processedFeatureFiles: processedFeatureFiles,
-    });
-    const newIssueSnapshot = await getIssueSnapshots({
-        client: parameters.clients.jira,
-        issues: successfulFeatureFileUploads
-            .flatMap((issues) => issues.affectedIssues)
-            .map((key) => {
-                return { key };
-            }),
-    });
-    if (newIssueSnapshot.errorMessages.length > 0) {
-        parameters.logger.message(
-            "warning",
-            dedent(`
-                Comparison of updated Jira issue data to backed up data failed for some issues, which may result in undesired data being displayed after the plugin has run:
-
-                  ${newIssueSnapshot.errorMessages.join("\n")}
-            `)
-        );
-    }
-    await restoreIssueSnapshots({
-        client: parameters.clients.jira,
-        logger: parameters.logger,
-        newData: newIssueSnapshot.issues,
-        previousData: issueSnapshot.issues,
-    });
+    const testExecutionIssueSummary = await pluginPhases.runFeatureFileUpload(parameters);
     // Now we can upload the results.
     if (!parameters.options.xray.uploadResults) {
         parameters.logger.message(
@@ -156,68 +79,24 @@ export async function cypressXrayPlugin(parameters: RuntimeParameters) {
         );
         return;
     }
-    const multipartInfoData = parameters.isCloudEnvironment
-        ? convertMultipartInfoCloud({
-              cypress: {
-                  config: {
-                      browserName: results.browserName,
-                      browserVersion: results.browserVersion,
-                      cypressVersion: results.cypressVersion,
-                  },
-              },
-              options: {
-                  jira: {
-                      projectKey: parameters.options.jira.projectKey,
-                      testExecutionIssue: {
-                          ...parameters.options.jira.testExecutionIssue,
-                          fields: {
-                              ...parameters.options.jira.testExecutionIssue?.fields,
-                              summary:
-                                  parameters.options.jira.testExecutionIssue?.fields?.summary ??
-                                  issueSnapshot.issues.find(
-                                      (data) =>
-                                          data.key ===
-                                          parameters.options.jira.testExecutionIssue?.key
-                                  )?.summary ??
-                                  `Execution Results [${results.startedTestsAt}]`,
-                          },
-                      },
-                  },
-              },
-          })
-        : await convertMultipartInfoServer({
-              client: parameters.clients.jira,
-              cypress: {
-                  config: {
-                      browserName: results.browserName,
-                      browserVersion: results.browserVersion,
-                      cypressVersion: results.cypressVersion,
-                  },
-              },
-              options: {
-                  jira: {
-                      fields: {
-                          testEnvironments: parameters.options.jira.fields.testEnvironments,
-                          testPlan: parameters.options.jira.fields.testPlan,
-                      },
-                      projectKey: parameters.options.jira.projectKey,
-                      testExecutionIssue: {
-                          ...parameters.options.jira.testExecutionIssue,
-                          fields: {
-                              ...parameters.options.jira.testExecutionIssue?.fields,
-                              summary:
-                                  parameters.options.jira.testExecutionIssue?.fields?.summary ??
-                                  issueSnapshot.issues.find(
-                                      (data) =>
-                                          data.key ===
-                                          parameters.options.jira.testExecutionIssue?.key
-                                  )?.summary ??
-                                  `Execution Results [${results.startedTestsAt}]`,
-                          },
-                      },
-                  },
-              },
-          });
+    const multipartInfoData = await convertMultipartInfo({
+        ...parameters,
+        cypress: { results: results },
+        options: {
+            jira: {
+                ...parameters.options.jira,
+                testExecutionIssue: {
+                    ...parameters.options.jira.testExecutionIssue,
+                    fields: {
+                        ...parameters.options.jira.testExecutionIssue?.fields,
+                        summary:
+                            testExecutionIssueSummary ??
+                            `Execution Results [${results.startedTestsAt}]`,
+                    },
+                },
+            },
+        },
+    });
     for (const message of multipartInfoData.errorMessages) {
         parameters.logger.message("warning", message);
     }
@@ -225,51 +104,10 @@ export async function cypressXrayPlugin(parameters: RuntimeParameters) {
     let cucumberExecutionIssueKey: string | undefined = undefined;
     if (containsCypressTests) {
         try {
-            const xrayJson = convertCypressResults({
-                context: {
-                    getEvidence: parameters.context.getEvidence,
-                    getIterationParameters: parameters.context.getIterationParameters,
-                    screenshots: parameters.context.screenshots,
-                },
-                cypress: {
-                    results: results,
-                },
-                isCloudEnvironment: parameters.isCloudEnvironment,
-                logger: parameters.logger,
-                options: {
-                    cucumber: {
-                        featureFileExtension: parameters.options.cucumber?.featureFileExtension,
-                    },
-                    jira: {
-                        projectKey: parameters.options.jira.projectKey,
-                    },
-                    plugin: {
-                        normalizeScreenshotNames:
-                            parameters.options.plugin.normalizeScreenshotNames,
-                        uploadLastAttempt: parameters.options.plugin.uploadLastAttempt,
-                    },
-                    xray: {
-                        uploadScreenshots: parameters.options.xray.uploadScreenshots,
-                        xrayStatus: parameters.options.xray.status,
-                    },
-                },
-            });
-            const uploadAttempt = await uploadCypressResults({
-                client: parameters.clients.xray,
-                logger: parameters.logger,
+            cypressExecutionIssueKey = await pluginPhases.runCypressUpload({
+                ...parameters,
+                cypress: { results: results },
                 multipartInfo: multipartInfoData.multipartInfo,
-                options: {
-                    plugin: {
-                        splitUpload: parameters.options.plugin.splitUpload,
-                    },
-                },
-                xrayJson: xrayJson,
-            });
-            cypressExecutionIssueKey = uploadAttempt.testExecutionIssueKey;
-            await parameters.context.emitter.emit("upload:cypress", {
-                info: multipartInfoData.multipartInfo,
-                results: xrayJson,
-                testExecutionIssueKey: cypressExecutionIssueKey,
             });
         } catch (error: unknown) {
             parameters.logger.message("error", errorMessage(error));
@@ -277,73 +115,22 @@ export async function cypressXrayPlugin(parameters: RuntimeParameters) {
     }
     if (containsCucumberTests) {
         try {
-            const reportData = await readCucumberReport({
-                cypress: {
-                    config: parameters.cypress.config,
-                },
-                options: {
-                    cucumber: {
-                        reportPath: parameters.options.cucumber?.preprocessor?.json.output,
-                    },
-                },
-            });
-            const cucumberJson = convertCucumberFeatures({
-                cucumberResults: reportData,
-                cypress: {
-                    config: parameters.cypress.config,
-                },
-                isCloudEnvironment: parameters.isCloudEnvironment,
-                logger: parameters.logger,
-                options: {
-                    cucumber: {
-                        prefixes: {
-                            test: parameters.options.cucumber?.prefixes.test,
-                        },
-                    },
-                    jira: {
-                        projectKey: parameters.options.jira.projectKey,
-                        testExecutionIssue: {
-                            key: parameters.options.jira.testExecutionIssue?.key,
-                        },
-                    },
-                    xray: {
-                        status: {
-                            step: {
-                                failed: parameters.options.xray.status.failed,
-                                passed: parameters.options.xray.status.passed,
-                                pending: parameters.options.xray.status.pending,
-                                skipped: parameters.options.xray.status.skipped,
-                            },
-                        },
-                        uploadScreenshots: parameters.options.xray.uploadScreenshots,
-                    },
-                },
-            });
-            const uploadResult = await uploadCucumberResults({
-                client: parameters.clients.xray,
-                cucumberJson: cucumberJson.features,
+            cucumberExecutionIssueKey = await pluginPhases.runCucumberUpload({
+                ...parameters,
                 multipartInfo: multipartInfoData.multipartInfo,
-            });
-            cucumberExecutionIssueKey = uploadResult.testExecutionIssueKey;
-            await parameters.context.emitter.emit("upload:cucumber", {
-                results: {
-                    features: cucumberJson.features,
-                    info: multipartInfoData.multipartInfo,
-                },
-                testExecutionIssueKey: cucumberExecutionIssueKey,
             });
         } catch (error: unknown) {
             parameters.logger.message("error", errorMessage(error));
         }
     }
-    const finalTestExecutionIssueKey = validateUploads({
+    const finalTestExecutionIssueKey = uploadValidation.validateUploads({
         cucumberExecutionIssueKey: cucumberExecutionIssueKey,
         cypressExecutionIssueKey: cypressExecutionIssueKey,
         logger: parameters.logger,
         url: parameters.options.jira.url,
     });
     if (finalTestExecutionIssueKey && parameters.options.jira.attachVideos) {
-        await uploadVideos({
+        await videoUpload.uploadVideos({
             client: parameters.clients.jira,
             cypress: {
                 results: {
@@ -370,14 +157,14 @@ export async function cypressXrayPlugin(parameters: RuntimeParameters) {
 }
 
 function inspectResults(parameters: {
-    cypress: { results: CypressFailedRunResult | CypressRunResult };
+    cypress: { results: CypressFailedRunResult | MinimalCypressRunResult };
     options: { cucumber: { featureFileExtension?: string } };
 }):
     | {
           containsCucumberTests: boolean;
           containsCypressTests: boolean;
           hasCypressFailed: false;
-          results: CypressRunResult;
+          results: MinimalCypressRunResult;
       }
     | { hasCypressFailed: true; results: CypressFailedRunResult } {
     if ("status" in parameters.cypress.results && parameters.cypress.results.status === "failed") {
@@ -401,7 +188,117 @@ function inspectResults(parameters: {
     };
 }
 
-interface RuntimeParameters {
+async function convertMultipartInfo(parameters: {
+    clients: {
+        jira: HasGetFieldsEndpoint;
+    };
+    cypress: {
+        results: MinimalCypressRunResult;
+    };
+    isCloudEnvironment: boolean;
+    options: {
+        jira: Pick<InternalJiraOptions, "attachVideos" | "projectKey" | "url"> & {
+            fields: Pick<InternalJiraOptions["fields"], "testEnvironments" | "testPlan">;
+            testExecutionIssue?: PluginIssueUpdate & {
+                testEnvironments?: [string, ...string[]];
+                testPlan?: string;
+            };
+        };
+    };
+}) {
+    if (parameters.isCloudEnvironment) {
+        return multipartInfoConversion.convertMultipartInfoCloud({
+            cypress: {
+                config: {
+                    browserName: parameters.cypress.results.browserName,
+                    browserVersion: parameters.cypress.results.browserVersion,
+                    cypressVersion: parameters.cypress.results.cypressVersion,
+                },
+            },
+            options: {
+                jira: {
+                    projectKey: parameters.options.jira.projectKey,
+                    testExecutionIssue: parameters.options.jira.testExecutionIssue,
+                },
+            },
+        });
+    }
+    return await multipartInfoConversion.convertMultipartInfoServer({
+        client: parameters.clients.jira,
+        cypress: {
+            config: {
+                browserName: parameters.cypress.results.browserName,
+                browserVersion: parameters.cypress.results.browserVersion,
+                cypressVersion: parameters.cypress.results.cypressVersion,
+            },
+        },
+        options: {
+            jira: {
+                fields: {
+                    testEnvironments: parameters.options.jira.fields.testEnvironments,
+                    testPlan: parameters.options.jira.fields.testPlan,
+                },
+                projectKey: parameters.options.jira.projectKey,
+                testExecutionIssue: parameters.options.jira.testExecutionIssue,
+            },
+        },
+    });
+}
+
+type MinimalRunResult<T extends CypressVersion = CypressVersion> = {
+    ["<13"]: Pick<RunResult<"<13">, "video"> & {
+        spec: Pick<RunResult<"<13">["spec"], "absolute" | "relative">;
+        tests: {
+            attempts: {
+                duration: RunResult<"<13">["tests"][number]["attempts"][number]["duration"];
+                screenshots: Pick<
+                    RunResult<"<13">["tests"][number]["attempts"][number]["screenshots"][number],
+                    "path"
+                >[];
+                startedAt: RunResult<"<13">["tests"][number]["attempts"][number]["startedAt"];
+                state: RunResult<"<13">["tests"][number]["attempts"][number]["state"];
+            }[];
+            title: RunResult<"<13">["tests"][number]["title"];
+        }[];
+    };
+    [">=14"]: Pick<RunResult<">=14">, "video"> & {
+        spec: Pick<RunResult<">=14">["spec"], "absolute" | "relative">;
+        stats: Pick<RunResult<">=14">["stats"], "startedAt">;
+        tests: {
+            attempts: Pick<RunResult<">=14">["tests"][number]["attempts"][number], "state">[];
+            duration: RunResult<">=14">["tests"][number]["duration"];
+            state: RunResult<">=14">["tests"][number]["state"];
+            title: RunResult<">=14">["tests"][number]["title"];
+        }[];
+    };
+    ["13"]: Pick<RunResult<"13">, "video"> & {
+        spec: Pick<RunResult<"13">["spec"], "absolute" | "relative">;
+        stats: Pick<RunResult<"13">["stats"], "startedAt">;
+        tests: {
+            attempts: Pick<RunResult<"13">["tests"][number]["attempts"][number], "state">[];
+            duration: RunResult<"13">["tests"][number]["duration"];
+            state: RunResult<"13">["tests"][number]["state"];
+            title: RunResult<"13">["tests"][number]["title"];
+        }[];
+    };
+}[T];
+
+export type MinimalCypressRunResult<T extends CypressVersion = CypressVersion> = {
+    ["<13"]: Pick<
+        CypressRunResult<"<13">,
+        "browserName" | "browserVersion" | "cypressVersion" | "startedTestsAt" | "status"
+    > & { runs: MinimalRunResult<"<13">[] };
+    [">=14"]: Pick<
+        CypressRunResult<">=14">,
+        "browserName" | "browserVersion" | "cypressVersion" | "startedTestsAt"
+    > & { runs: MinimalRunResult<">=14">[] };
+    ["13"]: Pick<
+        CypressRunResult<"13">,
+        "browserName" | "browserVersion" | "cypressVersion" | "startedTestsAt"
+    > & { runs: MinimalRunResult<"13">[] };
+}[T];
+
+export interface RuntimeParameters {
     clients: {
         jira: HasAddAttachmentEndpoint &
             HasSearchEndpoint &
@@ -417,7 +314,7 @@ interface RuntimeParameters {
             );
     };
     context: {
-        emitter: PluginEventEmitter;
+        emitter: Pick<PluginEventEmitter, "emit">;
         featureFilePaths: Iterable<string>;
         getEvidence: (issueKey: string) => XrayEvidenceItem[];
         getIterationParameters: (issueKey: string, testId: string) => Record<string, string>;
@@ -425,10 +322,10 @@ interface RuntimeParameters {
     };
     cypress: {
         config: Pick<PluginConfigOptions, "projectRoot">;
-        results: CypressFailedRunResult | CypressRunResult;
+        results: CypressFailedRunResult | MinimalCypressRunResult;
     };
     isCloudEnvironment: boolean;
-    logger: Logger;
+    logger: Pick<Logger, "message">;
     options: {
         cucumber?: Pick<
             InternalCucumberOptions,

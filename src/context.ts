@@ -62,7 +62,7 @@ export class PluginContext
         this.evidenceCollection = evidenceCollection;
         this.iterationParameterCollection = iterationParameterCollection;
         this.screenshotCollection = screenshotCollection;
-        this.eventEmitter = new PluginEventEmitter();
+        this.eventEmitter = new SimplePluginEventEmitter();
         this.logger = logger;
         this.featureFiles = new Set();
     }
@@ -195,31 +195,54 @@ type PluginEventListener<E extends keyof PluginEvent> = (
 type PluginEventListeners = { [E in keyof PluginEvent]: PluginEventListener<E>[] };
 
 /**
- * A minimal event emitter tailored for plugin events. Supports registering multiple listeners per
- * event and emitting events with typed data.
+ * Models cypress-xray-plugin event emitters.
  */
-export class PluginEventEmitter {
-    private readonly listeners: PluginEventListeners = {
-        ["upload:cucumber"]: [],
-        ["upload:cypress"]: [],
-    };
-
+export interface PluginEventEmitter {
+    /**
+     * Emits an event and invokes all registered listeners for that event. Waits for all async
+     * listeners to complete before resolving.
+     *
+     * @param name - the name of the event to emit
+     * @param data - the data associated with the event
+     */
+    emit<E extends keyof PluginEvent>(name: E, data: PluginEvent[E]): Promise<void>;
+    /**
+     * Deregisters a listener for a given plugin event.
+     *
+     * @param name - the name of the event
+     * @param listener - the callback to remove
+     */
+    off<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>): void;
     /**
      * Registers a listener for a given plugin event.
      *
      * @param name - the name of the event to listen to
      * @param listener - a callback to handle the event data
      */
-    public on<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>) {
-        this.listeners[name].push(listener);
-    }
-
+    on<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>): void;
     /**
      * Register a listener for a given plugin event that will be fired only once and then removed.
      *
      * @param name - the name of the event to listen to
      * @param listener - a callback to handle the event data
      */
+    once<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>): void;
+}
+
+/**
+ * A minimal event emitter tailored for plugin events. Supports registering multiple listeners per
+ * event and emitting events with typed data.
+ */
+class SimplePluginEventEmitter implements PluginEventEmitter {
+    private readonly listeners: PluginEventListeners = {
+        ["upload:cucumber"]: [],
+        ["upload:cypress"]: [],
+    };
+
+    public on<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>) {
+        this.listeners[name].push(listener);
+    }
+
     public once<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>) {
         const wrapper = async (data: PluginEvent[E]) => {
             await listener(data);
@@ -228,12 +251,6 @@ export class PluginEventEmitter {
         this.on(name, wrapper);
     }
 
-    /**
-     * Deregisters a listener for a given plugin event.
-     *
-     * @param name - the name of the event
-     * @param listener - the callback to remove
-     */
     public off<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>) {
         const keep: PluginEventListeners[E] = [];
         for (const eventListener of this.listeners[name]) {
@@ -244,13 +261,6 @@ export class PluginEventEmitter {
         this.listeners[name] = keep;
     }
 
-    /**
-     * Emits an event and invokes all registered listeners for that event. Waits for all async
-     * listeners to complete before resolving.
-     *
-     * @param name - the name of the event to emit
-     * @param data - the data associated with the event
-     */
     public async emit<E extends keyof PluginEvent>(name: E, data: PluginEvent[E]): Promise<void> {
         const eventListeners = this.listeners[name];
         await Promise.all(

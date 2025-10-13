@@ -220,27 +220,29 @@ export async function configureXrayPlugin(
             const messages = logger.getMessages();
             messages.forEach(([level, text]) => {
                 if (["debug", "info", "notice"].includes(level)) {
-                    LOG.message(level, text);
+                    context.getLogger().message(level, text);
                 }
             });
             if (messages.some(([level]) => level === "warning" || level === "error")) {
-                LOG.message("warning", "Encountered problems during plugin execution!");
+                context
+                    .getLogger()
+                    .message("warning", "Encountered problems during plugin execution!");
                 messages
                     .filter(([level]) => level === "warning")
                     .forEach(([level, text]) => {
-                        LOG.message(level, text);
+                        context.getLogger().message(level, text);
                     });
                 messages
                     .filter(([level]) => level === "error")
                     .forEach(([level, text]) => {
-                        LOG.message(level, text);
+                        context.getLogger().message(level, text);
                     });
             }
             logger.getFileLogErrorMessages().forEach(([error, filename]) => {
-                LOG.logErrorToFile(error, filename);
+                context.getLogger().logErrorToFile(error, filename);
             });
             logger.getFileLogMessages().forEach(([data, filename]) => {
-                LOG.logToFile(data, filename);
+                context.getLogger().logToFile(data, filename);
             });
         }
     });

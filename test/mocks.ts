@@ -1,4 +1,3 @@
-import type { Logger } from "../src/util/logging";
 import { unknownToString } from "../src/util/string";
 
 export function getMockedCypress(): {
@@ -17,35 +16,22 @@ export function getMockedCypress(): {
     return { cy: global.cy, cypress: global.Cypress };
 }
 
-export function getMockedLogger(functions?: Partial<Logger>): Logger {
-    return {
-        configure:
-            functions?.configure ??
-            ((...args: unknown[]) => {
-                throw new Error(
-                    `Logging function configure called unexpectedly with args: ${unknownToString(args)}`
-                );
-            }),
-        logErrorToFile:
-            functions?.logErrorToFile ??
-            ((...args: unknown[]) => {
-                throw new Error(
-                    `Logging function logErrorToFile called unexpectedly with args: ${unknownToString(args)}`
-                );
-            }),
-        logToFile:
-            functions?.logToFile ??
-            ((...args: unknown[]) => {
-                throw new Error(
-                    `Logging function logToFile called unexpectedly with args: ${unknownToString(args)}`
-                );
-            }),
-        message:
-            functions?.message ??
-            ((...args: unknown[]) => {
-                throw new Error(
-                    `Logging function message called unexpectedly with args: ${unknownToString(args)}`
-                );
-            }),
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
+export function stub<R>(): (...args: unknown[]) => R {
+    return (...args: unknown[]): R => {
+        throw new Error(`Mock called unexpectedly with args: ${unknownToString(args)}`);
+    };
+}
+
+export function countingMock<R>(...returnValues: R[]) {
+    let n = 1;
+    return (...args: unknown[]): R => {
+        if (n - 1 >= returnValues.length) {
+            const suffix = n === 1 ? "st" : n === 2 ? "nd" : n === 3 ? "rd" : "th";
+            throw new Error(
+                `Mock called unexpectedly for the ${n.toString()}${suffix} time with args: ${unknownToString(args)}`
+            );
+        }
+        return returnValues[n++ - 1];
     };
 }
