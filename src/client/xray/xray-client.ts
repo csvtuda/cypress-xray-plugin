@@ -61,7 +61,6 @@ export interface HasImportExecutionCucumberMultipartEndpoint {
  */
 export interface HasImportFeatureEndpoint {
     /**
-    /**
      * Uploads (zipped) feature file(s) to corresponding Xray issues.
      *
      * @param file - the (zipped) Cucumber feature file(s)

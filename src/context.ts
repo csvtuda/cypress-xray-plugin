@@ -11,7 +11,6 @@ import { JiraClientServer } from "./client/jira/jira-client-server";
 import { XrayClientCloud } from "./client/xray/xray-client-cloud";
 import { XrayClientServer } from "./client/xray/xray-client-server";
 import { ENV_NAMES } from "./env";
-import type { Command } from "./hooks/command";
 import type { ObjectLike, PluginConfigOptions, ScreenshotDetails } from "./types/cypress";
 import type {
     ClientCombination,
@@ -30,7 +29,6 @@ import { dedent } from "./util/dedent";
 import type { CucumberPreprocessorArgs, CucumberPreprocessorExports } from "./util/dependencies";
 import dependencies from "./util/dependencies";
 import { errorMessage } from "./util/errors";
-import type { ExecutableGraph } from "./util/graph/executable-graph";
 import { HELP } from "./util/help";
 import type { Logger } from "./util/logging";
 import { LOG } from "./util/logging";
@@ -46,8 +44,8 @@ export class PluginContext
     private readonly iterationParameterCollection: IterationParameterCollection;
     private readonly screenshotCollection: ScreenshotCollection;
     private readonly eventEmitter: PluginEventEmitter;
-    private readonly graph: ExecutableGraph<Command>;
     private readonly logger: Logger;
+    private readonly featureFiles: Set<string>;
 
     constructor(
         clients: ClientCombination,
@@ -56,7 +54,6 @@ export class PluginContext
         evidenceCollection: EvidenceCollection,
         iterationParameterCollection: IterationParameterCollection,
         screenshotCollection: ScreenshotCollection,
-        graph: ExecutableGraph<Command>,
         logger: Logger
     ) {
         this.clients = clients;
@@ -66,8 +63,16 @@ export class PluginContext
         this.iterationParameterCollection = iterationParameterCollection;
         this.screenshotCollection = screenshotCollection;
         this.eventEmitter = new PluginEventEmitter();
-        this.graph = graph;
         this.logger = logger;
+        this.featureFiles = new Set();
+    }
+
+    public addFeatureFile(filePath: string): void {
+        this.featureFiles.add(filePath);
+    }
+
+    public getFeatureFiles(): Iterable<string> {
+        return this.featureFiles;
     }
 
     public getClients(): ClientCombination {
@@ -80,10 +85,6 @@ export class PluginContext
 
     public getCypressOptions(): PluginConfigOptions {
         return this.cypressOptions;
-    }
-
-    public getGraph(): ExecutableGraph<Command> {
-        return this.graph;
     }
 
     public getLogger(): Logger {

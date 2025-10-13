@@ -1,5 +1,5 @@
 import type { EvidenceCollection, IterationParameterCollection } from "../context";
-import { getTestIssueKeys } from "../hooks/after/util";
+import { getTestIssueKeys } from "../plugin/cypress-test-processing/test-key-extraction";
 import { encode } from "../util/base64";
 import { dedent } from "../util/dedent";
 import { errorMessage } from "../util/errors";
