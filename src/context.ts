@@ -11,7 +11,6 @@ import { JiraClientServer } from "./client/jira/jira-client-server";
 import { XrayClientCloud } from "./client/xray/xray-client-cloud";
 import { XrayClientServer } from "./client/xray/xray-client-server";
 import { ENV_NAMES } from "./env";
-import type { Command } from "./hooks/command";
 import type { ObjectLike, PluginConfigOptions, ScreenshotDetails } from "./types/cypress";
 import type {
     ClientCombination,
@@ -30,7 +29,6 @@ import { dedent } from "./util/dedent";
 import type { CucumberPreprocessorArgs, CucumberPreprocessorExports } from "./util/dependencies";
 import dependencies from "./util/dependencies";
 import { errorMessage } from "./util/errors";
-import type { ExecutableGraph } from "./util/graph/executable-graph";
 import { HELP } from "./util/help";
 import type { Logger } from "./util/logging";
 import { LOG } from "./util/logging";
@@ -46,8 +44,8 @@ export class PluginContext
     private readonly iterationParameterCollection: IterationParameterCollection;
     private readonly screenshotCollection: ScreenshotCollection;
     private readonly eventEmitter: PluginEventEmitter;
-    private readonly graph: ExecutableGraph<Command>;
     private readonly logger: Logger;
+    private readonly featureFiles: Set<string>;
 
     constructor(
         clients: ClientCombination,
@@ -56,7 +54,6 @@ export class PluginContext
         evidenceCollection: EvidenceCollection,
         iterationParameterCollection: IterationParameterCollection,
         screenshotCollection: ScreenshotCollection,
-        graph: ExecutableGraph<Command>,
         logger: Logger
     ) {
         this.clients = clients;
@@ -65,9 +62,17 @@ export class PluginContext
         this.evidenceCollection = evidenceCollection;
         this.iterationParameterCollection = iterationParameterCollection;
         this.screenshotCollection = screenshotCollection;
-        this.eventEmitter = new PluginEventEmitter();
-        this.graph = graph;
+        this.eventEmitter = new SimplePluginEventEmitter();
         this.logger = logger;
+        this.featureFiles = new Set();
+    }
+
+    public addFeatureFile(filePath: string): void {
+        this.featureFiles.add(filePath);
+    }
+
+    public getFeatureFiles(): Iterable<string> {
+        return this.featureFiles;
     }
 
     public getClients(): ClientCombination {
@@ -80,10 +85,6 @@ export class PluginContext
 
     public getCypressOptions(): PluginConfigOptions {
         return this.cypressOptions;
-    }
-
-    public getGraph(): ExecutableGraph<Command> {
-        return this.graph;
     }
 
     public getLogger(): Logger {
@@ -194,31 +195,54 @@ type PluginEventListener<E extends keyof PluginEvent> = (
 type PluginEventListeners = { [E in keyof PluginEvent]: PluginEventListener<E>[] };
 
 /**
- * A minimal event emitter tailored for plugin events. Supports registering multiple listeners per
- * event and emitting events with typed data.
+ * Models cypress-xray-plugin event emitters.
  */
-export class PluginEventEmitter {
-    private readonly listeners: PluginEventListeners = {
-        ["upload:cucumber"]: [],
-        ["upload:cypress"]: [],
-    };
-
+export interface PluginEventEmitter {
+    /**
+     * Emits an event and invokes all registered listeners for that event. Waits for all async
+     * listeners to complete before resolving.
+     *
+     * @param name - the name of the event to emit
+     * @param data - the data associated with the event
+     */
+    emit<E extends keyof PluginEvent>(name: E, data: PluginEvent[E]): Promise<void>;
+    /**
+     * Deregisters a listener for a given plugin event.
+     *
+     * @param name - the name of the event
+     * @param listener - the callback to remove
+     */
+    off<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>): void;
     /**
      * Registers a listener for a given plugin event.
      *
      * @param name - the name of the event to listen to
      * @param listener - a callback to handle the event data
      */
-    public on<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>) {
-        this.listeners[name].push(listener);
-    }
-
+    on<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>): void;
     /**
      * Register a listener for a given plugin event that will be fired only once and then removed.
      *
      * @param name - the name of the event to listen to
      * @param listener - a callback to handle the event data
      */
+    once<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>): void;
+}
+
+/**
+ * A minimal event emitter tailored for plugin events. Supports registering multiple listeners per
+ * event and emitting events with typed data.
+ */
+class SimplePluginEventEmitter implements PluginEventEmitter {
+    private readonly listeners: PluginEventListeners = {
+        ["upload:cucumber"]: [],
+        ["upload:cypress"]: [],
+    };
+
+    public on<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>) {
+        this.listeners[name].push(listener);
+    }
+
     public once<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>) {
         const wrapper = async (data: PluginEvent[E]) => {
             await listener(data);
@@ -227,12 +251,6 @@ export class PluginEventEmitter {
         this.on(name, wrapper);
     }
 
-    /**
-     * Deregisters a listener for a given plugin event.
-     *
-     * @param name - the name of the event
-     * @param listener - the callback to remove
-     */
     public off<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>) {
         const keep: PluginEventListeners[E] = [];
         for (const eventListener of this.listeners[name]) {
@@ -243,13 +261,6 @@ export class PluginEventEmitter {
         this.listeners[name] = keep;
     }
 
-    /**
-     * Emits an event and invokes all registered listeners for that event. Waits for all async
-     * listeners to complete before resolving.
-     *
-     * @param name - the name of the event to emit
-     * @param data - the data associated with the event
-     */
     public async emit<E extends keyof PluginEvent>(name: E, data: PluginEvent[E]): Promise<void> {
         const eventListeners = this.listeners[name];
         await Promise.all(

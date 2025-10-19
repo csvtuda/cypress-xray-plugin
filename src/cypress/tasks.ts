@@ -1,8 +1,8 @@
 import type { EvidenceCollection, IterationParameterCollection } from "../context";
-import { getTestIssueKeys } from "../hooks/after/util";
 import { encode } from "../util/base64";
 import { dedent } from "../util/dedent";
 import { errorMessage } from "../util/errors";
+import { extractIssueKeys } from "../util/extraction";
 import type { Logger } from "../util/logging";
 
 type Task =
@@ -203,7 +203,7 @@ export class CypressTaskListener implements TaskListener {
         args: PluginTaskParameterType["cypress-xray-plugin:task:request"]
     ) {
         try {
-            const issueKeys = getTestIssueKeys(args.test, this.projectKey);
+            const issueKeys = extractIssueKeys(args.test, this.projectKey);
             for (const issueKey of issueKeys) {
                 this.evidenceCollection.addEvidence(issueKey, {
                     contentType: "application/json",
@@ -233,7 +233,7 @@ export class CypressTaskListener implements TaskListener {
         args: PluginTaskParameterType["cypress-xray-plugin:task:response"]
     ) {
         try {
-            const issueKeys = getTestIssueKeys(args.test, this.projectKey);
+            const issueKeys = extractIssueKeys(args.test, this.projectKey);
             for (const issueKey of issueKeys) {
                 this.evidenceCollection.addEvidence(issueKey, {
                     contentType: "application/json",
@@ -263,7 +263,7 @@ export class CypressTaskListener implements TaskListener {
         args: PluginTaskParameterType["cypress-xray-plugin:task:iteration:definition"]
     ) {
         try {
-            const issueKeys = getTestIssueKeys(args.test, this.projectKey);
+            const issueKeys = extractIssueKeys(args.test, this.projectKey);
             for (const issueKey of issueKeys) {
                 this.iterationParameterCollection.setIterationParameters(
                     issueKey,
