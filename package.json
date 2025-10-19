@@ -36,7 +36,7 @@
     },
     "scripts": {
         "test": "node --import tsx ./test/run-unit-tests.ts",
-        "test:coverage": "npx shx mkdir -p coverage && c8 -x '**/*.spec.ts' -r html npm run test",
+        "test:coverage": "npx shx mkdir -p coverage && c8 --config .c8.json npm run test",
         "test:integration": "node --import tsx ./test/run-integration-tests.ts",
         "test:server": "node --import tsx ./test/run-server.ts",
         "build": "node --import tsx build.ts",
