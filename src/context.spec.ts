@@ -30,7 +30,6 @@ import type {
 } from "./types/plugin";
 import { dedent } from "./util/dedent";
 import dependencies from "./util/dependencies";
-import { ExecutableGraph } from "./util/graph/executable-graph";
 import type { Level } from "./util/logging";
 import { CapturingLogger, LOG } from "./util/logging";
 
@@ -2279,7 +2278,6 @@ void describe(relative(cwd(), __filename), () => {
                 new SimpleEvidenceCollection(),
                 new SimpleIterationParameterCollection(),
                 new SimpleScreenshotCollection(),
-                new ExecutableGraph(),
                 new CapturingLogger()
             );
         });
