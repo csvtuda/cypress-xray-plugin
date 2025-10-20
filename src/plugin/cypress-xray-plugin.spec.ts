@@ -18,12 +18,12 @@ import { stub } from "../../test/mocks";
 import type { HasTransitionIssueEndpoint } from "../client/jira/jira-client";
 import type { Logger } from "../util/logging";
 import type { RuntimeParameters } from "./cypress-xray-plugin";
-import { runPlugin } from "./cypress-xray-plugin";
+import cypressXrayPlugin from "./cypress-xray-plugin";
 import pluginPhases from "./plugin-phases";
 import uploadValidation from "./results-upload/upload-validation";
 import videoUpload from "./results-upload/video-upload";
 
-// | **#** | **Scenario Description**                      | **Key Parameter Values**                                                                        |
+// | #     | Scenario Description                          | Key Parameter Values                                                                            |
 // | ----- | --------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 // | 1     | Upload disabled                               | `uploadResults=false`                                                                           |
 // | 2     | No runs (empty results)                       | `runs=[]`, `uploadResults=true`                                                                 |
@@ -37,14 +37,14 @@ import videoUpload from "./results-upload/video-upload";
 // | 10    | Cypress upload throws error                   | Test error logging branch                                                                       |
 // | 11    | Cucumber upload throws error                  | Test error logging branch                                                                       |
 
-void describe(runPlugin.name, () => {
+void describe(cypressXrayPlugin.runPlugin.name, () => {
     void describe("scenario: upload disabled", () => {
         const projectKey = generateFakeProjectKey();
         const contextOptions: RuntimeParameters["context"] = {
             emitter: { emit: stub() },
+            evidence: { getEvidence: stub() },
             featureFilePaths: faker().helpers.multiple(() => faker().system.filePath()),
-            getEvidence: stub(),
-            getIterationParameters: stub(),
+            iterationParameters: { getIterationParameters: stub() },
             screenshots: generateFakeScreenshotDetails(),
         };
         const options: RuntimeParameters["options"] = {
@@ -176,7 +176,7 @@ void describe(runPlugin.name, () => {
                     options: options,
                 };
                 // Test execution.
-                await runPlugin(parameters);
+                await cypressXrayPlugin.runPlugin(parameters);
 
                 // Test validation.
                 assert.deepStrictEqual(
@@ -220,9 +220,9 @@ void describe(runPlugin.name, () => {
         const projectKey = generateFakeProjectKey();
         const contextOptions: RuntimeParameters["context"] = {
             emitter: { emit: stub() },
+            evidence: { getEvidence: stub() },
             featureFilePaths: faker().helpers.multiple(() => faker().system.filePath()),
-            getEvidence: stub(),
-            getIterationParameters: stub(),
+            iterationParameters: { getIterationParameters: stub() },
             screenshots: generateFakeScreenshotDetails(),
         };
         const options: RuntimeParameters["options"] = {
@@ -363,7 +363,7 @@ void describe(runPlugin.name, () => {
                     options: options,
                 };
                 // Test execution.
-                await runPlugin(parameters);
+                await cypressXrayPlugin.runPlugin(parameters);
 
                 // Test validation.
                 assert.deepStrictEqual(
@@ -404,9 +404,9 @@ void describe(runPlugin.name, () => {
         const testExecutionIssue = faker().helpers.maybe(() => generateFakePluginIssueUpdate());
         const contextOptions: RuntimeParameters["context"] = {
             emitter: { emit: stub() },
+            evidence: { getEvidence: stub() },
             featureFilePaths: faker().helpers.multiple(() => faker().system.filePath()),
-            getEvidence: stub(),
-            getIterationParameters: stub(),
+            iterationParameters: { getIterationParameters: stub() },
             screenshots: generateFakeScreenshotDetails(),
         };
         const options: RuntimeParameters["options"] = {
@@ -592,7 +592,7 @@ void describe(runPlugin.name, () => {
                     options: options,
                 };
                 // Test execution.
-                await runPlugin(parameters);
+                await cypressXrayPlugin.runPlugin(parameters);
 
                 // Test validation.
                 assert.deepStrictEqual(
@@ -679,9 +679,9 @@ void describe(runPlugin.name, () => {
         const testExecutionIssue = faker().helpers.maybe(() => generateFakePluginIssueUpdate());
         const contextOptions: RuntimeParameters["context"] = {
             emitter: { emit: stub() },
+            evidence: { getEvidence: stub() },
             featureFilePaths: faker().helpers.multiple(() => faker().system.filePath()),
-            getEvidence: stub(),
-            getIterationParameters: stub(),
+            iterationParameters: { getIterationParameters: stub() },
             screenshots: generateFakeScreenshotDetails(),
         };
         const options: RuntimeParameters["options"] = {
@@ -817,7 +817,7 @@ void describe(runPlugin.name, () => {
                     options: options,
                 };
                 // Test execution.
-                await runPlugin(parameters);
+                await cypressXrayPlugin.runPlugin(parameters);
 
                 // Test validation.
                 assert.deepStrictEqual(
@@ -862,9 +862,9 @@ void describe(runPlugin.name, () => {
         const testExecutionIssue = faker().helpers.maybe(() => generateFakePluginIssueUpdate());
         const contextOptions: RuntimeParameters["context"] = {
             emitter: { emit: stub() },
+            evidence: { getEvidence: stub() },
             featureFilePaths: faker().helpers.multiple(() => faker().system.filePath()),
-            getEvidence: stub(),
-            getIterationParameters: stub(),
+            iterationParameters: { getIterationParameters: stub() },
             screenshots: generateFakeScreenshotDetails(),
         };
         const options: RuntimeParameters["options"] = {
@@ -1000,7 +1000,7 @@ void describe(runPlugin.name, () => {
                     options: options,
                 };
                 // Test execution.
-                await runPlugin(parameters);
+                await cypressXrayPlugin.runPlugin(parameters);
 
                 // Test validation.
                 assert.deepStrictEqual(
@@ -1045,9 +1045,9 @@ void describe(runPlugin.name, () => {
         const testExecutionIssue = faker().helpers.maybe(() => generateFakePluginIssueUpdate());
         const contextOptions: RuntimeParameters["context"] = {
             emitter: { emit: stub() },
+            evidence: { getEvidence: stub() },
             featureFilePaths: faker().helpers.multiple(() => faker().system.filePath()),
-            getEvidence: stub(),
-            getIterationParameters: stub(),
+            iterationParameters: { getIterationParameters: stub() },
             screenshots: generateFakeScreenshotDetails(),
         };
         const finalTestExecutionIssueKey =
@@ -1182,7 +1182,7 @@ void describe(runPlugin.name, () => {
                     options: options,
                 };
                 // Test execution.
-                await runPlugin(parameters);
+                await cypressXrayPlugin.runPlugin(parameters);
 
                 // Test validation.
                 assert.deepStrictEqual(
@@ -1219,9 +1219,9 @@ void describe(runPlugin.name, () => {
         const testExecutionIssue = generateFakePluginIssueUpdate({ key: false, transition: true });
         const contextOptions: RuntimeParameters["context"] = {
             emitter: { emit: stub() },
+            evidence: { getEvidence: stub() },
             featureFilePaths: faker().helpers.multiple(() => faker().system.filePath()),
-            getEvidence: stub(),
-            getIterationParameters: stub(),
+            iterationParameters: { getIterationParameters: stub() },
             screenshots: generateFakeScreenshotDetails(),
         };
         const finalTestExecutionIssueKey =
@@ -1354,7 +1354,7 @@ void describe(runPlugin.name, () => {
                     options: options,
                 };
                 // Test execution.
-                await runPlugin(parameters);
+                await cypressXrayPlugin.runPlugin(parameters);
 
                 // Test validation.
                 assert.deepStrictEqual(
@@ -1377,9 +1377,9 @@ void describe(runPlugin.name, () => {
         });
         const contextOptions: RuntimeParameters["context"] = {
             emitter: { emit: stub() },
+            evidence: { getEvidence: stub() },
             featureFilePaths: faker().helpers.multiple(() => faker().system.filePath()),
-            getEvidence: stub(),
-            getIterationParameters: stub(),
+            iterationParameters: { getIterationParameters: stub() },
             screenshots: generateFakeScreenshotDetails(),
         };
         const finalTestExecutionIssueKey =
@@ -1512,7 +1512,7 @@ void describe(runPlugin.name, () => {
                     options: options,
                 };
                 // Test execution.
-                await runPlugin(parameters);
+                await cypressXrayPlugin.runPlugin(parameters);
 
                 // Test validation.
                 assert.deepStrictEqual(
@@ -1532,9 +1532,9 @@ void describe(runPlugin.name, () => {
         const testExecutionIssue = generateFakePluginIssueUpdate({ key: false, transition: true });
         const contextOptions: RuntimeParameters["context"] = {
             emitter: { emit: stub() },
+            evidence: { getEvidence: stub() },
             featureFilePaths: faker().helpers.multiple(() => faker().system.filePath()),
-            getEvidence: stub(),
-            getIterationParameters: stub(),
+            iterationParameters: { getIterationParameters: stub() },
             screenshots: generateFakeScreenshotDetails(),
         };
         const options: RuntimeParameters["options"] = {
@@ -1653,7 +1653,7 @@ void describe(runPlugin.name, () => {
                     options: options,
                 };
                 // Test execution.
-                await runPlugin(parameters);
+                await cypressXrayPlugin.runPlugin(parameters);
 
                 // Test validation.
                 assert.deepStrictEqual(
@@ -1674,9 +1674,9 @@ void describe(runPlugin.name, () => {
         const testExecutionIssue = generateFakePluginIssueUpdate();
         const contextOptions: RuntimeParameters["context"] = {
             emitter: { emit: stub() },
+            evidence: { getEvidence: stub() },
             featureFilePaths: faker().helpers.multiple(() => faker().system.filePath()),
-            getEvidence: stub(),
-            getIterationParameters: stub(),
+            iterationParameters: { getIterationParameters: stub() },
             screenshots: generateFakeScreenshotDetails(),
         };
         const options: RuntimeParameters["options"] = {
@@ -1850,7 +1850,7 @@ void describe(runPlugin.name, () => {
                     options: options,
                 };
                 // Test execution.
-                await runPlugin(parameters);
+                await cypressXrayPlugin.runPlugin(parameters);
 
                 // Test validation.
                 assert.deepStrictEqual(
@@ -1881,9 +1881,9 @@ void describe(runPlugin.name, () => {
         const testExecutionIssue = generateFakePluginIssueUpdate();
         const contextOptions: RuntimeParameters["context"] = {
             emitter: { emit: stub() },
+            evidence: { getEvidence: stub() },
             featureFilePaths: faker().helpers.multiple(() => faker().system.filePath()),
-            getEvidence: stub(),
-            getIterationParameters: stub(),
+            iterationParameters: { getIterationParameters: stub() },
             screenshots: generateFakeScreenshotDetails(),
         };
         const options: RuntimeParameters["options"] = {
@@ -2053,7 +2053,7 @@ void describe(runPlugin.name, () => {
                     options: options,
                 };
                 // Test execution.
-                await runPlugin(parameters);
+                await cypressXrayPlugin.runPlugin(parameters);
 
                 // Test validation.
                 assert.deepStrictEqual(

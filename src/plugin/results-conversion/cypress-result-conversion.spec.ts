@@ -14,11 +14,15 @@ void describe(relative(cwd(), __filename), () => {
             void it("converts test results into xray results json", () => {
                 const result = cypressResultConversion.convertCypressResults({
                     context: {
-                        getEvidence() {
-                            return [];
+                        evidence: {
+                            getEvidence() {
+                                return [];
+                            },
                         },
-                        getIterationParameters() {
-                            return {};
+                        iterationParameters: {
+                            getIterationParameters() {
+                                return {};
+                            },
                         },
                         screenshots: [],
                     },
@@ -132,11 +136,15 @@ void describe(relative(cwd(), __filename), () => {
             void it("converts test results with multiple issue keys into xray results json", () => {
                 const result = cypressResultConversion.convertCypressResults({
                     context: {
-                        getEvidence() {
-                            return [];
+                        evidence: {
+                            getEvidence() {
+                                return [];
+                            },
                         },
-                        getIterationParameters() {
-                            return {};
+                        iterationParameters: {
+                            getIterationParameters() {
+                                return {};
+                            },
                         },
                         screenshots: [],
                     },
@@ -328,11 +336,15 @@ void describe(relative(cwd(), __filename), () => {
                 void it(`uses ${statusType} statuses`, () => {
                     const result = cypressResultConversion.convertCypressResults({
                         context: {
-                            getEvidence() {
-                                return [];
+                            evidence: {
+                                getEvidence() {
+                                    return [];
+                                },
                             },
-                            getIterationParameters() {
-                                return {};
+                            iterationParameters: {
+                                getIterationParameters() {
+                                    return {};
+                                },
                             },
                             screenshots: [],
                         },
@@ -392,11 +404,15 @@ void describe(relative(cwd(), __filename), () => {
             void it("converts test results into xray results json", () => {
                 const result = cypressResultConversion.convertCypressResults({
                     context: {
-                        getEvidence() {
-                            return [];
+                        evidence: {
+                            getEvidence() {
+                                return [];
+                            },
                         },
-                        getIterationParameters() {
-                            return {};
+                        iterationParameters: {
+                            getIterationParameters() {
+                                return {};
+                            },
                         },
                         screenshots: [
                             {
@@ -523,11 +539,15 @@ void describe(relative(cwd(), __filename), () => {
             void it("converts test results with multiple issue keys into xray results json", () => {
                 const result = cypressResultConversion.convertCypressResults({
                     context: {
-                        getEvidence() {
-                            return [];
+                        evidence: {
+                            getEvidence() {
+                                return [];
+                            },
                         },
-                        getIterationParameters() {
-                            return {};
+                        iterationParameters: {
+                            getIterationParameters() {
+                                return {};
+                            },
                         },
                         screenshots: [
                             {
@@ -652,11 +672,15 @@ void describe(relative(cwd(), __filename), () => {
                 const messageMock = context.mock.fn<Logger["message"]>();
                 const result = cypressResultConversion.convertCypressResults({
                     context: {
-                        getEvidence() {
-                            return [];
+                        evidence: {
+                            getEvidence() {
+                                return [];
+                            },
                         },
-                        getIterationParameters() {
-                            return {};
+                        iterationParameters: {
+                            getIterationParameters() {
+                                return {};
+                            },
                         },
                         screenshots: [
                             {
@@ -952,11 +976,15 @@ void describe(relative(cwd(), __filename), () => {
                 void it(`uses ${statusType} statuses`, () => {
                     const result = cypressResultConversion.convertCypressResults({
                         context: {
-                            getEvidence() {
-                                return [];
+                            evidence: {
+                                getEvidence() {
+                                    return [];
+                                },
                             },
-                            getIterationParameters() {
-                                return {};
+                            iterationParameters: {
+                                getIterationParameters() {
+                                    return {};
+                                },
                             },
                             screenshots: [],
                         },
@@ -1035,11 +1063,15 @@ void describe(relative(cwd(), __filename), () => {
             void it("uses custom aggregated statuses", () => {
                 const result = cypressResultConversion.convertCypressResults({
                     context: {
-                        getEvidence() {
-                            return [];
+                        evidence: {
+                            getEvidence() {
+                                return [];
+                            },
                         },
-                        getIterationParameters() {
-                            return {};
+                        iterationParameters: {
+                            getIterationParameters() {
+                                return {};
+                            },
                         },
                         screenshots: [],
                     },
@@ -1125,11 +1157,15 @@ void describe(relative(cwd(), __filename), () => {
                     () =>
                         cypressResultConversion.convertCypressResults({
                             context: {
-                                getEvidence() {
-                                    return [];
+                                evidence: {
+                                    getEvidence() {
+                                        return [];
+                                    },
                                 },
-                                getIterationParameters() {
-                                    return {};
+                                iterationParameters: {
+                                    getIterationParameters() {
+                                        return {};
+                                    },
                                 },
                                 screenshots: [],
                             },
@@ -1225,11 +1261,15 @@ void describe(relative(cwd(), __filename), () => {
             void it("skips cucumber screenshots", () => {
                 const result = cypressResultConversion.convertCypressResults({
                     context: {
-                        getEvidence() {
-                            return [];
+                        evidence: {
+                            getEvidence() {
+                                return [];
+                            },
                         },
-                        getIterationParameters() {
-                            return {};
+                        iterationParameters: {
+                            getIterationParameters() {
+                                return {};
+                            },
                         },
                         screenshots: [
                             {
@@ -1314,11 +1354,15 @@ void describe(relative(cwd(), __filename), () => {
             void it("skips screenshot upload if disabled", () => {
                 const result = cypressResultConversion.convertCypressResults({
                     context: {
-                        getEvidence() {
-                            return [];
+                        evidence: {
+                            getEvidence() {
+                                return [];
+                            },
                         },
-                        getIterationParameters() {
-                            return {};
+                        iterationParameters: {
+                            getIterationParameters() {
+                                return {};
+                            },
                         },
                         screenshots: [],
                     },
@@ -1406,11 +1450,15 @@ void describe(relative(cwd(), __filename), () => {
             void it("normalizes screenshot filenames if enabled", () => {
                 const result = cypressResultConversion.convertCypressResults({
                     context: {
-                        getEvidence() {
-                            return [];
+                        evidence: {
+                            getEvidence() {
+                                return [];
+                            },
                         },
-                        getIterationParameters() {
-                            return {};
+                        iterationParameters: {
+                            getIterationParameters() {
+                                return {};
+                            },
                         },
                         screenshots: [],
                     },
@@ -1470,36 +1518,40 @@ void describe(relative(cwd(), __filename), () => {
             void it("includes all evidence", () => {
                 const result = cypressResultConversion.convertCypressResults({
                     context: {
-                        getEvidence(issueKey: string) {
-                            switch (issueKey) {
-                                case "CYP-237":
-                                    return [
-                                        {
-                                            contentType: "text/plain",
-                                            data: "Z29vZGJ5ZQ==",
-                                            filename: "goodbye.txt",
-                                        },
-                                    ];
-                                case "CYP-452":
-                                    return [
-                                        {
-                                            contentType: "text/plain",
-                                            data: "aGkgdGhlcmU=",
-                                            filename: "hi.txt",
-                                        },
-                                    ];
-                                case "CYP-268":
-                                case "CYP-123":
-                                case "CYP-125":
-                                    return [];
-                                default:
-                                    throw new Error(
-                                        `Mock called unexpectedly with args: ${unknownToString(issueKey)}`
-                                    );
-                            }
+                        evidence: {
+                            getEvidence(issueKey: string) {
+                                switch (issueKey) {
+                                    case "CYP-237":
+                                        return [
+                                            {
+                                                contentType: "text/plain",
+                                                data: "Z29vZGJ5ZQ==",
+                                                filename: "goodbye.txt",
+                                            },
+                                        ];
+                                    case "CYP-452":
+                                        return [
+                                            {
+                                                contentType: "text/plain",
+                                                data: "aGkgdGhlcmU=",
+                                                filename: "hi.txt",
+                                            },
+                                        ];
+                                    case "CYP-268":
+                                    case "CYP-123":
+                                    case "CYP-125":
+                                        return [];
+                                    default:
+                                        throw new Error(
+                                            `Mock called unexpectedly with args: ${unknownToString(issueKey)}`
+                                        );
+                                }
+                            },
                         },
-                        getIterationParameters() {
-                            return {};
+                        iterationParameters: {
+                            getIterationParameters() {
+                                return {};
+                            },
                         },
                         screenshots: [
                             {
@@ -1686,37 +1738,41 @@ void describe(relative(cwd(), __filename), () => {
             void it("includes iteration parameters", () => {
                 const result = cypressResultConversion.convertCypressResults({
                     context: {
-                        getEvidence() {
-                            return [];
+                        evidence: {
+                            getEvidence() {
+                                return [];
+                            },
                         },
-                        getIterationParameters(issueKey, testId) {
-                            if (
-                                issueKey === "CYP-452" &&
-                                testId === "something CYP-452 happens Bob"
-                            ) {
-                                return { age: "42", name: "Bob" };
-                            }
-                            if (
-                                issueKey === "CYP-452" &&
-                                testId === "something CYP-452 happens Jeff"
-                            ) {
-                                return { age: "51", name: "Jeff" };
-                            }
-                            if (
-                                issueKey === "CYP-237" &&
-                                testId === "something CYP-237 happens Mary"
-                            ) {
-                                return { age: "32", name: "Mary" };
-                            }
-                            if (
-                                issueKey === "CYP-237" &&
-                                testId === "something CYP-237 happens Jane"
-                            ) {
-                                return { age: "19", name: "Jane" };
-                            }
-                            throw new Error(
-                                `Mock called unexpectedly with args: ${unknownToString({ issueKey, testId })}`
-                            );
+                        iterationParameters: {
+                            getIterationParameters(issueKey, testId) {
+                                if (
+                                    issueKey === "CYP-452" &&
+                                    testId === "something CYP-452 happens Bob"
+                                ) {
+                                    return { age: "42", name: "Bob" };
+                                }
+                                if (
+                                    issueKey === "CYP-452" &&
+                                    testId === "something CYP-452 happens Jeff"
+                                ) {
+                                    return { age: "51", name: "Jeff" };
+                                }
+                                if (
+                                    issueKey === "CYP-237" &&
+                                    testId === "something CYP-237 happens Mary"
+                                ) {
+                                    return { age: "32", name: "Mary" };
+                                }
+                                if (
+                                    issueKey === "CYP-237" &&
+                                    testId === "something CYP-237 happens Jane"
+                                ) {
+                                    return { age: "19", name: "Jane" };
+                                }
+                                throw new Error(
+                                    `Mock called unexpectedly with args: ${unknownToString({ issueKey, testId })}`
+                                );
+                            },
                         },
                         screenshots: [],
                     },
@@ -1834,11 +1890,15 @@ void describe(relative(cwd(), __filename), () => {
             void it("does not modify test information", () => {
                 const result = cypressResultConversion.convertCypressResults({
                     context: {
-                        getEvidence() {
-                            return [];
+                        evidence: {
+                            getEvidence() {
+                                return [];
+                            },
                         },
-                        getIterationParameters() {
-                            return {};
+                        iterationParameters: {
+                            getIterationParameters() {
+                                return {};
+                            },
                         },
                         screenshots: [],
                     },
@@ -1888,11 +1948,15 @@ void describe(relative(cwd(), __filename), () => {
                     () =>
                         cypressResultConversion.convertCypressResults({
                             context: {
-                                getEvidence() {
-                                    return [];
+                                evidence: {
+                                    getEvidence() {
+                                        return [];
+                                    },
                                 },
-                                getIterationParameters() {
-                                    return {};
+                                iterationParameters: {
+                                    getIterationParameters() {
+                                        return {};
+                                    },
                                 },
                                 screenshots: [],
                             },
@@ -1937,11 +2001,15 @@ void describe(relative(cwd(), __filename), () => {
                 const messageMock = context.mock.fn<Logger["message"]>();
                 const result = cypressResultConversion.convertCypressResults({
                     context: {
-                        getEvidence() {
-                            return [];
+                        evidence: {
+                            getEvidence() {
+                                return [];
+                            },
                         },
-                        getIterationParameters() {
-                            return {};
+                        iterationParameters: {
+                            getIterationParameters() {
+                                return {};
+                            },
                         },
                         screenshots: [],
                     },

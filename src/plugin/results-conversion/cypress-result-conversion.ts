@@ -1,5 +1,6 @@
 import { basename, extname, parse } from "node:path";
 import { lt } from "semver";
+import type { EvidenceCollection, IterationParameterCollection } from "../../context";
 import type { RunResult, ScreenshotDetails } from "../../types/cypress";
 import { CypressStatus } from "../../types/cypress/status";
 import type { InternalXrayOptions } from "../../types/plugin";
@@ -26,8 +27,8 @@ import { getXrayStatus } from "./cypress-status";
 
 function convertCypressResults(parameters: {
     context: {
-        getEvidence: (issueKey: string) => XrayEvidenceItem[];
-        getIterationParameters: (issueKey: string, testId: string) => Record<string, string>;
+        evidence: Pick<EvidenceCollection, "getEvidence">;
+        iterationParameters: Pick<IterationParameterCollection, "getIterationParameters">;
         screenshots: ScreenshotDetails[];
     };
     cypress: {
@@ -58,8 +59,8 @@ function convertCypressResults(parameters: {
 }) {
     const conversions = convertCypressTests({
         context: {
-            getEvidence: parameters.context.getEvidence,
-            getIterationParameters: parameters.context.getIterationParameters,
+            evidence: parameters.context.evidence,
+            iterationParameters: parameters.context.iterationParameters,
             screenshots: parameters.context.screenshots,
         },
         cypress: { results: parameters.cypress.results },
@@ -127,8 +128,8 @@ function convertCypressResults(parameters: {
 
 function convertCypressTests(parameters: {
     context: {
-        getEvidence: (issueKey: string) => XrayEvidenceItem[];
-        getIterationParameters: (issueKey: string, testId: string) => Record<string, string>;
+        evidence: Pick<EvidenceCollection, "getEvidence">;
+        iterationParameters: Pick<IterationParameterCollection, "getIterationParameters">;
         screenshots: ScreenshotDetails[];
     };
     cypress: {
@@ -207,9 +208,12 @@ function convertCypressTests(parameters: {
             getTest({
                 evidence: [
                     ...(conversionResult.screenshotsByIssueKey.get(issueKey) ?? []),
-                    ...parameters.context.getEvidence(issueKey),
+                    ...parameters.context.evidence.getEvidence(issueKey),
                 ],
-                getIterationParameters: parameters.context.getIterationParameters,
+                getIterationParameters:
+                    parameters.context.iterationParameters.getIterationParameters.bind(
+                        parameters.context.iterationParameters
+                    ),
                 isCloudEnvironment: parameters.isCloudEnvironment,
                 issueKey: issueKey,
                 runs: testRuns,

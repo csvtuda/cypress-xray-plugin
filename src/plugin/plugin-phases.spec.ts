@@ -1124,8 +1124,8 @@ void describe(pluginPhases.runCypressUpload.name, () => {
                     clients: { xray: xrayClientMock },
                     context: {
                         emitter: { emit: emitterMock },
-                        getEvidence: getEvidenceMock,
-                        getIterationParameters: getIterationParametersMock,
+                        evidence: { getEvidence: getEvidenceMock },
+                        iterationParameters: { getIterationParameters: getIterationParametersMock },
                         screenshots: screenshots,
                     },
                     cypress: { results: cypressResults },
@@ -1141,8 +1141,10 @@ void describe(pluginPhases.runCypressUpload.name, () => {
                         [
                             {
                                 context: {
-                                    getEvidence: getEvidenceMock,
-                                    getIterationParameters: getIterationParametersMock,
+                                    evidence: { getEvidence: getEvidenceMock },
+                                    iterationParameters: {
+                                        getIterationParameters: getIterationParametersMock,
+                                    },
                                     screenshots: screenshots,
                                 },
                                 cypress: { results: cypressResults },
@@ -1246,8 +1248,10 @@ void describe(pluginPhases.runCypressUpload.name, () => {
                             clients: { xray: xrayClientMock },
                             context: {
                                 emitter: { emit: emitterMock },
-                                getEvidence: getEvidenceMock,
-                                getIterationParameters: getIterationParametersMock,
+                                evidence: { getEvidence: getEvidenceMock },
+                                iterationParameters: {
+                                    getIterationParameters: getIterationParametersMock,
+                                },
                                 screenshots: screenshots,
                             },
                             cypress: { results: cypressResults },
@@ -1265,8 +1269,10 @@ void describe(pluginPhases.runCypressUpload.name, () => {
                         [
                             {
                                 context: {
-                                    getEvidence: getEvidenceMock,
-                                    getIterationParameters: getIterationParametersMock,
+                                    evidence: { getEvidence: getEvidenceMock },
+                                    iterationParameters: {
+                                        getIterationParameters: getIterationParametersMock,
+                                    },
                                     screenshots: screenshots,
                                 },
                                 cypress: { results: cypressResults },
@@ -1344,8 +1350,10 @@ void describe(pluginPhases.runCypressUpload.name, () => {
                             clients: { xray: xrayClientMock },
                             context: {
                                 emitter: { emit: emitterMock },
-                                getEvidence: getEvidenceMock,
-                                getIterationParameters: getIterationParametersMock,
+                                evidence: { getEvidence: getEvidenceMock },
+                                iterationParameters: {
+                                    getIterationParameters: getIterationParametersMock,
+                                },
                                 screenshots: screenshots,
                             },
                             cypress: { results: cypressResults },

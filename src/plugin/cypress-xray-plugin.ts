@@ -18,7 +18,11 @@ import type {
     HasAddEvidenceEndpoint,
     HasGetTestRunEndpoint,
 } from "../client/xray/xray-client-server";
-import type { PluginEventEmitter } from "../context";
+import type {
+    EvidenceCollection,
+    IterationParameterCollection,
+    PluginEventEmitter,
+} from "../context";
 import type {
     CypressRunResult,
     CypressVersion,
@@ -33,14 +37,13 @@ import type {
     InternalXrayOptions,
     PluginIssueUpdate,
 } from "../types/plugin";
-import type { XrayEvidenceItem } from "../types/xray/import-test-execution-results";
 import { errorMessage } from "../util/errors";
 import type { Logger } from "../util/logging";
 import pluginPhases from "./plugin-phases";
 import uploadValidation from "./results-upload/upload-validation";
 import videoUpload from "./results-upload/video-upload";
 
-export async function runPlugin(parameters: RuntimeParameters) {
+async function runPlugin(parameters: RuntimeParameters) {
     // First, we upload all feature files to make sure the steps are up to date.
     const testExecutionIssueSummary = await pluginPhases.runFeatureFileUpload(parameters);
     // Now we can upload the results.
@@ -231,9 +234,9 @@ export interface RuntimeParameters {
     };
     context: {
         emitter: Pick<PluginEventEmitter, "emit">;
+        evidence: Pick<EvidenceCollection, "getEvidence">;
         featureFilePaths: Iterable<string>;
-        getEvidence: (issueKey: string) => XrayEvidenceItem[];
-        getIterationParameters: (issueKey: string, testId: string) => Record<string, string>;
+        iterationParameters: Pick<IterationParameterCollection, "getIterationParameters">;
         screenshots: ScreenshotDetails[];
     };
     cypress: {
@@ -243,9 +246,8 @@ export interface RuntimeParameters {
     isCloudEnvironment: boolean;
     logger: Pick<Logger, "message">;
     options: {
-        cucumber?: Pick<
-            InternalCucumberOptions,
-            "featureFileExtension" | "prefixes" | "preprocessor"
+        cucumber?: Partial<
+            Pick<InternalCucumberOptions, "featureFileExtension" | "prefixes" | "preprocessor">
         >;
         jira: Pick<InternalJiraOptions, "attachVideos" | "projectKey" | "url"> & {
             fields: Pick<InternalJiraOptions["fields"], "testEnvironments" | "testPlan">;
@@ -261,3 +263,11 @@ export interface RuntimeParameters {
         xray: Pick<InternalXrayOptions, "status" | "uploadResults" | "uploadScreenshots">;
     };
 }
+
+/**
+ * Workaround until module mocking becomes a stable feature. The current approach allows replacing
+ * the functions with a mocked one.
+ *
+ * @see https://nodejs.org/docs/latest-v23.x/api/test.html#mockmodulespecifier-options
+ */
+export default { runPlugin };

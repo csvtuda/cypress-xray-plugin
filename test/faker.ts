@@ -1,16 +1,33 @@
 import { faker as fakerjs } from "@faker-js/faker";
 import ansiColors from "ansi-colors";
+import axios from "axios";
+import { JwtCredentials, PatCredentials } from "../src/client/authentication/credentials";
+import { AxiosRestClient } from "../src/client/https/requests";
+import { JiraClientCloud } from "../src/client/jira/jira-client-cloud";
+import { JiraClientServer } from "../src/client/jira/jira-client-server";
+import { XrayClientCloud } from "../src/client/xray/xray-client-cloud";
+import { XrayClientServer } from "../src/client/xray/xray-client-server";
 import type { MinimalCypressRunResult, MinimalRunResult } from "../src/plugin/cypress-xray-plugin";
 import type { JiraSnapshot } from "../src/plugin/jira-issue-snapshots/jira-issue-snapshots";
-import type { ScreenshotDetails } from "../src/types/cypress";
+import type { FileObject, ScreenshotDetails } from "../src/types/cypress";
 import { CypressStatus } from "../src/types/cypress/status";
-import type { PluginIssueUpdate } from "../src/types/plugin";
+import type {
+    ClientCombination,
+    CucumberOptions,
+    CypressXrayPluginOptions,
+    HttpClientCombination,
+    InternalCypressXrayPluginOptions,
+    JiraOptions,
+    PluginIssueUpdate,
+    PluginOptions,
+} from "../src/types/plugin";
 import type {
     XrayTest,
     XrayTestExecutionResults,
 } from "../src/types/xray/import-test-execution-results";
 import type { CucumberMultipartFeature } from "../src/types/xray/requests/import-execution-cucumber-multipart";
 import type { MultipartInfo } from "../src/types/xray/requests/import-execution-multipart-info";
+import { stub } from "./mocks";
 
 let seed: number;
 if (process.env.SEED) {
@@ -487,4 +504,276 @@ export function generateFakeCucumberMultipartFeatures(): CucumberMultipartFeatur
             uri: faker().internet.url(),
         };
     });
+}
+
+export function generateFakeClientCombination(options?: { kind?: "cloud" | "server" }): {
+    clients: ClientCombination;
+    httpClients: HttpClientCombination;
+} {
+    const httpClientJira = new AxiosRestClient(axios);
+    const httpClientXray = new AxiosRestClient(axios);
+    const kind = options?.kind ?? faker().helpers.arrayElement(["server", "cloud"]);
+    if (kind === "server") {
+        return {
+            clients: {
+                jiraClient: new JiraClientServer(
+                    faker().internet.url(),
+                    new PatCredentials(faker().internet.password()),
+                    httpClientJira
+                ),
+                kind: kind,
+                xrayClient: new XrayClientServer(
+                    faker().internet.url(),
+                    new PatCredentials(faker().internet.password()),
+                    httpClientXray
+                ),
+            },
+            httpClients: {
+                jira: httpClientJira,
+                xray: httpClientXray,
+            },
+        };
+    }
+    return {
+        clients: {
+            jiraClient: new JiraClientCloud(
+                faker().internet.url(),
+                new PatCredentials(faker().internet.password()),
+                httpClientJira
+            ),
+            kind: kind,
+            xrayClient: new XrayClientCloud(
+                faker().internet.url(),
+                new JwtCredentials(
+                    faker().internet.username(),
+                    faker().internet.password(),
+                    faker().internet.url(),
+                    httpClientXray
+                ),
+                httpClientXray
+            ),
+        },
+        httpClients: {
+            jira: httpClientJira,
+            xray: httpClientXray,
+        },
+    };
+}
+
+export function generateFakeExternalPluginOptions(options?: {
+    cucumber?: {
+        featureFileExtension?: CucumberOptions["featureFileExtension"];
+        uploadFeatures?: CucumberOptions["uploadFeatures"];
+    };
+    jira?: {
+        testExecutionIssue?: JiraOptions["testExecutionIssue"] | null;
+        testPlanIssueKey?: JiraOptions["testPlanIssueKey"];
+    };
+    plugin?: {
+        enabled?: PluginOptions["enabled"];
+        listenerDefault?: PluginOptions["listener"];
+        logDirectory?: PluginOptions["logDirectory"];
+        logger?: PluginOptions["logger"];
+    };
+}): CypressXrayPluginOptions {
+    return {
+        cucumber: {
+            downloadFeatures: faker().helpers.maybe(() => faker().datatype.boolean()),
+            featureFileExtension:
+                options?.cucumber?.featureFileExtension ?? faker().system.fileExt(),
+            prefixes: faker().helpers.maybe(() => {
+                return {
+                    precondition: faker().helpers.maybe(() => faker().string.sample()),
+                    test: faker().helpers.maybe(() => faker().string.sample()),
+                };
+            }),
+            uploadFeatures:
+                options?.cucumber?.uploadFeatures ??
+                faker().helpers.maybe(() => faker().datatype.boolean()),
+        },
+        http: faker().helpers.maybe(() => {
+            return {
+                jira: faker().helpers.maybe(() => {
+                    return {
+                        rateLimiting: faker().helpers.maybe(() => {
+                            return {
+                                requestsPerSecond: faker().helpers.maybe(() =>
+                                    faker().number.int()
+                                ),
+                            };
+                        }),
+                    };
+                }),
+                rateLimiting: faker().helpers.maybe(() => {
+                    return {
+                        requestsPerSecond: faker().helpers.maybe(() => faker().number.int()),
+                    };
+                }),
+                xray: faker().helpers.maybe(() => {
+                    return {
+                        rateLimiting: faker().helpers.maybe(() => {
+                            return {
+                                requestsPerSecond: faker().helpers.maybe(() =>
+                                    faker().number.int()
+                                ),
+                            };
+                        }),
+                    };
+                }),
+            };
+        }),
+        jira: {
+            attachVideos: faker().helpers.maybe(() => faker().datatype.boolean()),
+            fields: faker().helpers.maybe(() => {
+                return {
+                    description: faker().helpers.maybe(() => faker().string.uuid()),
+                    labels: faker().helpers.maybe(() => faker().string.uuid()),
+                    summary: faker().helpers.maybe(() => faker().string.uuid()),
+                    testEnvironments: faker().helpers.maybe(() => faker().string.uuid()),
+                    testPlan: faker().helpers.maybe(() => faker().string.uuid()),
+                };
+            }),
+            projectKey: generateFakeProjectKey(),
+            testExecutionIssue:
+                options?.jira?.testExecutionIssue === null
+                    ? undefined
+                    : (options?.jira?.testExecutionIssue ??
+                      faker().helpers.maybe(() =>
+                          generateFakePluginIssueUpdate({
+                              key: faker().datatype.boolean(),
+                          })
+                      )),
+            testExecutionIssueDescription: faker().helpers.maybe(() =>
+                faker().commerce.productDescription()
+            ),
+            testExecutionIssueKey: faker().helpers.maybe(() => generateFakeIssueKey()),
+            testExecutionIssueSummary: faker().helpers.maybe(() => faker().commerce.product()),
+            testExecutionIssueType: faker().helpers.maybe(() => faker().book.genre()),
+            testPlanIssueKey:
+                options?.jira?.testPlanIssueKey ??
+                faker().helpers.maybe(() => generateFakeIssueKey()),
+            testPlanIssueType: faker().helpers.maybe(() => faker().book.genre()),
+            url: faker().internet.url(),
+        },
+        plugin: {
+            debug: faker().helpers.maybe(() => faker().datatype.boolean()),
+            enabled:
+                options?.plugin?.enabled ?? faker().helpers.maybe(() => faker().datatype.boolean()),
+            listener: faker().helpers.maybe(() => options?.plugin?.listenerDefault),
+            logDirectory:
+                options?.plugin?.logDirectory ??
+                faker().helpers.maybe(() => faker().system.directoryPath()),
+            logger: options?.plugin?.logger ?? faker().helpers.maybe(() => stub()),
+            normalizeScreenshotNames: faker().helpers.maybe(() => faker().datatype.boolean()),
+            splitUpload: faker().helpers.maybe(() => faker().datatype.boolean()),
+            uploadLastAttempt: faker().helpers.maybe(() => faker().datatype.boolean()),
+        },
+        xray: {
+            status: faker().helpers.maybe(() => {
+                return {
+                    aggregate: faker().helpers.maybe(() => stub()),
+                    failed: faker().helpers.maybe(() => faker().color.human()),
+                    passed: faker().helpers.maybe(() => faker().color.human()),
+                    pending: faker().helpers.maybe(() => faker().color.human()),
+                    skipped: faker().helpers.maybe(() => faker().color.human()),
+                    step: faker().helpers.maybe(() => {
+                        return {
+                            failed: faker().helpers.maybe(() => faker().color.human()),
+                            passed: faker().helpers.maybe(() => faker().color.human()),
+                            pending: faker().helpers.maybe(() => faker().color.human()),
+                            skipped: faker().helpers.maybe(() => faker().color.human()),
+                        };
+                    }),
+                };
+            }),
+            testEnvironments: faker().helpers.maybe(() => [
+                faker().color.human(),
+                ...faker().helpers.multiple(() => faker().color.human(), {
+                    count: { max: 3, min: 0 },
+                }),
+            ]),
+            uploadRequests: faker().helpers.maybe(() => faker().datatype.boolean()),
+            uploadResults: faker().helpers.maybe(() => faker().datatype.boolean()),
+            uploadScreenshots: faker().helpers.maybe(() => faker().datatype.boolean()),
+            url: faker().helpers.maybe(() => faker().internet.url()),
+        },
+    };
+}
+
+export function generateFakeInternalPluginOptions(
+    options?: CypressXrayPluginOptions
+): InternalCypressXrayPluginOptions {
+    return {
+        cucumber: {
+            downloadFeatures: options?.cucumber?.downloadFeatures ?? faker().datatype.boolean(),
+            featureFileExtension:
+                options?.cucumber?.featureFileExtension ?? faker().system.fileExt(),
+            prefixes: {
+                precondition: options?.cucumber?.prefixes?.precondition,
+                test: options?.cucumber?.prefixes?.test,
+            },
+            preprocessor: {
+                json: {
+                    enabled: faker().datatype.boolean(),
+                    output: faker().system.fileExt(),
+                },
+            },
+            uploadFeatures: options?.cucumber?.uploadFeatures ?? faker().datatype.boolean(),
+        },
+        http: options?.http,
+        jira: {
+            attachVideos: options?.jira.attachVideos ?? faker().datatype.boolean(),
+            fields: {
+                description: options?.jira.fields?.description,
+                labels: options?.jira.fields?.labels,
+                summary: options?.jira.fields?.summary,
+                testEnvironments: options?.jira.fields?.testEnvironments,
+                testPlan: options?.jira.fields?.testPlan,
+            },
+            projectKey: options?.jira.projectKey ?? generateFakeProjectKey(),
+            testExecutionIssue: options?.jira.testExecutionIssue,
+            testExecutionIssueDescription: options?.jira.testExecutionIssueDescription,
+            testExecutionIssueKey: options?.jira.testExecutionIssueKey,
+            testExecutionIssueSummary: options?.jira.testExecutionIssueSummary,
+            testExecutionIssueType: options?.jira.testExecutionIssueType ?? faker().book.genre(),
+            testPlanIssueKey: options?.jira.testPlanIssueKey,
+            testPlanIssueType: options?.jira.testPlanIssueType ?? faker().book.genre(),
+            url: options?.jira.url ?? faker().internet.url(),
+        },
+        plugin: {
+            debug: options?.plugin?.debug ?? faker().datatype.boolean(),
+            enabled: options?.plugin?.enabled ?? faker().datatype.boolean(),
+            listener: options?.plugin?.listener,
+            logDirectory: options?.plugin?.logDirectory ?? faker().system.directoryPath(),
+            logger: options?.plugin?.logger,
+            normalizeScreenshotNames:
+                options?.plugin?.normalizeScreenshotNames ?? faker().datatype.boolean(),
+            splitUpload: options?.plugin?.splitUpload ?? faker().datatype.boolean(),
+            uploadLastAttempt: options?.plugin?.uploadLastAttempt ?? faker().datatype.boolean(),
+        },
+        xray: {
+            status: {
+                aggregate: options?.xray?.status?.aggregate,
+                failed: options?.xray?.status?.failed,
+                passed: options?.xray?.status?.passed,
+                pending: options?.xray?.status?.pending,
+                skipped: options?.xray?.status?.skipped,
+                step: options?.xray?.status?.step,
+            },
+            testEnvironments: options?.xray?.testEnvironments,
+            uploadRequests: options?.xray?.uploadRequests ?? faker().datatype.boolean(),
+            uploadResults: options?.xray?.uploadResults ?? faker().datatype.boolean(),
+            uploadScreenshots: options?.xray?.uploadScreenshots ?? faker().datatype.boolean(),
+            url: options?.xray?.url,
+        },
+    };
+}
+
+export function generateFakeFileObject(options?: { fileExtension?: string }): FileObject {
+    return {
+        ...({} as FileObject),
+        filePath: `${faker().system.directoryPath()}/${faker().system.fileName({ extensionCount: 0 })}.${options?.fileExtension ?? faker().system.fileExt()}`,
+        outputPath: faker().system.filePath(),
+        shouldWatch: faker().datatype.boolean(),
+    };
 }

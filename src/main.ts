@@ -1,13 +1,8 @@
 import path from "path";
-import globalContext, {
-    PluginContext,
-    SimpleEvidenceCollection,
-    SimpleIterationParameterCollection,
-    SimpleScreenshotCollection,
-} from "./context";
+import globalContext from "./context";
 import type { PluginTaskParameterType } from "./cypress/tasks";
 import { CypressTaskListener } from "./cypress/tasks";
-import { runPlugin } from "./plugin/cypress-xray-plugin";
+import cypressXrayPlugin from "./plugin/cypress-xray-plugin";
 import type { CypressFailedRunResult, CypressRunResult } from "./types/cypress";
 import type {
     CypressXrayPluginOptions,
@@ -17,17 +12,7 @@ import type {
 import { dedent } from "./util/dedent";
 import { getOrCall } from "./util/functions";
 import { HELP } from "./util/help";
-import { CapturingLogger, LOG } from "./util/logging";
-
-let canShowInitializationWarning = true;
-
-/**
- * Resets the plugin including its context.
- */
-export function resetPlugin(): void {
-    globalContext.setGlobalContext(undefined);
-    canShowInitializationWarning = true;
-}
+import { LOG } from "./util/logging";
 
 /**
  * Configures the plugin. The plugin will check all environment variables passed in
@@ -53,7 +38,6 @@ export async function configureXrayPlugin(
     config: Cypress.PluginConfigOptions,
     options: CypressXrayPluginOptions
 ): Promise<void> {
-    canShowInitializationWarning = false;
     // Resolve these before all other options for correct enabledness.
     const pluginOptions: InternalPluginOptions = globalContext.initPluginOptions(
         config.env,
@@ -94,27 +78,18 @@ export async function configureXrayPlugin(
         xray: globalContext.initXrayOptions(config.env, options.xray),
     };
     const httpClients = globalContext.initHttpClients(internalOptions.plugin, internalOptions.http);
-    const logger = new CapturingLogger();
-    const context = new PluginContext(
-        await globalContext.initClients(
-            internalOptions.jira,
-            internalOptions.xray,
-            config.env,
-            httpClients
-        ),
-        internalOptions,
-        config,
-        new SimpleEvidenceCollection(),
-        new SimpleIterationParameterCollection(),
-        new SimpleScreenshotCollection(),
-        logger
+    const { jiraClient, kind, xrayClient } = await globalContext.initClients(
+        internalOptions.jira,
+        internalOptions.xray,
+        config.env,
+        httpClients
     );
-    globalContext.setGlobalContext(context);
+    const context = globalContext.initGlobalContext(internalOptions);
     const cypressTaskListener = new CypressTaskListener(
         internalOptions.jira.projectKey,
-        context,
-        context,
-        logger
+        context.getEvidenceCollection(),
+        context.getIterationParameterCollection(),
+        context.getLogger()
     );
     if (options.plugin?.listener) {
         await options.plugin.listener({
@@ -145,7 +120,7 @@ export async function configureXrayPlugin(
         },
     });
     on("after:screenshot", (screenshot) => {
-        context.addScreenshot(screenshot);
+        context.getScreenshotCollection().addScreenshot(screenshot);
     });
     on("after:run", async (results: CypressFailedRunResult | CypressRunResult) => {
         try {
@@ -174,65 +149,65 @@ export async function configureXrayPlugin(
             const resolvedTestPlanIssueKey = await getOrCall(options.jira.testPlanIssueKey, {
                 results: cypressRunResult,
             });
-            await runPlugin({
-                clients: {
-                    jira: context.getClients().jiraClient,
-                    xray: context.getClients().xrayClient,
-                },
+            await cypressXrayPlugin.runPlugin({
+                clients: { jira: jiraClient, xray: xrayClient },
                 context: {
                     emitter: context.getEventEmitter(),
+                    evidence: context.getEvidenceCollection(),
                     featureFilePaths: context.getFeatureFiles(),
-                    getEvidence: context.getEvidence.bind(context),
-                    getIterationParameters: context.getIterationParameters.bind(context),
-                    screenshots: context.getScreenshots(),
+                    iterationParameters: context.getIterationParameterCollection(),
+                    screenshots: context.getScreenshotCollection().getScreenshots(),
                 },
                 cypress: { config: config, results: cypressRunResult },
-                isCloudEnvironment: context.getClients().kind === "cloud",
+                isCloudEnvironment: kind === "cloud",
                 logger: context.getLogger(),
                 options: {
-                    cucumber: context.getOptions().cucumber,
+                    cucumber: {
+                        featureFileExtension: internalOptions.cucumber?.featureFileExtension,
+                        prefixes: internalOptions.cucumber?.prefixes,
+                        preprocessor: internalOptions.cucumber?.preprocessor,
+                    },
                     jira: {
-                        attachVideos: context.getOptions().jira.attachVideos,
+                        attachVideos: internalOptions.jira.attachVideos,
                         fields: {
-                            testEnvironments: context.getOptions().jira.fields.testEnvironments,
-                            testPlan: context.getOptions().jira.fields.testPlan,
+                            testEnvironments: internalOptions.jira.fields.testEnvironments,
+                            testPlan: internalOptions.jira.fields.testPlan,
                         },
-                        projectKey: context.getOptions().jira.projectKey,
+                        projectKey: internalOptions.jira.projectKey,
                         testExecutionIssue: {
                             ...resolvedTestExecutionIssueData,
                             fields: {
                                 issuetype: {
-                                    name: context.getOptions().jira.testExecutionIssueType,
+                                    name: internalOptions.jira.testExecutionIssueType,
                                 },
-                                summary: context.getOptions().jira.testExecutionIssueSummary,
+                                summary: internalOptions.jira.testExecutionIssueSummary,
                                 ...resolvedTestExecutionIssueData?.fields,
                             },
                             key:
                                 resolvedTestExecutionIssueData?.key ??
-                                context.getOptions().jira.testExecutionIssueKey,
-                            testEnvironments: context.getOptions().xray.testEnvironments,
+                                internalOptions.jira.testExecutionIssueKey,
+                            testEnvironments: internalOptions.xray.testEnvironments,
                             testPlan: resolvedTestPlanIssueKey,
                         },
-                        url: context.getOptions().jira.url,
+                        url: internalOptions.jira.url,
                     },
                     plugin: {
-                        normalizeScreenshotNames:
-                            context.getOptions().plugin.normalizeScreenshotNames,
-                        splitUpload: context.getOptions().plugin.splitUpload,
-                        uploadLastAttempt: context.getOptions().plugin.uploadLastAttempt,
+                        normalizeScreenshotNames: internalOptions.plugin.normalizeScreenshotNames,
+                        splitUpload: internalOptions.plugin.splitUpload,
+                        uploadLastAttempt: internalOptions.plugin.uploadLastAttempt,
                     },
                     xray: {
-                        status: context.getOptions().xray.status,
-                        uploadResults: context.getOptions().xray.uploadResults,
-                        uploadScreenshots: context.getOptions().xray.uploadScreenshots,
+                        status: internalOptions.xray.status,
+                        uploadResults: internalOptions.xray.uploadResults,
+                        uploadScreenshots: internalOptions.xray.uploadScreenshots,
                     },
                 },
             });
         } finally {
-            const messages = logger.getMessages();
+            const messages = context.getLogger().getMessages();
             messages.forEach(([level, text]) => {
                 if (["debug", "info", "notice"].includes(level)) {
-                    context.getLogger().message(level, text);
+                    LOG.message(level, text);
                 }
             });
             if (messages.some(([level]) => level === "warning" || level === "error")) {
@@ -242,20 +217,26 @@ export async function configureXrayPlugin(
                 messages
                     .filter(([level]) => level === "warning")
                     .forEach(([level, text]) => {
-                        context.getLogger().message(level, text);
+                        LOG.message(level, text);
                     });
                 messages
                     .filter(([level]) => level === "error")
                     .forEach(([level, text]) => {
-                        context.getLogger().message(level, text);
+                        LOG.message(level, text);
                     });
             }
-            logger.getFileLogErrorMessages().forEach(([error, filename]) => {
-                context.getLogger().logErrorToFile(error, filename);
-            });
-            logger.getFileLogMessages().forEach(([data, filename]) => {
-                context.getLogger().logToFile(data, filename);
-            });
+            context
+                .getLogger()
+                .getFileLogErrorMessages()
+                .forEach(([error, filename]) => {
+                    LOG.logErrorToFile(error, filename);
+                });
+            context
+                .getLogger()
+                .getFileLogMessages()
+                .forEach(([data, filename]) => {
+                    LOG.logToFile(data, filename);
+                });
         }
     });
 }
@@ -271,18 +252,16 @@ export async function configureXrayPlugin(
 export function syncFeatureFile(file: Cypress.FileObject): string {
     const context = globalContext.getGlobalContext();
     if (!context) {
-        if (canShowInitializationWarning) {
-            LOG.message(
-                "warning",
-                dedent(`
-                    ${file.filePath}
+        LOG.message(
+            "warning",
+            dedent(`
+                ${file.filePath}
 
-                      Skipping file:preprocessor hook: Plugin misconfigured: configureXrayPlugin() was not called.
+                  Skipping file:preprocessor hook: Plugin misconfigured: configureXrayPlugin() was not called.
 
-                      Make sure your project is set up correctly: ${HELP.plugin.configuration.introduction}
-                `)
-            );
-        }
+                  Make sure your project is set up correctly: ${HELP.plugin.configuration.introduction}
+            `)
+        );
         return file.filePath;
     }
     if (!context.getOptions().plugin.enabled) {

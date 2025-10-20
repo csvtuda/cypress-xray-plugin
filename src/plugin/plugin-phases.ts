@@ -16,7 +16,11 @@ import type {
     HasAddEvidenceEndpoint,
     HasGetTestRunEndpoint,
 } from "../client/xray/xray-client-server";
-import type { PluginEventEmitter } from "../context";
+import type {
+    EvidenceCollection,
+    IterationParameterCollection,
+    PluginEventEmitter,
+} from "../context";
 import type { PluginConfigOptions, ScreenshotDetails } from "../types/cypress";
 import type {
     InternalCucumberOptions,
@@ -25,7 +29,6 @@ import type {
     InternalXrayOptions,
     PluginIssueUpdate,
 } from "../types/plugin";
-import type { XrayEvidenceItem } from "../types/xray/import-test-execution-results";
 import type { MultipartInfo } from "../types/xray/requests/import-execution-multipart-info";
 import { dedent } from "../util/dedent";
 import type { Logger } from "../util/logging";
@@ -48,7 +51,7 @@ async function runFeatureFileUpload(parameters: {
     isCloudEnvironment: boolean;
     logger: Pick<Logger, "message">;
     options: {
-        cucumber?: Pick<InternalCucumberOptions, "prefixes">;
+        cucumber?: Partial<Pick<InternalCucumberOptions, "prefixes">>;
         jira: Pick<InternalJiraOptions, "projectKey"> & {
             testExecutionIssue?: Pick<PluginIssueUpdate, "key"> & { fields?: { summary?: string } };
         };
@@ -207,8 +210,8 @@ async function runCypressUpload(parameters: {
     };
     context: {
         emitter: Pick<PluginEventEmitter, "emit">;
-        getEvidence: (issueKey: string) => XrayEvidenceItem[];
-        getIterationParameters: (issueKey: string, testId: string) => Record<string, string>;
+        evidence: Pick<EvidenceCollection, "getEvidence">;
+        iterationParameters: Pick<IterationParameterCollection, "getIterationParameters">;
         screenshots: ScreenshotDetails[];
     };
     cypress: { results: MinimalCypressRunResult };
@@ -216,7 +219,7 @@ async function runCypressUpload(parameters: {
     logger: Pick<Logger, "message">;
     multipartInfo: MultipartInfo;
     options: {
-        cucumber?: Pick<InternalCucumberOptions, "featureFileExtension">;
+        cucumber?: Partial<Pick<InternalCucumberOptions, "featureFileExtension">>;
         jira: Pick<InternalJiraOptions, "projectKey">;
         plugin: Pick<
             InternalPluginOptions,
@@ -227,8 +230,8 @@ async function runCypressUpload(parameters: {
 }) {
     const xrayJson = cypressResultConversion.convertCypressResults({
         context: {
-            getEvidence: parameters.context.getEvidence,
-            getIterationParameters: parameters.context.getIterationParameters,
+            evidence: parameters.context.evidence,
+            iterationParameters: parameters.context.iterationParameters,
             screenshots: parameters.context.screenshots,
         },
         cypress: { results: parameters.cypress.results },
@@ -270,7 +273,7 @@ async function runCucumberUpload(parameters: {
     logger: Pick<Logger, "message">;
     multipartInfo: MultipartInfo;
     options: {
-        cucumber?: Pick<InternalCucumberOptions, "prefixes" | "preprocessor">;
+        cucumber?: Partial<Pick<InternalCucumberOptions, "prefixes" | "preprocessor">>;
         jira: Pick<InternalJiraOptions, "projectKey"> & {
             testExecutionIssue?: Pick<PluginIssueUpdate, "key">;
         };
@@ -299,7 +302,7 @@ async function runCucumberUpload(parameters: {
         isCloudEnvironment: parameters.isCloudEnvironment,
         logger: parameters.logger,
         options: {
-            cucumber: { prefixes: { test: parameters.options.cucumber?.prefixes.test } },
+            cucumber: { prefixes: { test: parameters.options.cucumber?.prefixes?.test } },
             jira: {
                 projectKey: parameters.options.jira.projectKey,
                 testExecutionIssue: { key: parameters.options.jira.testExecutionIssue?.key },
