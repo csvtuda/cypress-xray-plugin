@@ -648,6 +648,18 @@ void describe(cypressXrayPlugin.runPlugin.name, () => {
                             {
                                 ...parameters,
                                 multipartInfo: multipartInfo,
+                                options: {
+                                    ...parameters.options,
+                                    jira: {
+                                        ...parameters.options.jira,
+                                        testExecutionIssue: {
+                                            ...parameters.options.jira.testExecutionIssue,
+                                            key:
+                                                cypressExecutionIssueKey ??
+                                                parameters.options.jira.testExecutionIssue?.key,
+                                        },
+                                    },
+                                },
                             },
                         ],
                     ]
@@ -835,6 +847,16 @@ void describe(cypressXrayPlugin.runPlugin.name, () => {
                             {
                                 ...parameters,
                                 multipartInfo: multipartInfo,
+                                options: {
+                                    ...parameters.options,
+                                    jira: {
+                                        ...parameters.options.jira,
+                                        testExecutionIssue: {
+                                            ...parameters.options.jira.testExecutionIssue,
+                                            key: undefined,
+                                        },
+                                    },
+                                },
                             },
                         ],
                     ]

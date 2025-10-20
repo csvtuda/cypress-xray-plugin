@@ -104,6 +104,18 @@ async function runPlugin(parameters: RuntimeParameters) {
             cucumberExecutionIssueKey = await pluginPhases.runCucumberUpload({
                 ...parameters,
                 multipartInfo: multipartInfo,
+                options: {
+                    ...parameters.options,
+                    jira: {
+                        ...parameters.options.jira,
+                        testExecutionIssue: {
+                            ...parameters.options.jira.testExecutionIssue,
+                            key:
+                                cypressExecutionIssueKey ??
+                                parameters.options.jira.testExecutionIssue?.key,
+                        },
+                    },
+                },
             });
         } catch (error: unknown) {
             parameters.logger.message("error", errorMessage(error));
