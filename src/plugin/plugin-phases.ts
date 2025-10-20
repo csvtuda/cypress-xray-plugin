@@ -130,8 +130,7 @@ async function runFeatureFileUpload(parameters: {
     });
     if (
         parameters.options.xray.uploadResults &&
-        parameters.options.jira.testExecutionIssue?.key &&
-        parameters.options.jira.testExecutionIssue.fields?.summary
+        parameters.options.jira.testExecutionIssue?.fields?.summary
     ) {
         return parameters.options.jira.testExecutionIssue.fields.summary;
     }

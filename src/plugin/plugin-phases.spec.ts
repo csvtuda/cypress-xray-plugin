@@ -413,6 +413,89 @@ void describe(pluginPhases.runFeatureFileUpload.name, () => {
                 );
                 assert.deepStrictEqual(result, testExecutionIssueSummary);
             });
+
+            void it("returns the provided summary if specified if nothing else is provided", async (context) => {
+                // Test setup.
+                const testExecutionIssueSummary = faker().string.fromCharacters("abc", 5);
+                const uploadResults = true;
+                const firstIssueSnapshot = generateFakeIssueSnapshots({
+                    generateErrors: "zero",
+                    generateLabels: "zero-or-more",
+                    issueKeys: featureFileData.flatMap((data) => data.issueKeys),
+                });
+                const secondIssueSnapshot = generateFakeIssueSnapshots({
+                    generateErrors: "zero",
+                    generateLabels: "zero-or-more",
+                    issueKeys: featureFileData.flatMap((data) => data.issueKeys),
+                });
+                const jiraClientMock: HasSearchEndpoint & HasEditIssueEndpoint = {
+                    editIssue: stub(),
+                    search: stub(),
+                };
+                const xrayClientMock: HasImportFeatureEndpoint = { importFeature: stub() };
+                context.mock.method(
+                    featureFileProcessing,
+                    "processFeatureFiles",
+                    () => processedFeatureFiles
+                );
+                const getIssueSnapshotsMock = context.mock.method(
+                    jiraIssueSnapshots,
+                    "getIssueSnapshots",
+                    countingMock(
+                        Promise.resolve(firstIssueSnapshot),
+                        Promise.resolve(secondIssueSnapshot)
+                    )
+                );
+                context.mock.method(featureFileUpload, "uploadFeatureFiles", () =>
+                    Promise.resolve(affectedIssues)
+                );
+                context.mock.method(jiraIssueSnapshots, "restoreIssueSnapshots", () =>
+                    Promise.resolve()
+                );
+                const messageMock = context.mock.fn<Logger["message"]>();
+                // Test execution.
+                const result = await pluginPhases.runFeatureFileUpload({
+                    clients: { jira: jiraClientMock, xray: xrayClientMock },
+                    context: { featureFilePaths: featureFileData.map((data) => data.filePath) },
+                    isCloudEnvironment: displayCloudHelp,
+                    logger: { message: messageMock },
+                    options: {
+                        cucumber: cucumberOptions,
+                        jira: {
+                            projectKey: projectKey,
+                            testExecutionIssue: {
+                                fields: { summary: testExecutionIssueSummary },
+                            },
+                        },
+                        xray: { uploadResults: uploadResults },
+                    },
+                });
+                // Test validation.
+                assert.deepStrictEqual(
+                    getIssueSnapshotsMock.mock.calls.map((call) => call.arguments),
+                    [
+                        [
+                            {
+                                client: jiraClientMock,
+                                issues: featureFileData
+                                    .flatMap((data) => data.issueKeys)
+                                    .map((key) => {
+                                        return { key };
+                                    }),
+                            },
+                        ],
+                        [
+                            {
+                                client: jiraClientMock,
+                                issues: affectedIssues.map((key) => {
+                                    return { key };
+                                }),
+                            },
+                        ],
+                    ]
+                );
+                assert.deepStrictEqual(result, testExecutionIssueSummary);
+            });
         });
     }
 
