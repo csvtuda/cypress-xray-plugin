@@ -2060,7 +2060,7 @@ void describe(relative(cwd(), __filename), () => {
                         line: 2,
                         name: "A tagged feature",
                         tags: [],
-                        uri: "cypress\\e2e\\outline.cy.feature",
+                        uri: "cypress/e2e/outline.cy.feature",
                     },
                     {
                         description: "",
@@ -2151,7 +2151,7 @@ void describe(relative(cwd(), __filename), () => {
                         line: 1,
                         name: "A tagged feature",
                         tags: [],
-                        uri: "cypress\\e2e\\spec.cy.feature",
+                        uri: "cypress/e2e/spec.cy.feature",
                     },
                 ],
                 cypress: { config: { projectRoot: "./test/resources" } },
@@ -2330,7 +2330,7 @@ void describe(relative(cwd(), __filename), () => {
                         line: 1,
                         name: "Example",
                         tags: [],
-                        uri: "cypress\\e2e\\features\\example.feature",
+                        uri: "cypress/e2e/features/example.feature",
                     },
                 ],
                 cypress: { config: { projectRoot: "./test/resources" } },
@@ -2411,7 +2411,7 @@ void describe(relative(cwd(), __filename), () => {
                     line: 1,
                     name: "Example",
                     tags: [],
-                    uri: "cypress\\e2e\\features\\example.feature",
+                    uri: "cypress/e2e/features/example.feature",
                 },
             ]);
         });
