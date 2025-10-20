@@ -23,3 +23,10 @@ export function getCreatedTestExecutionIssueKey(
     assert.ok(createdIssueLine[1]);
     return testExecutionIssueKey;
 }
+
+export function shouldRunIntegrationTests(environment: "cloud" | "server"): boolean {
+    if (process.env.INTEGRATION_TESTS_ENVIRONMENT) {
+        return process.env.INTEGRATION_TESTS_ENVIRONMENT === environment;
+    }
+    return true;
+}

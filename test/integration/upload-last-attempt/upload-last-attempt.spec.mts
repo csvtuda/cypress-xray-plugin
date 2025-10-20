@@ -5,42 +5,34 @@ import { describe, it } from "node:test";
 import { setTimeout } from "node:timers/promises";
 import { runCypress } from "../../sh.mjs";
 import { JIRA_CLIENT_CLOUD, XRAY_CLIENT_CLOUD, XRAY_CLIENT_SERVER } from "../clients.mjs";
-import { getCreatedTestExecutionIssueKey } from "../util.mjs";
+import { getCreatedTestExecutionIssueKey, shouldRunIntegrationTests } from "../util.mjs";
 
 // ============================================================================================== //
 // https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues/451
 // ============================================================================================== //
 
 void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => {
-    for (const testCase of [
-        {
-            linkedTests: ["CXP-17", "CXP-18"],
-            projectDirectory: join(import.meta.dirname, "cloud"),
-            projectKey: "CXP",
-            service: "cloud",
-            title: "only last attempts are uploaded (cloud)",
-        },
-        {
-            linkedTests: ["CYPLUG-1692", "CYPLUG-1694"],
-            projectDirectory: join(import.meta.dirname, "server"),
-            projectKey: "CYPLUG",
-            service: "server",
-            title: "only last attempts are uploaded (server)",
-        },
-    ] as const) {
-        void it(testCase.title, async () => {
-            const output = runCypress(testCase.projectDirectory, {
-                expectedStatusCode: 1,
-                includeDefaultEnv: testCase.service,
-            });
+    if (shouldRunIntegrationTests("cloud")) {
+        for (const testCase of [
+            {
+                linkedTests: ["CXP-17", "CXP-18"],
+                projectDirectory: join(import.meta.dirname, "cloud"),
+                projectKey: "CXP",
+                title: "only last attempts are uploaded (cloud)",
+            },
+        ] as const) {
+            void it(testCase.title, async () => {
+                const output = runCypress(testCase.projectDirectory, {
+                    expectedStatusCode: 1,
+                    includeDefaultEnv: "cloud",
+                });
 
-            const testExecutionIssueKey = getCreatedTestExecutionIssueKey(
-                testCase.projectKey,
-                output,
-                "cypress"
-            );
+                const testExecutionIssueKey = getCreatedTestExecutionIssueKey(
+                    testCase.projectKey,
+                    output,
+                    "cypress"
+                );
 
-            if (testCase.service === "cloud") {
                 const executionIssue = await JIRA_CLIENT_CLOUD.issues.getIssue({
                     fields: ["id"],
                     issueIdOrKey: testExecutionIssueKey,
@@ -127,9 +119,31 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 assert.deepStrictEqual(testResultsRetriedScreenshot.results[0].iterations, {
                     results: [],
                 });
-            }
+            });
+        }
+    }
 
-            if (testCase.service === "server") {
+    if (shouldRunIntegrationTests("server")) {
+        for (const testCase of [
+            {
+                linkedTests: ["CYPLUG-1692", "CYPLUG-1694"],
+                projectDirectory: join(import.meta.dirname, "server"),
+                projectKey: "CYPLUG",
+                title: "only last attempts are uploaded (server)",
+            },
+        ] as const) {
+            void it(testCase.title, async () => {
+                const output = runCypress(testCase.projectDirectory, {
+                    expectedStatusCode: 1,
+                    includeDefaultEnv: "server",
+                });
+
+                const testExecutionIssueKey = getCreatedTestExecutionIssueKey(
+                    testCase.projectKey,
+                    output,
+                    "cypress"
+                );
+
                 // Jira server does not like searches immediately after issue creation (socket hang up).
                 await setTimeout(10000);
                 const testRunRetried = await XRAY_CLIENT_SERVER.testRun.getTestRun({
@@ -156,7 +170,7 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     "template spec -- CYPLUG-1694 manual screenshot (failed) (attempt 3).png"
                 );
                 assert.strictEqual(testResultsRetriedScreenshot.iterations, undefined);
-            }
-        });
+            });
+        }
     }
 });
