@@ -76,21 +76,21 @@ export interface JiraFieldIds {
     /**
      * The Jira issue description field ID.
      *
-     * @deprecated Will be removed in version `8.0.0`. `description` is a system field and will
+     * @deprecated Will be removed in version `9.0.0`. `description` is a system field and will
      * always have ID `description`.
      */
     description?: string;
     /**
      * The Jira issue labels field ID.
      *
-     * @deprecated Will be removed in version `8.0.0`. `labels` is a system field and will
+     * @deprecated Will be removed in version `9.0.0`. `labels` is a system field and will
      * always have ID `labels`.
      */
     labels?: string;
     /**
      * The Jira issue summary field ID (i.e. the title of the issues).
      *
-     * @deprecated Will be removed in version `8.0.0`. `summary` is a system field and will always
+     * @deprecated Will be removed in version `9.0.0`. `summary` is a system field and will always
      * have ID `summary`.
      */
     summary?: string;
@@ -231,7 +231,7 @@ export interface JiraOptions {
      * `Cypress version: ${cypressVersion} Browser: ${browserName} (${browserVersion})`
      * ```
      *
-     * @deprecated Will be removed in version `8.0.0`. Please use the following instead:
+     * @deprecated Will be removed in version `9.0.0`. Please use the following instead:
      *
      * @example
      *
@@ -253,7 +253,7 @@ export interface JiraOptions {
      *
      * @example "CYP-123"
      *
-     * @deprecated Will be removed in version `8.0.0`. Please use the following instead:
+     * @deprecated Will be removed in version `9.0.0`. Please use the following instead:
      *
      * @example
      *
@@ -278,7 +278,7 @@ export interface JiraOptions {
      * ```
      * where `t` is the timestamp when Cypress started testing.
      *
-     * @deprecated Will be removed in version `8.0.0`. Please use the following instead:
+     * @deprecated Will be removed in version `9.0.0`. Please use the following instead:
      *
      * @example
      *
@@ -298,7 +298,7 @@ export interface JiraOptions {
      * The issue type name of test executions. By default, Xray calls them `Test Execution`, but
      * it's possible that they have been renamed or translated in your Jira instance.
      *
-     * @deprecated Will be removed in version `8.0.0`. Please use the following instead:
+     * @deprecated Will be removed in version `9.0.0`. Please use the following instead:
      *
      * @example
      *
@@ -335,7 +335,7 @@ export interface JiraOptions {
      * The issue type name of test plans. By default, Xray calls them `Test Plan`, but it's possible
      * that they have been renamed or translated in your Jira instance.
      *
-     * @deprecated Unused, will be removed in version `8.0.0`.
+     * @deprecated Unused, will be removed in version `9.0.0`.
      */
     testPlanIssueType?: string;
     /**
