@@ -1,6 +1,5 @@
 import { basename, extname, parse } from "node:path";
 import { lt } from "semver";
-import type { EvidenceCollection, IterationParameterCollection } from "../../context";
 import type { RunResult, ScreenshotDetails } from "../../models/cypress";
 import { CypressStatus } from "../../models/cypress/status";
 import type { InternalXrayOptions } from "../../models/plugin";
@@ -17,6 +16,7 @@ import { normalizedFilename } from "../../util/files";
 import { HELP } from "../../util/help";
 import type { Logger } from "../../util/logging";
 import { earliestDate, latestDate, truncateIsoTime } from "../../util/time";
+import type { EvidenceCollection, IterationParameterCollection } from "../context";
 import type {
     FailedConversion,
     RunConverter,

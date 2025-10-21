@@ -1,4 +1,4 @@
-import type { EvidenceCollection, IterationParameterCollection } from "../context";
+import type { EvidenceCollection, IterationParameterCollection } from "../plugin/context";
 import { encode } from "../util/base64";
 import { dedent } from "../util/dedent";
 import { errorMessage } from "../util/errors";

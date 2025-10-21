@@ -19,11 +19,6 @@ import type {
     HasGetTestRunEndpoint,
 } from "../client/xray/xray-client-server";
 import type {
-    EvidenceCollection,
-    IterationParameterCollection,
-    PluginEventEmitter,
-} from "../context";
-import type {
     CypressRunResult,
     CypressVersion,
     PluginConfigOptions,
@@ -39,6 +34,11 @@ import type {
 } from "../models/plugin";
 import { errorMessage } from "../util/errors";
 import type { Logger } from "../util/logging";
+import type {
+    EvidenceCollection,
+    IterationParameterCollection,
+    PluginEventEmitter,
+} from "./context";
 import pluginPhases from "./plugin-phases";
 import uploadValidation from "./results-upload/upload-validation";
 import videoUpload from "./results-upload/video-upload";

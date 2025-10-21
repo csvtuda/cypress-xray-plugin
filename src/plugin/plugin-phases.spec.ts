@@ -36,13 +36,13 @@ import type {
     HasAddEvidenceEndpoint,
     HasGetTestRunEndpoint,
 } from "../client/xray/xray-client-server";
+import { dedent } from "../util/dedent";
+import type { Logger } from "../util/logging";
 import type {
     EvidenceCollection,
     IterationParameterCollection,
     PluginEventEmitter,
-} from "../context";
-import { dedent } from "../util/dedent";
-import type { Logger } from "../util/logging";
+} from "./context";
 import featureFileProcessing from "./feature-file-processing/feature-file-processing";
 import featureFileUpload from "./feature-file-upload/feature-file-upload";
 import jiraIssueSnapshots from "./jira-issue-snapshots/jira-issue-snapshots";
