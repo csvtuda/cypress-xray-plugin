@@ -90,7 +90,7 @@ export interface EvidenceCollection {
     getEvidence(issueKey: string): XrayEvidenceItem[];
 }
 
-export class SimpleEvidenceCollection {
+export class SimpleEvidenceCollection implements EvidenceCollection {
     private readonly collectedEvidence = new Map<string, XrayEvidenceItem[]>();
     addEvidence(issueKey: string, evidence: XrayEvidenceItem): void {
         const currentEvidence = this.collectedEvidence.get(issueKey);

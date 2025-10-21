@@ -2,7 +2,6 @@ import type { AxiosResponse } from "axios";
 import type { SearchRequestCloud } from "../../types/jira/requests/search";
 import type { Issue } from "../../types/jira/responses/issue";
 import type { SearchResultsCloud } from "../../types/jira/responses/search-results";
-import type { StringMap } from "../../types/util";
 import { LOG } from "../../util/logging";
 import { loggedRequest } from "../util";
 import { BaseJiraClient } from "./base-jira-client";
@@ -16,7 +15,7 @@ export class JiraClientCloud extends BaseJiraClient implements HasSearchEndpoint
     public async search(request: SearchRequestCloud): Promise<Issue[]> {
         const header = await this.credentials.getAuthorizationHeader();
         LOG.message("debug", "Searching issues...");
-        const results: StringMap<Issue> = {};
+        const results: Record<string, Issue> = {};
         let isLast = false;
         let nextPageToken = undefined;
         do {

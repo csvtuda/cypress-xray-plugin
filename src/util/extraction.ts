@@ -1,4 +1,3 @@
-import type { StringMap } from "../types/util";
 import { dedent } from "./dedent";
 import { HELP } from "./help";
 import { unknownToString } from "./string";
@@ -73,7 +72,7 @@ export function extractArrayOfStrings(data: unknown, propertyName: string): stri
 function verifyIsObjectWithProperty(
     data: unknown,
     propertyName: string
-): asserts data is StringMap<unknown> {
+): asserts data is Record<string, unknown> {
     if (typeof data !== "object" || data === null || !(propertyName in data)) {
         throw new Error(
             `Expected an object containing property '${propertyName}', but got: ${JSON.stringify(
