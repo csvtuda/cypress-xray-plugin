@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { CypressStatus } from "../../types/cypress/status";
+import { CypressStatus } from "../../models/cypress/status";
 import { getXrayStatus, toCypressStatus } from "./cypress-status";
 
 void describe(relative(cwd(), __filename), () => {

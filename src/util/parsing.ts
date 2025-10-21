@@ -1,4 +1,4 @@
-import type { ObjectLike } from "../types/cypress";
+import type { ObjectLike } from "../models/cypress";
 import { dedent } from "./dedent";
 import { unknownToString } from "./string";
 

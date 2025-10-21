@@ -1,5 +1,5 @@
 import type { Background, Comment, Scenario } from "@cucumber/messages";
-import type { CucumberOptions } from "../../types/plugin";
+import type { CucumberOptions } from "../../models/plugin";
 import { dedent } from "../../util/dedent";
 import { errorMessage } from "../../util/errors";
 import { HELP } from "../../util/help";

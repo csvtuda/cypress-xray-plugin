@@ -21,15 +21,15 @@ import type {
     IterationParameterCollection,
     PluginEventEmitter,
 } from "../context";
-import type { PluginConfigOptions, ScreenshotDetails } from "../types/cypress";
+import type { PluginConfigOptions, ScreenshotDetails } from "../models/cypress";
 import type {
     InternalCucumberOptions,
     InternalJiraOptions,
     InternalPluginOptions,
     InternalXrayOptions,
     PluginIssueUpdate,
-} from "../types/plugin";
-import type { MultipartInfo } from "../types/xray/requests/import-execution-multipart-info";
+} from "../models/plugin";
+import type { MultipartInfo } from "../models/xray/requests/import-execution-multipart-info";
 import { dedent } from "../util/dedent";
 import type { Logger } from "../util/logging";
 import type { MinimalCypressRunResult } from "./cypress-xray-plugin";

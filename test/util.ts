@@ -3,7 +3,7 @@ import { existsSync, readdirSync, rmSync } from "node:fs";
 import { before } from "node:test";
 import os from "os";
 import path from "path";
-import type { CypressFailedRunResult, CypressRunResult, RunResult } from "../src/types/cypress";
+import type { CypressFailedRunResult, CypressRunResult, RunResult } from "../src/models/cypress";
 import { unknownToString } from "../src/util/string";
 
 export const TEST_TMP_DIR = path.join(os.tmpdir(), "cypress-xray-plugin");

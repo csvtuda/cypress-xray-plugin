@@ -10,8 +10,8 @@ import type {
 import type {
     XrayEvidenceItem,
     XrayTestExecutionResults,
-} from "../../types/xray/import-test-execution-results";
-import type { MultipartInfo } from "../../types/xray/requests/import-execution-multipart-info";
+} from "../../models/xray/import-test-execution-results";
+import type { MultipartInfo } from "../../models/xray/requests/import-execution-multipart-info";
 import { dedent } from "../../util/dedent";
 import { errorMessage } from "../../util/errors";
 import type { Logger } from "../../util/logging";

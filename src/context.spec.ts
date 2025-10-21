@@ -14,14 +14,14 @@ import { JiraClientServer } from "./client/jira/jira-client-server";
 import { XrayClientCloud } from "./client/xray/xray-client-cloud";
 import { XrayClientServer } from "./client/xray/xray-client-server";
 import globalContext, { SimpleEvidenceCollection } from "./context";
-import type { User } from "./types/jira/responses/user";
+import type { User } from "./models/jira/responses/user";
 import type {
     InternalCucumberOptions,
     InternalHttpOptions,
     InternalJiraOptions,
     InternalPluginOptions,
     InternalXrayOptions,
-} from "./types/plugin";
+} from "./models/plugin";
 import { dedent } from "./util/dedent";
 import dependencies from "./util/dependencies";
 import type { Level } from "./util/logging";

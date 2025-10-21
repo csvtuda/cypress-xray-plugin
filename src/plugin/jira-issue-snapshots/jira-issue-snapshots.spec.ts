@@ -3,7 +3,7 @@ import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
 import type { HasEditIssueEndpoint, HasSearchEndpoint } from "../../client/jira/jira-client";
-import type { Issue } from "../../types/jira/responses/issue";
+import type { Issue } from "../../models/jira/responses/issue";
 import { dedent } from "../../util/dedent";
 import type { Logger } from "../../util/logging";
 import jiraIssueSnapshots from "./jira-issue-snapshots";

@@ -16,13 +16,13 @@ import { stub } from "../test/mocks";
 import { mockedCypressEventEmitter } from "../test/util";
 import globalContext, { PluginContext } from "./context";
 import { configureXrayPlugin, syncFeatureFile } from "./main";
-import cypressXrayPlugin from "./plugin/cypress-xray-plugin";
 import type {
     CypressFailedRunResult,
     CypressRunResult,
     PluginConfigOptions,
-} from "./types/cypress";
-import type { PluginOptions } from "./types/plugin";
+} from "./models/cypress";
+import type { PluginOptions } from "./models/plugin";
+import cypressXrayPlugin from "./plugin/cypress-xray-plugin";
 import { dedent } from "./util/dedent";
 import { LOG } from "./util/logging";
 

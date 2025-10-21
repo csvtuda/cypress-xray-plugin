@@ -1,9 +1,9 @@
-import type { CypressRunResult } from "../../types/cypress";
-import type { IssueUpdate } from "../../types/jira/responses/issue-update";
+import type { CypressRunResult } from "../../models/cypress";
+import type { IssueUpdate } from "../../models/jira/responses/issue-update";
 import type {
     MultipartInfo,
     MultipartInfoCloud,
-} from "../../types/xray/requests/import-execution-multipart-info";
+} from "../../models/xray/requests/import-execution-multipart-info";
 import { dedent } from "../../util/dedent";
 
 /**

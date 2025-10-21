@@ -1,6 +1,6 @@
 import type { HasGetFieldsEndpoint } from "../../client/jira/jira-client";
-import type { FieldDetail } from "../../types/jira/responses/field-detail";
-import type { JiraFieldIds, PluginIssueUpdate } from "../../types/plugin";
+import type { FieldDetail } from "../../models/jira/responses/field-detail";
+import type { JiraFieldIds, PluginIssueUpdate } from "../../models/plugin";
 import { dedent } from "../../util/dedent";
 import { errorMessage } from "../../util/errors";
 import { prettyPadObjects, prettyPadValues } from "../../util/pretty";

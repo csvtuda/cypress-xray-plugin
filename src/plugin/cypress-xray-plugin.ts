@@ -29,14 +29,14 @@ import type {
     PluginConfigOptions,
     RunResult,
     ScreenshotDetails,
-} from "../types/cypress";
+} from "../models/cypress";
 import type {
     InternalCucumberOptions,
     InternalJiraOptions,
     InternalPluginOptions,
     InternalXrayOptions,
     PluginIssueUpdate,
-} from "../types/plugin";
+} from "../models/plugin";
 import { errorMessage } from "../util/errors";
 import type { Logger } from "../util/logging";
 import pluginPhases from "./plugin-phases";

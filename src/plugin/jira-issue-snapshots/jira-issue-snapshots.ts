@@ -1,5 +1,5 @@
 import type { HasEditIssueEndpoint, HasSearchEndpoint } from "../../client/jira/jira-client";
-import type { Issue } from "../../types/jira/responses/issue";
+import type { Issue } from "../../models/jira/responses/issue";
 import { dedent } from "../../util/dedent";
 import { errorMessage } from "../../util/errors";
 import { extractArrayOfStrings, extractString } from "../../util/extraction";

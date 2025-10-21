@@ -1,6 +1,6 @@
 import { basename, extname } from "node:path";
-import type { RunResult, ScreenshotDetails } from "../../types/cypress";
-import type { CypressStatus } from "../../types/cypress/status";
+import type { RunResult, ScreenshotDetails } from "../../models/cypress";
+import type { CypressStatus } from "../../models/cypress/status";
 import { extractIssueKeys } from "../../util/extraction";
 import { toCypressStatus } from "./cypress-status";
 

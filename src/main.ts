@@ -2,13 +2,13 @@ import path from "path";
 import globalContext from "./context";
 import type { PluginTaskParameterType } from "./cypress/tasks";
 import { CypressTaskListener } from "./cypress/tasks";
-import cypressXrayPlugin from "./plugin/cypress-xray-plugin";
-import type { CypressFailedRunResult, CypressRunResult } from "./types/cypress";
+import type { CypressFailedRunResult, CypressRunResult } from "./models/cypress";
 import type {
     CypressXrayPluginOptions,
     InternalCypressXrayPluginOptions,
     InternalPluginOptions,
-} from "./types/plugin";
+} from "./models/plugin";
+import cypressXrayPlugin from "./plugin/cypress-xray-plugin";
 import { dedent } from "./util/dedent";
 import { getOrCall } from "./util/functions";
 import { HELP } from "./util/help";

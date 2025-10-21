@@ -1,15 +1,15 @@
 import { basename, extname, parse } from "node:path";
 import { lt } from "semver";
 import type { EvidenceCollection, IterationParameterCollection } from "../../context";
-import type { RunResult, ScreenshotDetails } from "../../types/cypress";
-import { CypressStatus } from "../../types/cypress/status";
-import type { InternalXrayOptions } from "../../types/plugin";
+import type { RunResult, ScreenshotDetails } from "../../models/cypress";
+import { CypressStatus } from "../../models/cypress/status";
+import type { InternalXrayOptions } from "../../models/plugin";
 import type {
     XrayEvidenceItem,
     XrayIterationResult,
     XrayTest,
     XrayTestExecutionResults,
-} from "../../types/xray/import-test-execution-results";
+} from "../../models/xray/import-test-execution-results";
 import { encodeFile } from "../../util/base64";
 import { dedent } from "../../util/dedent";
 import { errorMessage } from "../../util/errors";

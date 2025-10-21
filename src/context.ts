@@ -11,7 +11,7 @@ import { JiraClientServer } from "./client/jira/jira-client-server";
 import { XrayClientCloud } from "./client/xray/xray-client-cloud";
 import { XrayClientServer } from "./client/xray/xray-client-server";
 import { ENV_NAMES } from "./env";
-import type { ObjectLike, ScreenshotDetails } from "./types/cypress";
+import type { ObjectLike, ScreenshotDetails } from "./models/cypress";
 import type {
     ClientCombination,
     CypressXrayPluginOptions,
@@ -23,8 +23,8 @@ import type {
     InternalPluginOptions,
     InternalXrayOptions,
     PluginEvent,
-} from "./types/plugin";
-import type { XrayEvidenceItem } from "./types/xray/import-test-execution-results";
+} from "./models/plugin";
+import type { XrayEvidenceItem } from "./models/xray/import-test-execution-results";
 import { dedent } from "./util/dedent";
 import type { CucumberPreprocessorArgs, CucumberPreprocessorExports } from "./util/dependencies";
 import dependencies from "./util/dependencies";

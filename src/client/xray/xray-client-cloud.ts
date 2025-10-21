@@ -3,17 +3,17 @@ import FormData from "form-data";
 import type {
     XrayEvidenceItem,
     XrayTestExecutionResults,
-} from "../../types/xray/import-test-execution-results";
-import type { CucumberMultipartFeature } from "../../types/xray/requests/import-execution-cucumber-multipart";
-import type { MultipartInfo } from "../../types/xray/requests/import-execution-multipart-info";
-import type { GetTestRunsResponseCloud } from "../../types/xray/responses/graphql/get-test-runs";
-import type { TestRun } from "../../types/xray/responses/graphql/xray";
-import type { ImportExecutionResponseCloud } from "../../types/xray/responses/import-execution";
+} from "../../models/xray/import-test-execution-results";
+import type { CucumberMultipartFeature } from "../../models/xray/requests/import-execution-cucumber-multipart";
+import type { MultipartInfo } from "../../models/xray/requests/import-execution-multipart-info";
+import type { GetTestRunsResponseCloud } from "../../models/xray/responses/graphql/get-test-runs";
+import type { TestRun } from "../../models/xray/responses/graphql/xray";
+import type { ImportExecutionResponseCloud } from "../../models/xray/responses/import-execution";
 import type {
     ImportFeatureResponse,
     ImportFeatureResponseCloud,
     IssueDetails,
-} from "../../types/xray/responses/import-feature";
+} from "../../models/xray/responses/import-feature";
 import { dedent } from "../../util/dedent";
 import { LOG } from "../../util/logging";
 import type { JwtCredentials } from "../authentication/credentials";

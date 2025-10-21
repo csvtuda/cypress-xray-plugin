@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { beforeEach, describe, it } from "node:test";
-import type { SearchResultsServer } from "../../types/jira/responses/search-results";
+import type { SearchResultsServer } from "../../models/jira/responses/search-results";
 import type { Logger } from "../../util/logging";
 import { LOG } from "../../util/logging";
 import { BasicAuthCredentials } from "../authentication/credentials";
