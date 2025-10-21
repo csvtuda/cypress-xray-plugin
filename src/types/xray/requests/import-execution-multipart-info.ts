@@ -10,7 +10,7 @@ export interface MultipartInfo extends IssueUpdate {
 }
 export interface MultipartInfoCloud extends MultipartInfo {
     xrayFields?: {
-        environments?: string[];
+        environments?: readonly string[];
         testPlanKey?: string;
     };
 }

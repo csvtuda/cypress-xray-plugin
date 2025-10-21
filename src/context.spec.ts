@@ -13,13 +13,7 @@ import { JiraClientCloud } from "./client/jira/jira-client-cloud";
 import { JiraClientServer } from "./client/jira/jira-client-server";
 import { XrayClientCloud } from "./client/xray/xray-client-cloud";
 import { XrayClientServer } from "./client/xray/xray-client-server";
-import globalContext, {
-    PluginContext,
-    SimpleEvidenceCollection,
-    SimpleIterationParameterCollection,
-    SimpleScreenshotCollection,
-} from "./context";
-import type { PluginConfigOptions } from "./types/cypress";
+import globalContext, { SimpleEvidenceCollection } from "./context";
 import type { User } from "./types/jira/responses/user";
 import type {
     InternalCucumberOptions,
@@ -30,9 +24,8 @@ import type {
 } from "./types/plugin";
 import { dedent } from "./util/dedent";
 import dependencies from "./util/dependencies";
-import { ExecutableGraph } from "./util/graph/executable-graph";
 import type { Level } from "./util/logging";
-import { CapturingLogger, LOG } from "./util/logging";
+import { LOG } from "./util/logging";
 
 void describe(relative(cwd(), __filename), () => {
     void describe("the plugin context configuration", () => {
@@ -2178,124 +2171,6 @@ void describe(relative(cwd(), __filename), () => {
                 filename: "goodbye.json",
             });
             assert.deepStrictEqual(evidenceCollection.getEvidence("CYP-123"), [
-                {
-                    contentType: "application/json",
-                    data: "WyJoZWxsbyJd",
-                    filename: "hello.json",
-                },
-                {
-                    contentType: "application/json",
-                    data: "WyJnb29kYnllIl0=",
-                    filename: "goodbye.json",
-                },
-            ]);
-        });
-
-        void it("collects evidence for multiple tests", () => {
-            const evidenceCollection = new SimpleEvidenceCollection();
-            evidenceCollection.addEvidence("CYP-123", {
-                contentType: "application/json",
-                data: "WyJoZWxsbyJd",
-                filename: "hello.json",
-            });
-            evidenceCollection.addEvidence("CYP-456", {
-                contentType: "application/json",
-                data: "WyJnb29kYnllIl0=",
-                filename: "goodbye.json",
-            });
-            assert.deepStrictEqual(evidenceCollection.getEvidence("CYP-123"), [
-                {
-                    contentType: "application/json",
-                    data: "WyJoZWxsbyJd",
-                    filename: "hello.json",
-                },
-            ]);
-            assert.deepStrictEqual(evidenceCollection.getEvidence("CYP-456"), [
-                {
-                    contentType: "application/json",
-                    data: "WyJnb29kYnllIl0=",
-                    filename: "goodbye.json",
-                },
-            ]);
-        });
-
-        void it("returns an empty array for unknown tests", () => {
-            const evidenceCollection = new SimpleEvidenceCollection();
-            evidenceCollection.addEvidence("CYP-123", {
-                contentType: "application/json",
-                data: "WyJoZWxsbyJd",
-                filename: "hello.json",
-            });
-            assert.deepStrictEqual(evidenceCollection.getEvidence("CYP-456"), []);
-        });
-    });
-
-    void describe(PluginContext.name, () => {
-        let context: PluginContext;
-
-        beforeEach(() => {
-            const jiraClient = new JiraClientServer(
-                "http://localhost:1234",
-                new PatCredentials("token"),
-                new AxiosRestClient(axios)
-            );
-            const xrayClient = new XrayClientServer(
-                "http://localhost:1234",
-                new PatCredentials("token"),
-                new AxiosRestClient(axios)
-            );
-            context = new PluginContext(
-                {
-                    jiraClient: jiraClient,
-                    kind: "server",
-                    xrayClient: xrayClient,
-                },
-                {
-                    http: {},
-                    jira: {
-                        attachVideos: false,
-                        fields: {},
-                        projectKey: "CYP",
-                        testExecutionIssueType: "Text Execution",
-                        testPlanIssueType: "Test Plan",
-                        url: "http://localhost:1234",
-                    },
-                    plugin: {
-                        debug: false,
-                        enabled: true,
-                        logDirectory: "./logs",
-                        normalizeScreenshotNames: false,
-                        splitUpload: false,
-                        uploadLastAttempt: false,
-                    },
-                    xray: {
-                        status: {},
-                        uploadRequests: false,
-                        uploadResults: false,
-                        uploadScreenshots: false,
-                    },
-                },
-                {} as PluginConfigOptions<"<13">,
-                new SimpleEvidenceCollection(),
-                new SimpleIterationParameterCollection(),
-                new SimpleScreenshotCollection(),
-                new ExecutableGraph(),
-                new CapturingLogger()
-            );
-        });
-
-        void it("collects evidence for single tests", () => {
-            context.addEvidence("CYP-123", {
-                contentType: "application/json",
-                data: "WyJoZWxsbyJd",
-                filename: "hello.json",
-            });
-            context.addEvidence("CYP-123", {
-                contentType: "application/json",
-                data: "WyJnb29kYnllIl0=",
-                filename: "goodbye.json",
-            });
-            assert.deepStrictEqual(context.getEvidence("CYP-123"), [
                 {
                     contentType: "application/json",
                     data: "WyJoZWxsbyJd",

@@ -11,8 +11,7 @@ import { JiraClientServer } from "./client/jira/jira-client-server";
 import { XrayClientCloud } from "./client/xray/xray-client-cloud";
 import { XrayClientServer } from "./client/xray/xray-client-server";
 import { ENV_NAMES } from "./env";
-import type { Command } from "./hooks/command";
-import type { ObjectLike, PluginConfigOptions, ScreenshotDetails } from "./types/cypress";
+import type { ObjectLike, ScreenshotDetails } from "./types/cypress";
 import type {
     ClientCombination,
     CypressXrayPluginOptions,
@@ -30,97 +29,59 @@ import { dedent } from "./util/dedent";
 import type { CucumberPreprocessorArgs, CucumberPreprocessorExports } from "./util/dependencies";
 import dependencies from "./util/dependencies";
 import { errorMessage } from "./util/errors";
-import type { ExecutableGraph } from "./util/graph/executable-graph";
 import { HELP } from "./util/help";
-import type { Logger } from "./util/logging";
-import { LOG } from "./util/logging";
+import { CapturingLogger, LOG } from "./util/logging";
 import { asArrayOfStrings, asBoolean, asObject, asString, parse } from "./util/parsing";
 
-export class PluginContext
-    implements EvidenceCollection, IterationParameterCollection, ScreenshotCollection
-{
-    private readonly clients: ClientCombination;
+export class PluginContext {
     private readonly internalOptions: InternalCypressXrayPluginOptions;
-    private readonly cypressOptions: PluginConfigOptions;
+    private readonly featureFiles: Set<string>;
+    private readonly logger: CapturingLogger;
     private readonly evidenceCollection: EvidenceCollection;
     private readonly iterationParameterCollection: IterationParameterCollection;
     private readonly screenshotCollection: ScreenshotCollection;
     private readonly eventEmitter: PluginEventEmitter;
-    private readonly graph: ExecutableGraph<Command>;
-    private readonly logger: Logger;
 
-    constructor(
-        clients: ClientCombination,
-        internalOptions: InternalCypressXrayPluginOptions,
-        cypressOptions: PluginConfigOptions,
-        evidenceCollection: EvidenceCollection,
-        iterationParameterCollection: IterationParameterCollection,
-        screenshotCollection: ScreenshotCollection,
-        graph: ExecutableGraph<Command>,
-        logger: Logger
-    ) {
-        this.clients = clients;
+    constructor(internalOptions: InternalCypressXrayPluginOptions) {
         this.internalOptions = internalOptions;
-        this.cypressOptions = cypressOptions;
-        this.evidenceCollection = evidenceCollection;
-        this.iterationParameterCollection = iterationParameterCollection;
-        this.screenshotCollection = screenshotCollection;
-        this.eventEmitter = new PluginEventEmitter();
-        this.graph = graph;
-        this.logger = logger;
+        this.featureFiles = new Set();
+        this.logger = new CapturingLogger();
+        this.evidenceCollection = new SimpleEvidenceCollection();
+        this.iterationParameterCollection = new SimpleIterationParameterCollection();
+        this.screenshotCollection = new SimpleScreenshotCollection();
+        this.eventEmitter = new SimplePluginEventEmitter();
     }
 
-    public getClients(): ClientCombination {
-        return this.clients;
-    }
-
-    public getOptions(): InternalCypressXrayPluginOptions {
-        return this.internalOptions;
-    }
-
-    public getCypressOptions(): PluginConfigOptions {
-        return this.cypressOptions;
-    }
-
-    public getGraph(): ExecutableGraph<Command> {
-        return this.graph;
-    }
-
-    public getLogger(): Logger {
+    public getLogger(): CapturingLogger {
         return this.logger;
     }
 
-    public addScreenshot(screenshot: ScreenshotDetails) {
-        this.screenshotCollection.addScreenshot(screenshot);
+    public getEvidenceCollection(): EvidenceCollection {
+        return this.evidenceCollection;
     }
 
-    public getScreenshots(): ScreenshotDetails[] {
-        return this.screenshotCollection.getScreenshots();
+    public getIterationParameterCollection(): IterationParameterCollection {
+        return this.iterationParameterCollection;
     }
 
-    public addEvidence(issueKey: string, evidence: Required<XrayEvidenceItem>): void {
-        this.evidenceCollection.addEvidence(issueKey, evidence);
-        LOG.message("debug", `Added evidence for test ${issueKey}: ${evidence.filename}`);
-    }
-
-    public getEvidence(issueKey: string): XrayEvidenceItem[] {
-        return this.evidenceCollection.getEvidence(issueKey);
-    }
-
-    public setIterationParameters(
-        issueKey: string,
-        testId: string,
-        parameters: Record<string, string>
-    ): void {
-        this.iterationParameterCollection.setIterationParameters(issueKey, testId, parameters);
-    }
-
-    public getIterationParameters(issueKey: string, testId: string): Record<string, string> {
-        return this.iterationParameterCollection.getIterationParameters(issueKey, testId);
+    public getScreenshotCollection(): ScreenshotCollection {
+        return this.screenshotCollection;
     }
 
     public getEventEmitter(): PluginEventEmitter {
         return this.eventEmitter;
+    }
+
+    public addFeatureFile(filePath: string): void {
+        this.featureFiles.add(filePath);
+    }
+
+    public getFeatureFiles(): Iterable<string> {
+        return this.featureFiles;
+    }
+
+    public getOptions(): InternalCypressXrayPluginOptions {
+        return this.internalOptions;
     }
 }
 
@@ -194,31 +155,54 @@ type PluginEventListener<E extends keyof PluginEvent> = (
 type PluginEventListeners = { [E in keyof PluginEvent]: PluginEventListener<E>[] };
 
 /**
- * A minimal event emitter tailored for plugin events. Supports registering multiple listeners per
- * event and emitting events with typed data.
+ * Models cypress-xray-plugin event emitters.
  */
-export class PluginEventEmitter {
-    private readonly listeners: PluginEventListeners = {
-        ["upload:cucumber"]: [],
-        ["upload:cypress"]: [],
-    };
-
+export interface PluginEventEmitter {
+    /**
+     * Emits an event and invokes all registered listeners for that event. Waits for all async
+     * listeners to complete before resolving.
+     *
+     * @param name - the name of the event to emit
+     * @param data - the data associated with the event
+     */
+    emit<E extends keyof PluginEvent>(name: E, data: PluginEvent[E]): Promise<void>;
+    /**
+     * Deregisters a listener for a given plugin event.
+     *
+     * @param name - the name of the event
+     * @param listener - the callback to remove
+     */
+    off<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>): void;
     /**
      * Registers a listener for a given plugin event.
      *
      * @param name - the name of the event to listen to
      * @param listener - a callback to handle the event data
      */
-    public on<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>) {
-        this.listeners[name].push(listener);
-    }
-
+    on<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>): void;
     /**
      * Register a listener for a given plugin event that will be fired only once and then removed.
      *
      * @param name - the name of the event to listen to
      * @param listener - a callback to handle the event data
      */
+    once<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>): void;
+}
+
+/**
+ * A minimal event emitter tailored for plugin events. Supports registering multiple listeners per
+ * event and emitting events with typed data.
+ */
+export class SimplePluginEventEmitter implements PluginEventEmitter {
+    private readonly listeners: PluginEventListeners = {
+        ["upload:cucumber"]: [],
+        ["upload:cypress"]: [],
+    };
+
+    public on<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>) {
+        this.listeners[name].push(listener);
+    }
+
     public once<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>) {
         const wrapper = async (data: PluginEvent[E]) => {
             await listener(data);
@@ -227,12 +211,6 @@ export class PluginEventEmitter {
         this.on(name, wrapper);
     }
 
-    /**
-     * Deregisters a listener for a given plugin event.
-     *
-     * @param name - the name of the event
-     * @param listener - the callback to remove
-     */
     public off<E extends keyof PluginEvent>(name: E, listener: PluginEventListener<E>) {
         const keep: PluginEventListeners[E] = [];
         for (const eventListener of this.listeners[name]) {
@@ -243,13 +221,6 @@ export class PluginEventEmitter {
         this.listeners[name] = keep;
     }
 
-    /**
-     * Emits an event and invokes all registered listeners for that event. Waits for all async
-     * listeners to complete before resolving.
-     *
-     * @param name - the name of the event to emit
-     * @param data - the data associated with the event
-     */
     public async emit<E extends keyof PluginEvent>(name: E, data: PluginEvent[E]): Promise<void> {
         const eventListeners = this.listeners[name];
         await Promise.all(
@@ -266,8 +237,9 @@ function getGlobalContext(): PluginContext | undefined {
     return context;
 }
 
-function setGlobalContext(newContext?: PluginContext): void {
-    context = newContext;
+function initGlobalContext(options: InternalCypressXrayPluginOptions): PluginContext {
+    context = new PluginContext(options);
+    return context;
 }
 
 /**
@@ -821,9 +793,9 @@ export default {
     getGlobalContext,
     initClients,
     initCucumberOptions,
+    initGlobalContext,
     initHttpClients,
     initJiraOptions,
     initPluginOptions,
     initXrayOptions,
-    setGlobalContext,
 };
