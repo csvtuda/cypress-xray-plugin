@@ -853,7 +853,7 @@ void describe(cypressXrayPlugin.runPlugin.name, () => {
                                         ...parameters.options.jira,
                                         testExecutionIssue: {
                                             ...parameters.options.jira.testExecutionIssue,
-                                            key: undefined,
+                                            key: parameters.options.jira.testExecutionIssue?.key,
                                         },
                                     },
                                 },
