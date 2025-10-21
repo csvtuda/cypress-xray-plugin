@@ -16,22 +16,22 @@ import type {
     HasAddEvidenceEndpoint,
     HasGetTestRunEndpoint,
 } from "../client/xray/xray-client-server";
-import type {
-    EvidenceCollection,
-    IterationParameterCollection,
-    PluginEventEmitter,
-} from "../context";
-import type { PluginConfigOptions, ScreenshotDetails } from "../types/cypress";
+import type { PluginConfigOptions, ScreenshotDetails } from "../models/cypress";
 import type {
     InternalCucumberOptions,
     InternalJiraOptions,
     InternalPluginOptions,
     InternalXrayOptions,
     PluginIssueUpdate,
-} from "../types/plugin";
-import type { MultipartInfo } from "../types/xray/requests/import-execution-multipart-info";
+} from "../models/plugin";
+import type { MultipartInfo } from "../models/xray/requests/import-execution-multipart-info";
 import { dedent } from "../util/dedent";
 import type { Logger } from "../util/logging";
+import type {
+    EvidenceCollection,
+    IterationParameterCollection,
+    PluginEventEmitter,
+} from "./context";
 import type { MinimalCypressRunResult } from "./cypress-xray-plugin";
 import featureFileProcessing from "./feature-file-processing/feature-file-processing";
 import featureFileUpload from "./feature-file-upload/feature-file-upload";

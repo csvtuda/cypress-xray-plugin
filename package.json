@@ -28,8 +28,8 @@
     ],
     "exports": {
         ".": "./index.js",
-        "./commands": "./src/cypress/commands.js",
-        "./commands/tasks": "./src/cypress/index.js"
+        "./commands": "./src/tasks/commands.js",
+        "./commands/tasks": "./src/tasks/index.js"
     },
     "directories": {
         "lib": "src"

@@ -4,12 +4,12 @@ import { readFileSync } from "node:fs";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { beforeEach, describe, it, mock } from "node:test";
-import type { XrayTestExecutionResults } from "../../types/xray/import-test-execution-results";
-import type { CucumberMultipartFeature } from "../../types/xray/requests/import-execution-cucumber-multipart";
+import type { XrayTestExecutionResults } from "../../models/xray/import-test-execution-results";
+import type { CucumberMultipartFeature } from "../../models/xray/requests/import-execution-cucumber-multipart";
 import type {
     MultipartInfo,
     MultipartInfoCloud,
-} from "../../types/xray/requests/import-execution-multipart-info";
+} from "../../models/xray/requests/import-execution-multipart-info";
 import { dedent } from "../../util/dedent";
 import { LOG } from "../../util/logging";
 import { JwtCredentials } from "../authentication/credentials";

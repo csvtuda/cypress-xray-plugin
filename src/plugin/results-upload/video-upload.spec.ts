@@ -3,7 +3,7 @@ import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
 import type { HasAddAttachmentEndpoint } from "../../client/jira/jira-client";
-import type { Attachment } from "../../types/jira/responses/attachment";
+import type { Attachment } from "../../models/jira/responses/attachment";
 import { dedent } from "../../util/dedent";
 import type { Logger } from "../../util/logging";
 import videoUpload from ".//video-upload";

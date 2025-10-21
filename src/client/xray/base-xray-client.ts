@@ -1,10 +1,10 @@
 import { type AxiosResponse, HttpStatusCode, isAxiosError } from "axios";
 import FormData from "form-data";
 import fs from "fs";
-import type { XrayTestExecutionResults } from "../../types/xray/import-test-execution-results";
-import type { CucumberMultipartFeature } from "../../types/xray/requests/import-execution-cucumber-multipart";
-import type { MultipartInfo } from "../../types/xray/requests/import-execution-multipart-info";
-import type { ImportFeatureResponse } from "../../types/xray/responses/import-feature";
+import type { XrayTestExecutionResults } from "../../models/xray/import-test-execution-results";
+import type { CucumberMultipartFeature } from "../../models/xray/requests/import-execution-cucumber-multipart";
+import type { MultipartInfo } from "../../models/xray/requests/import-execution-multipart-info";
+import type { ImportFeatureResponse } from "../../models/xray/responses/import-feature";
 import { dedent } from "../../util/dedent";
 import { LoggedError, errorMessage } from "../../util/errors";
 import { HELP } from "../../util/help";

@@ -7,25 +7,25 @@ import {
     BasicAuthCredentials,
     JwtCredentials,
     PatCredentials,
-} from "./client/authentication/credentials";
-import { AxiosRestClient } from "./client/https/requests";
-import { JiraClientCloud } from "./client/jira/jira-client-cloud";
-import { JiraClientServer } from "./client/jira/jira-client-server";
-import { XrayClientCloud } from "./client/xray/xray-client-cloud";
-import { XrayClientServer } from "./client/xray/xray-client-server";
-import globalContext, { SimpleEvidenceCollection } from "./context";
-import type { User } from "./types/jira/responses/user";
+} from "../client/authentication/credentials";
+import { AxiosRestClient } from "../client/https/requests";
+import { JiraClientCloud } from "../client/jira/jira-client-cloud";
+import { JiraClientServer } from "../client/jira/jira-client-server";
+import { XrayClientCloud } from "../client/xray/xray-client-cloud";
+import { XrayClientServer } from "../client/xray/xray-client-server";
+import type { User } from "../models/jira/responses/user";
 import type {
     InternalCucumberOptions,
     InternalHttpOptions,
     InternalJiraOptions,
     InternalPluginOptions,
     InternalXrayOptions,
-} from "./types/plugin";
-import { dedent } from "./util/dedent";
-import dependencies from "./util/dependencies";
-import type { Level } from "./util/logging";
-import { LOG } from "./util/logging";
+} from "../models/plugin";
+import globalContext, { SimpleEvidenceCollection } from "../plugin/context";
+import { dedent } from "../util/dedent";
+import dependencies from "../util/dependencies";
+import type { Level } from "../util/logging";
+import { LOG } from "../util/logging";
 
 void describe(relative(cwd(), __filename), () => {
     void describe("the plugin context configuration", () => {

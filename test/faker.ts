@@ -9,10 +9,8 @@ import { JiraClientCloud } from "../src/client/jira/jira-client-cloud";
 import { JiraClientServer } from "../src/client/jira/jira-client-server";
 import { XrayClientCloud } from "../src/client/xray/xray-client-cloud";
 import { XrayClientServer } from "../src/client/xray/xray-client-server";
-import type { MinimalCypressRunResult, MinimalRunResult } from "../src/plugin/cypress-xray-plugin";
-import type { JiraSnapshot } from "../src/plugin/jira-issue-snapshots/jira-issue-snapshots";
-import type { FileObject, ScreenshotDetails } from "../src/types/cypress";
-import { CypressStatus } from "../src/types/cypress/status";
+import type { FileObject, ScreenshotDetails } from "../src/models/cypress";
+import { CypressStatus } from "../src/models/cypress/status";
 import type {
     ClientCombination,
     CucumberOptions,
@@ -22,13 +20,15 @@ import type {
     JiraOptions,
     PluginIssueUpdate,
     PluginOptions,
-} from "../src/types/plugin";
+} from "../src/models/plugin";
 import type {
     XrayTest,
     XrayTestExecutionResults,
-} from "../src/types/xray/import-test-execution-results";
-import type { CucumberMultipartFeature } from "../src/types/xray/requests/import-execution-cucumber-multipart";
-import type { MultipartInfo } from "../src/types/xray/requests/import-execution-multipart-info";
+} from "../src/models/xray/import-test-execution-results";
+import type { CucumberMultipartFeature } from "../src/models/xray/requests/import-execution-cucumber-multipart";
+import type { MultipartInfo } from "../src/models/xray/requests/import-execution-multipart-info";
+import type { MinimalCypressRunResult, MinimalRunResult } from "../src/plugin/cypress-xray-plugin";
+import type { JiraSnapshot } from "../src/plugin/jira-issue-snapshots/jira-issue-snapshots";
 import { stub } from "./mocks";
 
 const SEED_FILE = join(".", ".seed");

@@ -4,7 +4,7 @@ import { cwd } from "node:process";
 import { describe, it } from "node:test";
 import type { HasAddEvidenceToTestRunEndpoint } from "../../client/xray/xray-client-cloud";
 import type { HasAddEvidenceEndpoint } from "../../client/xray/xray-client-server";
-import type { GetTestRunResponseServer } from "../../types/xray/responses/graphql/get-test-runs";
+import type { GetTestRunResponseServer } from "../../models/xray/responses/graphql/get-test-runs";
 import { dedent } from "../../util/dedent";
 import type { Logger } from "../../util/logging";
 import cypressResultUpload from "./cypress-result-upload";

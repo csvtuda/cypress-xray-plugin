@@ -1,11 +1,11 @@
 import type { AxiosResponse } from "axios";
 import FormData from "form-data";
 import fs from "fs";
-import type { Attachment } from "../../types/jira/responses/attachment";
-import type { FieldDetail } from "../../types/jira/responses/field-detail";
-import type { IssueTypeDetails } from "../../types/jira/responses/issue-type-details";
-import type { IssueUpdate } from "../../types/jira/responses/issue-update";
-import type { User } from "../../types/jira/responses/user";
+import type { Attachment } from "../../models/jira/responses/attachment";
+import type { FieldDetail } from "../../models/jira/responses/field-detail";
+import type { IssueTypeDetails } from "../../models/jira/responses/issue-type-details";
+import type { IssueUpdate } from "../../models/jira/responses/issue-update";
+import type { User } from "../../models/jira/responses/user";
 import { dedent } from "../../util/dedent";
 import { LOG } from "../../util/logging";
 import { Client } from "../client";

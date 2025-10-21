@@ -1,8 +1,7 @@
 import type { AxiosResponse } from "axios";
-import type { SearchRequestServer } from "../../types/jira/requests/search";
-import type { Issue } from "../../types/jira/responses/issue";
-import type { SearchResultsServer } from "../../types/jira/responses/search-results";
-import type { StringMap } from "../../types/util";
+import type { SearchRequestServer } from "../../models/jira/requests/search";
+import type { Issue } from "../../models/jira/responses/issue";
+import type { SearchResultsServer } from "../../models/jira/responses/search-results";
 import { LOG } from "../../util/logging";
 import { loggedRequest } from "../util";
 import { BaseJiraClient } from "./base-jira-client";
@@ -18,7 +17,7 @@ export class JiraClientServer extends BaseJiraClient implements HasSearchEndpoin
         LOG.message("debug", "Searching issues...");
         let total = 0;
         let startAt = request.startAt ?? 0;
-        const results: StringMap<Issue> = {};
+        const results: Record<string, Issue> = {};
         do {
             const paginatedRequest = {
                 ...request,

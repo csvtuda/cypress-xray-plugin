@@ -1,16 +1,16 @@
 import type { AxiosResponse } from "axios";
 import FormData from "form-data";
-import type { XrayTestExecutionResults } from "../../types/xray/import-test-execution-results";
-import type { CucumberMultipartFeature } from "../../types/xray/requests/import-execution-cucumber-multipart";
-import type { MultipartInfo } from "../../types/xray/requests/import-execution-multipart-info";
-import type { GetTestRunResponseServer } from "../../types/xray/responses/graphql/get-test-runs";
-import type { ImportExecutionResponseServer } from "../../types/xray/responses/import-execution";
+import type { XrayTestExecutionResults } from "../../models/xray/import-test-execution-results";
+import type { CucumberMultipartFeature } from "../../models/xray/requests/import-execution-cucumber-multipart";
+import type { MultipartInfo } from "../../models/xray/requests/import-execution-multipart-info";
+import type { GetTestRunResponseServer } from "../../models/xray/responses/graphql/get-test-runs";
+import type { ImportExecutionResponseServer } from "../../models/xray/responses/import-execution";
 import type {
     ImportFeatureResponse,
     ImportFeatureResponseServer,
     IssueDetails,
-} from "../../types/xray/responses/import-feature";
-import type { XrayLicenseStatus } from "../../types/xray/responses/license";
+} from "../../models/xray/responses/import-feature";
+import type { XrayLicenseStatus } from "../../models/xray/responses/license";
 import { dedent } from "../../util/dedent";
 import { LOG } from "../../util/logging";
 import type { HttpCredentials } from "../authentication/credentials";

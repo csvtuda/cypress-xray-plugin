@@ -5,7 +5,7 @@ import type {
     CucumberMultipartFeature,
     CucumberMultipartStep,
     CucumberMultipartTag,
-} from "../../types/xray/requests/import-execution-cucumber-multipart";
+} from "../../models/xray/requests/import-execution-cucumber-multipart";
 import { dedent } from "../../util/dedent";
 import { errorMessage } from "../../util/errors";
 import { HELP } from "../../util/help";

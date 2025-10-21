@@ -2,8 +2,8 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import type { RunResult, ScreenshotDetails } from "../../types/cypress";
-import { CypressStatus } from "../../types/cypress/status";
+import type { RunResult, ScreenshotDetails } from "../../models/cypress";
+import { CypressStatus } from "../../models/cypress/status";
 import { RunConverterLatest, RunConverterV12 } from "./cypress-run-conversion";
 
 void describe(relative(cwd(), __filename), () => {
