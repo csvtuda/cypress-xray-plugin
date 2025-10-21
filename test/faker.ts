@@ -1,6 +1,8 @@
 import { faker as fakerjs } from "@faker-js/faker";
 import ansiColors from "ansi-colors";
 import axios from "axios";
+import { readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { JwtCredentials, PatCredentials } from "../src/client/authentication/credentials";
 import { AxiosRestClient } from "../src/client/https/requests";
 import { JiraClientCloud } from "../src/client/jira/jira-client-cloud";
@@ -29,30 +31,38 @@ import type { CucumberMultipartFeature } from "../src/types/xray/requests/import
 import type { MultipartInfo } from "../src/types/xray/requests/import-execution-multipart-info";
 import { stub } from "./mocks";
 
-let seed: number;
-if (process.env.SEED) {
-    seed = Number.parseInt(process.env.SEED);
-} else {
-    seed = Math.ceil(Math.random() * Number.MAX_SAFE_INTEGER);
+const SEED_FILE = join(".", ".seed");
+
+let seed: number | undefined = undefined;
+
+export function initFaker() {
+    if (process.env.SEED) {
+        writeFileSync(SEED_FILE, process.env.SEED);
+    } else {
+        writeFileSync(SEED_FILE, Math.ceil(Math.random() * Number.MAX_SAFE_INTEGER).toString());
+    }
 }
-console.log(
-    ansiColors.cyanBright(
-        `======================${"=".repeat(Number.MAX_SAFE_INTEGER.toString().length + 2)}`
-    )
-);
-console.log(
-    ansiColors.cyanBright(
-        `= Faker library seed: ${seed.toString()}${" ".repeat(Number.MAX_SAFE_INTEGER.toString().length - seed.toString().length + 1)}=`
-    )
-);
-console.log(
-    ansiColors.cyanBright(
-        `======================${"=".repeat(Number.MAX_SAFE_INTEGER.toString().length + 2)}`
-    )
-);
-fakerjs.seed(seed);
 
 export function faker() {
+    if (seed === undefined) {
+        seed ??= Number.parseInt(readFileSync(SEED_FILE, { encoding: "utf-8" }));
+        console.log(
+            ansiColors.cyanBright(
+                `======================${"=".repeat(Number.MAX_SAFE_INTEGER.toString().length + 2)}`
+            )
+        );
+        console.log(
+            ansiColors.cyanBright(
+                `= Faker library seed: ${seed.toString()}${" ".repeat(Number.MAX_SAFE_INTEGER.toString().length - seed.toString().length + 1)}=`
+            )
+        );
+        console.log(
+            ansiColors.cyanBright(
+                `======================${"=".repeat(Number.MAX_SAFE_INTEGER.toString().length + 2)}`
+            )
+        );
+        fakerjs.seed(seed);
+    }
     return fakerjs;
 }
 

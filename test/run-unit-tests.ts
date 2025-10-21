@@ -2,6 +2,7 @@ import { createWriteStream } from "node:fs";
 import { resolve } from "node:path";
 import { run } from "node:test";
 import { junit, spec } from "node:test/reporters";
+import { initFaker } from "./faker";
 import { startServer, stopServer } from "./server";
 import { findFiles } from "./util";
 
@@ -16,6 +17,7 @@ const TEST_STREAM = run({
         process.exitCode = 1;
     })
     .once("readable", () => {
+        initFaker();
         startServer();
     })
     .once("end", () => {

@@ -143,3 +143,5 @@ integration.xml
 test/integration/**/cypress.env.json
 test/integration/**/cucumber-report.json
 test/integration/**/*.png
+
+.seed
