@@ -1,5 +1,12 @@
 # Changelog
 
+# `8.6.0`
+
+- Added `cypress-xray-plugin:task:evidence:attachment` task for uploading arbitrary evidence
+- Deprecated `xray.uploadResults` option
+- Deprecated `cypress-xray-plugin:task:request` task
+- Deprecated `cypress-xray-plugin:task:response` task
+
 # `8.5.2`
 
 - Updated all mentions of package to new @csvtuda scope
