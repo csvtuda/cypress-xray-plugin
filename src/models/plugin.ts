@@ -535,6 +535,31 @@ export interface XrayOptions {
      * command line (via environment variables).
      *
      * @defaultValue true
+     *
+     * @deprecated Will be removed in version `9.0.0`. Please use the following instead:
+     *
+     * @example
+     *
+     * ```ts
+     * // To upload requests as evidence, you'll need to overwrite the cy.request() command:
+     * Cypress.Commands.overwrite("request", (originalFn, request: Partial<Cypress.RequestOptions>) => {
+     *   enqueueTask("cypress-xray-plugin:task:evidence:attachment", {
+     *     contentType: "application/json",
+     *     data: Buffer.from(JSON.stringify(request)).toString("base64"),
+     *     filename: "my-request.json",
+     *   });
+     *   return originalFn(request);
+     * });
+     *
+     * // To upload responses as evidence, you can enqueue the evidence task inside the test case:
+     * cy.request("my-url").then((response) =>
+     *   enqueueTask("cypress-xray-plugin:task:evidence:attachment", {
+     *     contentType: "application/json",
+     *     data: Buffer.from(JSON.stringify(response)).toString("base64"),
+     *     filename: "my-response.json",
+     *   })
+     * );
+     * ```
      */
     uploadResults?: boolean;
     /**
