@@ -97,6 +97,11 @@ export async function configureXrayPlugin(
         });
     }
     on("task", {
+        ["cypress-xray-plugin:task:evidence:attachment"]: (
+            args: PluginTaskParameterType["cypress-xray-plugin:task:evidence:attachment"]
+        ) => {
+            return cypressTaskListener["cypress-xray-plugin:task:evidence:attachment"](args);
+        },
         ["cypress-xray-plugin:task:iteration:definition"]: (
             args: PluginTaskParameterType["cypress-xray-plugin:task:iteration:definition"]
         ) => {
@@ -288,6 +293,9 @@ export function syncFeatureFile(file: Cypress.FileObject): string {
 
 function registerDefaultTasks(on: Cypress.PluginEvents) {
     on("task", {
+        ["cypress-xray-plugin:task:evidence:attachment"]: (
+            args: PluginTaskParameterType["cypress-xray-plugin:task:evidence:attachment"]
+        ) => args.evidence,
         ["cypress-xray-plugin:task:iteration:definition"]: (
             args: PluginTaskParameterType["cypress-xray-plugin:task:iteration:definition"]
         ) => args.parameters,

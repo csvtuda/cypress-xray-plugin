@@ -22,6 +22,7 @@ import type {
     PluginOptions,
 } from "../src/models/plugin";
 import type {
+    XrayEvidenceItem,
     XrayTest,
     XrayTestExecutionResults,
 } from "../src/models/xray/import-test-execution-results";
@@ -785,5 +786,13 @@ export function generateFakeFileObject(options?: { fileExtension?: string }): Fi
         filePath: `${faker().system.directoryPath()}/${faker().system.fileName({ extensionCount: 0 })}.${options?.fileExtension ?? faker().system.fileExt()}`,
         outputPath: faker().system.filePath(),
         shouldWatch: faker().datatype.boolean(),
+    };
+}
+
+export function generateFakeXrayEvidenceItem(): Required<XrayEvidenceItem> {
+    return {
+        contentType: faker().system.mimeType(),
+        data: Buffer.from(faker().string.sample()).toString("base64"),
+        filename: faker().system.fileName(),
     };
 }

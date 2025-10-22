@@ -1,3 +1,4 @@
+import type { XrayEvidenceItem } from "../models/xray/import-test-execution-results";
 import type { EvidenceCollection, IterationParameterCollection } from "../plugin/context";
 import { encode } from "../util/base64";
 import { dedent } from "../util/dedent";
@@ -6,6 +7,7 @@ import { extractIssueKeys } from "../util/extraction";
 import type { Logger } from "../util/logging";
 
 type Task =
+    | "cypress-xray-plugin:task:evidence:attachment"
     | "cypress-xray-plugin:task:iteration:definition"
     | "cypress-xray-plugin:task:request"
     | "cypress-xray-plugin:task:response";
@@ -15,6 +17,10 @@ type Task =
  */
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const PluginTask = {
+    /**
+     * The task that adds evidence to a test run.
+     */
+    ["EVIDENCE_ATTACHMENT"]: "cypress-xray-plugin:task:evidence:attachment",
     /**
      * The task which handles incoming responses from requests dispatched through `cy.request`
      * within a test.
@@ -32,9 +38,34 @@ export const PluginTask = {
 } as const;
 
 /**
+ * Enqueues the plugin task that adds Xray evidence to the current test run.
+ *
+ * @param task - the task name
+ * @param evidence - the evidence to add to the current test run
+ */
+export function enqueueTask(
+    task: "cypress-xray-plugin:task:evidence:attachment",
+    evidence: Required<XrayEvidenceItem>
+): Cypress.Chainable<XrayEvidenceItem>;
+/**
  * Enqueues the plugin task for processing a dispatched request. The plugin internally keeps track
  * of all requests enqueued in this way and will upload them as test execution evidence if the
  * appropriate options are enabled.
+ *
+ * @deprecated Will be removed in version `9.0.0`. Please use the following instead:
+ *
+ * @example
+ *
+ * ```ts
+ * Cypress.Commands.overwrite("request", (originalFn, request: Partial<Cypress.RequestOptions>) => {
+ *   enqueueTask("cypress-xray-plugin:task:evidence:attachment", {
+ *     contentType: "application/json",
+ *     data: Buffer.from(JSON.stringify(request)).toString("base64"),
+ *     filename: "my-request.json",
+ *   });
+ *   return originalFn(request);
+ * });
+ * ```
  *
  * @param task - the task name
  * @param filename - the name of the evidence file to save the request data to
@@ -51,6 +82,20 @@ export function enqueueTask(
  * Enqueues the plugin task for processing a received response. The plugin internally keeps track
  * of all responses enqueued in this way and will upload them as test execution evidence if the
  * appropriate options are enabled.
+ *
+ * @deprecated Will be removed in version `9.0.0`. Please use the following instead:
+ *
+ * @example
+ *
+ * ```ts
+ * cy.request("my-url").then((response) =>
+ *   enqueueTask("cypress-xray-plugin:task:evidence:attachment", {
+ *     contentType: "application/json",
+ *     data: Buffer.from(JSON.stringify(response)).toString("base64"),
+ *     filename: "my-response.json",
+ *   })
+ * );
+ * ```
  *
  * @param task - the task name
  * @param filename - the name of the evidence file to save the response data to
@@ -73,8 +118,17 @@ export function enqueueTask(
     task: "cypress-xray-plugin:task:iteration:definition",
     parameters: Record<string, string>
 ): Cypress.Chainable<Record<string, string>>;
+
+// Implementation.
 export function enqueueTask<T>(task: Task, ...args: unknown[]): Cypress.Chainable<T> {
     switch (task) {
+        case "cypress-xray-plugin:task:evidence:attachment": {
+            // Cast valid because of overload.
+            const [evidence] = args as [Required<XrayEvidenceItem>];
+            const taskParameters: PluginTaskParameterType["cypress-xray-plugin:task:evidence:attachment"] =
+                { evidence: evidence, test: Cypress.currentTest.titlePath.join(" ") };
+            return cy.task(task, taskParameters);
+        }
         case "cypress-xray-plugin:task:request": {
             // Cast valid because of overload.
             const [filename, request] = args as [string, Partial<Cypress.RequestOptions>];
@@ -99,10 +153,7 @@ export function enqueueTask<T>(task: Task, ...args: unknown[]): Cypress.Chainabl
             // Cast valid because of overload.
             const [parameters] = args as [Record<string, string>];
             const taskParameters: PluginTaskParameterType["cypress-xray-plugin:task:iteration:definition"] =
-                {
-                    parameters: parameters,
-                    test: Cypress.currentTest.titlePath.join(" "),
-                };
+                { parameters: parameters, test: Cypress.currentTest.titlePath.join(" ") };
             return cy.task(task, taskParameters);
         }
     }
@@ -112,6 +163,19 @@ export function enqueueTask<T>(task: Task, ...args: unknown[]): Cypress.Chainabl
  * Models the parameters for the different plugin tasks.
  */
 export interface PluginTaskParameterType {
+    /**
+     * The task parameters for attaching Xray evidence to test runs.
+     */
+    ["cypress-xray-plugin:task:evidence:attachment"]: {
+        /**
+         * The Xray evidence item to add to the current test.
+         */
+        evidence: Required<XrayEvidenceItem>;
+        /**
+         * The test name where the task was called.
+         */
+        test: string;
+    };
     /**
      * The task parameters for defining Xray iteration data.
      */
@@ -163,7 +227,11 @@ export interface PluginTaskParameterType {
 
 interface PluginTaskReturnType {
     /**
-     * The result of an itereation parameter definition task task.
+     * The result of an evidence attachment task.
+     */
+    ["cypress-xray-plugin:task:evidence:attachment"]: XrayEvidenceItem;
+    /**
+     * The result of an iteration parameter definition task.
      */
     ["cypress-xray-plugin:task:iteration:definition"]: Partial<Cypress.RequestOptions>;
     /**
@@ -184,14 +252,14 @@ export class CypressTaskListener implements TaskListener {
     private readonly projectKey: string;
     private readonly evidenceCollection: EvidenceCollection;
     private readonly iterationParameterCollection: IterationParameterCollection;
-    private readonly logger: Logger;
+    private readonly logger: Pick<Logger, "message">;
     private readonly ignoredTests = new Set<string>();
 
     constructor(
         projectKey: string,
         evidenceCollection: EvidenceCollection,
         iterationParameterCollection: IterationParameterCollection,
-        logger: Logger
+        logger: Pick<Logger, "message">
     ) {
         this.projectKey = projectKey;
         this.evidenceCollection = evidenceCollection;
@@ -199,32 +267,24 @@ export class CypressTaskListener implements TaskListener {
         this.logger = logger;
     }
 
+    public ["cypress-xray-plugin:task:evidence:attachment"](
+        args: PluginTaskParameterType["cypress-xray-plugin:task:evidence:attachment"]
+    ) {
+        for (const key of this.getKeys(args.test, "cypress-xray-plugin:task:evidence:attachment")) {
+            this.evidenceCollection.addEvidence(key, args.evidence);
+        }
+        return args.evidence;
+    }
+
     public ["cypress-xray-plugin:task:request"](
         args: PluginTaskParameterType["cypress-xray-plugin:task:request"]
     ) {
-        try {
-            const issueKeys = extractIssueKeys(args.test, this.projectKey);
-            for (const issueKey of issueKeys) {
-                this.evidenceCollection.addEvidence(issueKey, {
-                    contentType: "application/json",
-                    data: encode(JSON.stringify(args.request, null, 2)),
-                    filename: args.filename,
-                });
-            }
-        } catch (error: unknown) {
-            if (!this.ignoredTests.has(args.test)) {
-                this.logger.message(
-                    "warning",
-                    dedent(`
-                        Test: ${args.test}
-
-                          Encountered a cy.request call which will not be included as evidence.
-
-                            Caused by: ${errorMessage(error)}
-                    `)
-                );
-                this.ignoredTests.add(args.test);
-            }
+        for (const key of this.getKeys(args.test, "cypress-xray-plugin:task:request")) {
+            this.evidenceCollection.addEvidence(key, {
+                contentType: "application/json",
+                data: encode(JSON.stringify(args.request, null, 2)),
+                filename: args.filename,
+            });
         }
         return args.request;
     }
@@ -232,29 +292,12 @@ export class CypressTaskListener implements TaskListener {
     public ["cypress-xray-plugin:task:response"](
         args: PluginTaskParameterType["cypress-xray-plugin:task:response"]
     ) {
-        try {
-            const issueKeys = extractIssueKeys(args.test, this.projectKey);
-            for (const issueKey of issueKeys) {
-                this.evidenceCollection.addEvidence(issueKey, {
-                    contentType: "application/json",
-                    data: encode(JSON.stringify(args.response, null, 2)),
-                    filename: args.filename,
-                });
-            }
-        } catch (error: unknown) {
-            if (!this.ignoredTests.has(args.test)) {
-                this.logger.message(
-                    "warning",
-                    dedent(`
-                        Test: ${args.test}
-
-                          Encountered a cy.request call which will not be included as evidence.
-
-                            Caused by: ${errorMessage(error)}
-                    `)
-                );
-                this.ignoredTests.add(args.test);
-            }
+        for (const key of this.getKeys(args.test, "cypress-xray-plugin:task:response")) {
+            this.evidenceCollection.addEvidence(key, {
+                contentType: "application/json",
+                data: encode(JSON.stringify(args.response, null, 2)),
+                filename: args.filename,
+            });
         }
         return args.response;
     }
@@ -262,30 +305,37 @@ export class CypressTaskListener implements TaskListener {
     public ["cypress-xray-plugin:task:iteration:definition"](
         args: PluginTaskParameterType["cypress-xray-plugin:task:iteration:definition"]
     ) {
+        for (const key of this.getKeys(
+            args.test,
+            "cypress-xray-plugin:task:iteration:definition"
+        )) {
+            this.iterationParameterCollection.setIterationParameters(
+                key,
+                args.test,
+                args.parameters
+            );
+        }
+        return args.parameters;
+    }
+
+    private getKeys(test: string, task: Task): string[] {
         try {
-            const issueKeys = extractIssueKeys(args.test, this.projectKey);
-            for (const issueKey of issueKeys) {
-                this.iterationParameterCollection.setIterationParameters(
-                    issueKey,
-                    args.test,
-                    args.parameters
-                );
-            }
+            return extractIssueKeys(test, this.projectKey);
         } catch (error: unknown) {
-            if (!this.ignoredTests.has(args.test)) {
+            if (!this.ignoredTests.has(test)) {
                 this.logger.message(
                     "warning",
                     dedent(`
-                        Test: ${args.test}
+                        Test: ${test}
 
-                          Encountered an iteration definition task call which cannot be mapped to a test.
+                          Encountered a ${task} task call which cannot be mapped to a test.
 
                             Caused by: ${errorMessage(error)}
                     `)
                 );
-                this.ignoredTests.add(args.test);
+                this.ignoredTests.add(test);
             }
+            return [];
         }
-        return args.parameters;
     }
 }

@@ -2,10 +2,18 @@ import assert from "node:assert";
 import path from "node:path";
 import process from "node:process";
 import { describe, it } from "node:test";
+import {
+    faker,
+    generateFakeIssueKey,
+    generateFakeProjectKey,
+    generateFakeTitles,
+    generateFakeXrayEvidenceItem,
+} from "../../test/faker";
 import { getMockedCypress } from "../../test/mocks";
 import type { RequestOptions } from "../models/cypress";
 import { SimpleEvidenceCollection, SimpleIterationParameterCollection } from "../plugin/context";
 import { dedent } from "../util/dedent";
+import type { Logger } from "../util/logging";
 import { LOG } from "../util/logging";
 import * as tasks from "./tasks";
 
@@ -105,6 +113,37 @@ void describe(path.relative(process.cwd(), __filename), () => {
                     test: "Incoming test title",
                 },
             ]);
+        });
+
+        void it("enqueues tasks for attaching test evidence", (context) => {
+            const testName = faker().helpers.multiple(() => faker().string.sample());
+            const contentType = faker().system.mimeType();
+            const data = Buffer.from(faker().string.sample()).toString("base64");
+            const filename = faker().system.fileName();
+            const { cy, cypress } = getMockedCypress();
+            cypress.currentTest.titlePath = testName;
+            const task = context.mock.method(cy, "task", context.mock.fn());
+            tasks.enqueueTask("cypress-xray-plugin:task:evidence:attachment", {
+                contentType: contentType,
+                data: data,
+                filename: filename,
+            });
+            assert.deepStrictEqual(
+                task.mock.calls.map((call) => call.arguments),
+                [
+                    [
+                        "cypress-xray-plugin:task:evidence:attachment",
+                        {
+                            evidence: {
+                                contentType: contentType,
+                                data: data,
+                                filename: filename,
+                            },
+                            test: testName.join(" "),
+                        },
+                    ],
+                ]
+            );
         });
     });
 
@@ -268,7 +307,7 @@ void describe(path.relative(process.cwd(), __filename), () => {
                 dedent(`
                     Test: This is a test
 
-                      Encountered a cy.request call which will not be included as evidence.
+                      Encountered a cypress-xray-plugin:task:request task call which cannot be mapped to a test.
 
                         Caused by: Test: This is a test
 
@@ -323,7 +362,7 @@ void describe(path.relative(process.cwd(), __filename), () => {
                 dedent(`
                     Test: This is a test
 
-                      Encountered a cy.request call which will not be included as evidence.
+                      Encountered a cypress-xray-plugin:task:request task call which cannot be mapped to a test.
 
                         Caused by: Test: This is a test
 
@@ -566,7 +605,7 @@ void describe(path.relative(process.cwd(), __filename), () => {
                 dedent(`
                     Test: This is a test
 
-                      Encountered a cy.request call which will not be included as evidence.
+                      Encountered a cypress-xray-plugin:task:response task call which cannot be mapped to a test.
 
                         Caused by: Test: This is a test
 
@@ -636,7 +675,7 @@ void describe(path.relative(process.cwd(), __filename), () => {
                 dedent(`
                     Test: This is a test
 
-                      Encountered a cy.request call which will not be included as evidence.
+                      Encountered a cypress-xray-plugin:task:response task call which cannot be mapped to a test.
 
                         Caused by: Test: This is a test
 
@@ -773,7 +812,7 @@ void describe(path.relative(process.cwd(), __filename), () => {
                 dedent(`
                     Test: This is a test
 
-                      Encountered an iteration definition task call which cannot be mapped to a test.
+                      Encountered a cypress-xray-plugin:task:iteration:definition task call which cannot be mapped to a test.
 
                         Caused by: Test: This is a test
 
@@ -820,7 +859,7 @@ void describe(path.relative(process.cwd(), __filename), () => {
                 dedent(`
                     Test: This is a test
 
-                      Encountered an iteration definition task call which cannot be mapped to a test.
+                      Encountered a cypress-xray-plugin:task:iteration:definition task call which cannot be mapped to a test.
 
                         Caused by: Test: This is a test
 
@@ -836,6 +875,181 @@ void describe(path.relative(process.cwd(), __filename), () => {
                           - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
                 `),
             ]);
+        });
+
+        void it("handles evidence attachments for tests with issue key", (context) => {
+            const messageMock = context.mock.fn<Logger["message"]>();
+            const evidenceCollection = new SimpleEvidenceCollection();
+            const addEvidenceMock = context.mock.method(
+                evidenceCollection,
+                "addEvidence",
+                context.mock.fn()
+            );
+            const projectKey = generateFakeProjectKey();
+            const issueKey = generateFakeIssueKey({ projectKey: projectKey });
+            const evidence = generateFakeXrayEvidenceItem();
+            const listener = new tasks.CypressTaskListener(
+                projectKey,
+                evidenceCollection,
+                new SimpleIterationParameterCollection(),
+                { message: messageMock }
+            );
+            const result = listener["cypress-xray-plugin:task:evidence:attachment"]({
+                evidence: evidence,
+                test: generateFakeTitles(issueKey).join(" "),
+            });
+            assert.deepStrictEqual(
+                addEvidenceMock.mock.calls.map((call) => call.arguments),
+                [[issueKey, evidence]]
+            );
+            assert.deepStrictEqual(result, evidence);
+        });
+
+        void it("handles single evidence attachments for tests with multiple issue keys", (context) => {
+            const messageMock = context.mock.fn<Logger["message"]>();
+            const evidenceCollection = new SimpleEvidenceCollection();
+            const projectKey = generateFakeProjectKey();
+            const issueKeys = faker().helpers.multiple(() =>
+                generateFakeIssueKey({ projectKey: projectKey })
+            );
+            const evidence = generateFakeXrayEvidenceItem();
+            const listener = new tasks.CypressTaskListener(
+                projectKey,
+                evidenceCollection,
+                new SimpleIterationParameterCollection(),
+                { message: messageMock }
+            );
+            listener["cypress-xray-plugin:task:evidence:attachment"]({
+                evidence: evidence,
+                test: issueKeys.flatMap((key) => generateFakeTitles(key)).join(" "),
+            });
+            for (const issueKey of issueKeys) {
+                assert.deepStrictEqual(evidenceCollection.getEvidence(issueKey), [evidence]);
+            }
+        });
+
+        void it("handles multiple evidence attachments for tests with the same issue key", (context) => {
+            const messageMock = context.mock.fn<Logger["message"]>();
+            const evidenceCollection = new SimpleEvidenceCollection();
+            const projectKey = generateFakeProjectKey();
+            const issueKey = generateFakeIssueKey({ projectKey: projectKey });
+            const evidences = faker().helpers.multiple(() => generateFakeXrayEvidenceItem());
+            const listener = new tasks.CypressTaskListener(
+                projectKey,
+                evidenceCollection,
+                new SimpleIterationParameterCollection(),
+                { message: messageMock }
+            );
+            for (const evidence of evidences) {
+                listener["cypress-xray-plugin:task:evidence:attachment"]({
+                    evidence: evidence,
+                    test: generateFakeTitles(issueKey).join(" "),
+                });
+            }
+            assert.deepStrictEqual(evidenceCollection.getEvidence(issueKey), evidences);
+        });
+
+        void it("handles single evidence attachments for tests without issue key", (context) => {
+            const messageMock = context.mock.fn<Logger["message"]>();
+            const evidenceCollection = new SimpleEvidenceCollection();
+            const projectKey = generateFakeProjectKey();
+            const evidence = generateFakeXrayEvidenceItem();
+            const title = generateFakeTitles().join(" ");
+            const addEvidenceMock = context.mock.method(
+                evidenceCollection,
+                "addEvidence",
+                context.mock.fn()
+            );
+            const listener = new tasks.CypressTaskListener(
+                projectKey,
+                evidenceCollection,
+                new SimpleIterationParameterCollection(),
+                { message: messageMock }
+            );
+            listener["cypress-xray-plugin:task:evidence:attachment"]({
+                evidence: evidence,
+                test: title,
+            });
+            assert.strictEqual(addEvidenceMock.mock.callCount(), 0);
+            assert.deepStrictEqual(
+                messageMock.mock.calls.map((call) => call.arguments),
+                [
+                    [
+                        "warning",
+                        dedent(`
+                            Test: ${title}
+
+                              Encountered a cypress-xray-plugin:task:evidence:attachment task call which cannot be mapped to a test.
+
+                                Caused by: Test: ${title}
+
+                                  No test issue keys found in title.
+
+                                  You can target existing test issues by adding a corresponding issue key:
+
+                                    it("${projectKey}-123 ${title}", () => {
+                                      // ...
+                                    });
+
+                                  For more information, visit:
+                                  - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
+                        `),
+                    ],
+                ]
+            );
+        });
+
+        void it("handles multiple evidence attachments for tests without issue key", (context) => {
+            const messageMock = context.mock.fn<Logger["message"]>();
+            const evidenceCollection = new SimpleEvidenceCollection();
+            const projectKey = generateFakeProjectKey();
+            const evidences = faker().helpers.multiple(() => generateFakeXrayEvidenceItem());
+            const title = generateFakeTitles().join(" ");
+            const addEvidenceMock = context.mock.method(
+                evidenceCollection,
+                "addEvidence",
+                context.mock.fn()
+            );
+            const listener = new tasks.CypressTaskListener(
+                projectKey,
+                evidenceCollection,
+                new SimpleIterationParameterCollection(),
+                { message: messageMock }
+            );
+            for (const evidence of evidences) {
+                listener["cypress-xray-plugin:task:evidence:attachment"]({
+                    evidence: evidence,
+                    test: title,
+                });
+            }
+            assert.strictEqual(addEvidenceMock.mock.callCount(), 0);
+            assert.deepStrictEqual(messageMock.mock.callCount(), 1);
+            assert.deepStrictEqual(
+                messageMock.mock.calls.map((call) => call.arguments),
+                [
+                    [
+                        "warning",
+                        dedent(`
+                            Test: ${title}
+
+                              Encountered a cypress-xray-plugin:task:evidence:attachment task call which cannot be mapped to a test.
+
+                                Caused by: Test: ${title}
+
+                                  No test issue keys found in title.
+
+                                  You can target existing test issues by adding a corresponding issue key:
+
+                                    it("${projectKey}-123 ${title}", () => {
+                                      // ...
+                                    });
+
+                                  For more information, visit:
+                                  - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
+                        `),
+                    ],
+                ]
+            );
         });
     });
 });
