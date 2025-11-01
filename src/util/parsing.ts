@@ -10,7 +10,7 @@ import { unknownToString } from "./string";
  * @see https://www.npmjs.com/package/yn
  */
 export function asBoolean(value: string): boolean {
-    value = String(value).trim();
+    value = value.trim();
     if (/^(?:y|yes|true|1|on)$/i.test(value)) {
         return true;
     }
