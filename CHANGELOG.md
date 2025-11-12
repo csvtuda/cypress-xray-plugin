@@ -1,5 +1,10 @@
 # Changelog
 
+# `8.6.1`
+
+- Deprecated `xray.uploadRequests` option
+- Un-deprecated `xray.uploadResults` option
+
 # `8.6.0`
 
 - Added `cypress-xray-plugin:task:evidence:attachment` task for uploading arbitrary evidence
