@@ -528,13 +528,6 @@ export interface XrayOptions {
      * @see https://csvtuda.github.io/docs/cypress-xray-plugin/guides/uploadRequestData/
      *
      * @defaultValue false
-     */
-    uploadRequests?: boolean;
-    /**
-     * Turns execution results upload on or off. Useful when switching upload on or off from the
-     * command line (via environment variables).
-     *
-     * @defaultValue true
      *
      * @deprecated Will be removed in version `9.0.0`. Please use the following instead:
      *
@@ -560,6 +553,13 @@ export interface XrayOptions {
      *   })
      * );
      * ```
+     */
+    uploadRequests?: boolean;
+    /**
+     * Turns execution results upload on or off. Useful when switching upload on or off from the
+     * command line (via environment variables).
+     *
+     * @defaultValue true
      */
     uploadResults?: boolean;
     /**
