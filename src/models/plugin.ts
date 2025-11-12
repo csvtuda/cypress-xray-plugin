@@ -533,25 +533,55 @@ export interface XrayOptions {
      *
      * @example
      *
+     * Disable the plugin's internal `cy.request()` override (which will be removed alongside this option in `9.0.0`):
+     *
      * ```ts
-     * // To upload requests as evidence, you'll need to overwrite the cy.request() command:
-     * Cypress.Commands.overwrite("request", (originalFn, request: Partial<Cypress.RequestOptions>) => {
+     * // cypress.config.js
+     * import { configureXrayPlugin } from "@csvtuda/cypress-xray-plugin";
+     *
+     * async setupNodeEvents(on, config) {
+     *     await configureXrayPlugin(on, config, {
+     *         // ...
+     *         xray: {
+     *             uploadRequests: false
+     *         }
+     *     });
+     * }
+     * ```
+     *
+     * Then, if you want to upload requests, you'll need to overwrite the `cy.request()` command yourself:
+     *
+     * ```ts
+     * // commands.js
+     * import { enqueueTask } from "@csvtuda/cypress-xray-plugin/commands/tasks";
+     *
+     * Cypress.Commands.overwrite("request", (originalFn, request) => {
+     *   const myFileName = "my-request.json"; // build as desired
      *   enqueueTask("cypress-xray-plugin:task:evidence:attachment", {
      *     contentType: "application/json",
      *     data: Buffer.from(JSON.stringify(request)).toString("base64"),
-     *     filename: "my-request.json",
+     *     filename: myFileName,
      *   });
      *   return originalFn(request);
      * });
+     * ```
      *
-     * // To upload responses as evidence, you can enqueue the evidence task inside the test case:
-     * cy.request("my-url").then((response) =>
-     *   enqueueTask("cypress-xray-plugin:task:evidence:attachment", {
-     *     contentType: "application/json",
-     *     data: Buffer.from(JSON.stringify(response)).toString("base64"),
-     *     filename: "my-response.json",
-     *   })
-     * );
+     * If you want to upload responses as evidence, you'll need to enqueue the evidence task inside the test case:
+     *
+     * ```ts
+     * // my-test.js
+     * import { enqueueTask } from "@csvtuda/cypress-xray-plugin/commands/tasks";
+     *
+     * it("CYP-123 my test case", () => {
+     *   cy.request("my-url").then((response) =>
+     *     const myFileName = "my-response.json"; // build as desired
+     *     enqueueTask("cypress-xray-plugin:task:evidence:attachment", {
+     *       contentType: "application/json",
+     *       data: Buffer.from(JSON.stringify(response)).toString("base64"),
+     *       filename: myFileName,
+     *     })
+     *   );
+     * });
      * ```
      */
     uploadRequests?: boolean;
