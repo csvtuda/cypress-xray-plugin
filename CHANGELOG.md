@@ -1,5 +1,9 @@
 # Changelog
 
+# `8.6.2`
+
+- Fixed issue where test executions were not being reused ([#41](https://github.com/csvtuda/cypress-xray-plugin/issues/41))
+
 # `8.6.1`
 
 - Deprecated `xray.uploadRequests` option
@@ -614,7 +618,6 @@ Some of the plugin's core functionality has been rewritten entirely to keep thin
 ## Breaking changes
 
 - The plugin will now _never_ create new Jira issues. The only exception to this rule are test execution issues.
-
     - It now only uploads results of Cypress tests which include [a corresponding Jira key](https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/) and skips all other tests
     - It now only uploads results of Cucumber tests which include both:
         - Issue tags for background elements (see [here](https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/))
