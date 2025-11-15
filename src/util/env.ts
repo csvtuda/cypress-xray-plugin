@@ -69,3 +69,34 @@ export const ENV_NAMES = {
         url: "XRAY_URL",
     },
 } as const;
+
+/**
+ * Determines whether a given environment variable exists in the provided object and is a non-empty
+ * string.
+ *
+ * @param name - The key of the environment variable to check.
+ * @param env - The environment-like object (e.g., `process.env`) to look into.
+ *
+ * @returns `true` if `name` exists as a key in `env` and its value is non-empty string
+ *
+ * @example
+ *
+ * ```ts
+ * if (isEnvVariableDefined("API_KEY", process.env)) {
+ *     // Here, process.env.API_KEY is typed as a string
+ *     startService(process.env.API_KEY);
+ * }
+ * ```
+ */
+export function isEnvVariableDefined<K extends string, T extends Record<string, unknown>>(
+    name: K,
+    env: T
+): env is T & Record<K, string> {
+    if (!(name in env)) {
+        return false;
+    }
+    if (typeof env[name] !== "string") {
+        return false;
+    }
+    return env[name].trim() !== "";
+}

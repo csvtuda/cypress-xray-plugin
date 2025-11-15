@@ -27,7 +27,7 @@ import type { XrayEvidenceItem } from "../models/xray/import-test-execution-resu
 import { dedent } from "../util/dedent";
 import type { CucumberPreprocessorArgs, CucumberPreprocessorExports } from "../util/dependencies";
 import dependencies from "../util/dependencies";
-import { ENV_NAMES } from "../util/env";
+import { ENV_NAMES, isEnvVariableDefined } from "../util/env";
 import { errorMessage } from "../util/errors";
 import { HELP } from "../util/help";
 import { CapturingLogger, LOG } from "../util/logging";
@@ -535,16 +535,16 @@ async function initClients(
     httpClients: HttpClientCombination
 ): Promise<ClientCombination> {
     if (
-        ENV_NAMES.authentication.jira.username in env &&
-        ENV_NAMES.authentication.jira.apiToken in env
+        isEnvVariableDefined(ENV_NAMES.authentication.jira.username, env) &&
+        isEnvVariableDefined(ENV_NAMES.authentication.jira.apiToken, env)
     ) {
         LOG.message(
             "info",
             "Jira username and API token found. Setting up Jira cloud basic auth credentials."
         );
         const credentials = new BasicAuthCredentials(
-            env[ENV_NAMES.authentication.jira.username] as string,
-            env[ENV_NAMES.authentication.jira.apiToken] as string
+            env[ENV_NAMES.authentication.jira.username],
+            env[ENV_NAMES.authentication.jira.apiToken]
         );
         const jiraClient = await getJiraClient(
             jiraOptions.url,
@@ -553,8 +553,8 @@ async function initClients(
             "cloud"
         );
         if (
-            ENV_NAMES.authentication.xray.clientId in env &&
-            ENV_NAMES.authentication.xray.clientSecret in env
+            isEnvVariableDefined(ENV_NAMES.authentication.xray.clientId, env) &&
+            isEnvVariableDefined(ENV_NAMES.authentication.xray.clientSecret, env)
         ) {
             LOG.message(
                 "info",
@@ -565,8 +565,8 @@ async function initClients(
                 ""
             );
             const xrayCredentials = new JwtCredentials(
-                env[ENV_NAMES.authentication.xray.clientId] as string,
-                env[ENV_NAMES.authentication.xray.clientSecret] as string,
+                env[ENV_NAMES.authentication.xray.clientId],
+                env[ENV_NAMES.authentication.xray.clientSecret],
                 `${url}/api/${XrayClientCloud.VERSION}/authenticate`,
                 httpClients.xray
             );
@@ -584,11 +584,9 @@ async function initClients(
                   You can find all configurations currently supported at: ${HELP.plugin.configuration.authentication.root}
             `)
         );
-    } else if (ENV_NAMES.authentication.jira.apiToken in env) {
+    } else if (isEnvVariableDefined(ENV_NAMES.authentication.jira.apiToken, env)) {
         LOG.message("info", "Jira PAT found. Setting up Jira server PAT credentials.");
-        const credentials = new PatCredentials(
-            env[ENV_NAMES.authentication.jira.apiToken] as string
-        );
+        const credentials = new PatCredentials(env[ENV_NAMES.authentication.jira.apiToken]);
         const jiraClient = await getJiraClient(
             jiraOptions.url,
             credentials,
@@ -607,16 +605,16 @@ async function initClients(
             xrayClient: xrayClient,
         };
     } else if (
-        ENV_NAMES.authentication.jira.username in env &&
-        ENV_NAMES.authentication.jira.password in env
+        isEnvVariableDefined(ENV_NAMES.authentication.jira.username, env) &&
+        isEnvVariableDefined(ENV_NAMES.authentication.jira.password, env)
     ) {
         LOG.message(
             "info",
             "Jira username and password found. Setting up Jira server basic auth credentials."
         );
         const credentials = new BasicAuthCredentials(
-            env[ENV_NAMES.authentication.jira.username] as string,
-            env[ENV_NAMES.authentication.jira.password] as string
+            env[ENV_NAMES.authentication.jira.username],
+            env[ENV_NAMES.authentication.jira.password]
         );
         const jiraClient = await getJiraClient(
             jiraOptions.url,
