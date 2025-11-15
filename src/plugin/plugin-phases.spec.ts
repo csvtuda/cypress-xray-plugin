@@ -1164,7 +1164,12 @@ void describe(pluginPhases.runCypressUpload.name, () => {
                 const projectKey = generateFakeProjectKey();
                 const options = {
                     cucumber: { featureFileExtension: `.${faker().system.fileExt()}` },
-                    jira: { projectKey: projectKey },
+                    jira: {
+                        projectKey: projectKey,
+                        testExecutionIssue: faker().helpers.maybe(() => {
+                            return { key: faker().helpers.maybe(() => generateFakeIssueKey()) };
+                        }),
+                    },
                     plugin: {
                         normalizeScreenshotNames: faker().datatype.boolean(),
                         splitUpload: faker().datatype.boolean(),
@@ -1237,7 +1242,10 @@ void describe(pluginPhases.runCypressUpload.name, () => {
                                     cucumber: {
                                         featureFileExtension: options.cucumber.featureFileExtension,
                                     },
-                                    jira: { projectKey: options.jira.projectKey },
+                                    jira: {
+                                        projectKey: options.jira.projectKey,
+                                        testExecutionIssueKey: options.jira.testExecutionIssue?.key,
+                                    },
                                     plugin: {
                                         normalizeScreenshotNames:
                                             options.plugin.normalizeScreenshotNames,
@@ -1286,7 +1294,12 @@ void describe(pluginPhases.runCypressUpload.name, () => {
                 const projectKey = generateFakeProjectKey();
                 const options = {
                     cucumber: { featureFileExtension: `.${faker().system.fileExt()}` },
-                    jira: { projectKey: projectKey },
+                    jira: {
+                        projectKey: projectKey,
+                        testExecutionIssue: faker().helpers.maybe(() => {
+                            return { key: faker().helpers.maybe(() => generateFakeIssueKey()) };
+                        }),
+                    },
                     plugin: {
                         normalizeScreenshotNames: faker().datatype.boolean(),
                         splitUpload: faker().datatype.boolean(),
@@ -1365,7 +1378,10 @@ void describe(pluginPhases.runCypressUpload.name, () => {
                                     cucumber: {
                                         featureFileExtension: options.cucumber.featureFileExtension,
                                     },
-                                    jira: { projectKey: options.jira.projectKey },
+                                    jira: {
+                                        projectKey: options.jira.projectKey,
+                                        testExecutionIssueKey: options.jira.testExecutionIssue?.key,
+                                    },
                                     plugin: {
                                         normalizeScreenshotNames:
                                             options.plugin.normalizeScreenshotNames,

@@ -219,7 +219,9 @@ async function runCypressUpload(parameters: {
     multipartInfo: MultipartInfo;
     options: {
         cucumber?: Partial<Pick<InternalCucumberOptions, "featureFileExtension">>;
-        jira: Pick<InternalJiraOptions, "projectKey">;
+        jira: Pick<InternalJiraOptions, "projectKey"> & {
+            testExecutionIssue?: Pick<PluginIssueUpdate, "key">;
+        };
         plugin: Pick<
             InternalPluginOptions,
             "normalizeScreenshotNames" | "splitUpload" | "uploadLastAttempt"
@@ -238,7 +240,10 @@ async function runCypressUpload(parameters: {
         logger: parameters.logger,
         options: {
             cucumber: { featureFileExtension: parameters.options.cucumber?.featureFileExtension },
-            jira: { projectKey: parameters.options.jira.projectKey },
+            jira: {
+                projectKey: parameters.options.jira.projectKey,
+                testExecutionIssueKey: parameters.options.jira.testExecutionIssue?.key,
+            },
             plugin: {
                 normalizeScreenshotNames: parameters.options.plugin.normalizeScreenshotNames,
                 uploadLastAttempt: parameters.options.plugin.uploadLastAttempt,
