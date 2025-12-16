@@ -1143,6 +1143,18 @@ void describe(relative(cwd(), __filename), () => {
                         assert.strictEqual(pluginOptions.enabled, false);
                     });
 
+                    // https://github.com/csvtuda/cypress-xray-plugin/issues/50
+                    // E.g.: npx cypress run --env PLUGIN_ENABLED=false
+                    void it("PLUGIN_ENABLED (actual boolean)", () => {
+                        const env = {
+                            ["PLUGIN_ENABLED"]: false,
+                        };
+                        const pluginOptions = globalContext.initPluginOptions(env, {
+                            enabled: true,
+                        });
+                        assert.strictEqual(pluginOptions.enabled, false);
+                    });
+
                     void it("PLUGIN_LOG_DIRECTORY", () => {
                         const env = {
                             ["PLUGIN_LOG_DIRECTORY"]: "/home/logs/cypress-xray-plugin",
