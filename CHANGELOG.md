@@ -1,5 +1,10 @@
 # Changelog
 
+# `8.6.3`
+
+- Fixed issue where environment variables were being parsed incorrectly ([#50](https://github.com/csvtuda/cypress-xray-plugin/issues/50))
+- Bumped glob from 11.0.3 to 11.1.0
+
 # `8.6.2`
 
 - Fixed issue where test executions were not being reused ([#41](https://github.com/csvtuda/cypress-xray-plugin/issues/41))
