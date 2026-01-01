@@ -74,7 +74,7 @@
         "cypress": "^15.7.0",
         "cypress-on-fix": "^1.1.0",
         "dotenv": "^17.2.3",
-        "eslint": "^9.23.0",
+        "eslint": "^9.39.2",
         "eslint-plugin-perfectionist": "^4.15.0",
         "eslint-plugin-tsdoc": "^0.5.0",
         "graphql": "^16.12.0",
