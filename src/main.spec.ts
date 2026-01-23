@@ -162,7 +162,6 @@ void describe(relative(cwd(), __filename), () => {
                 },
             });
             const internalOptions = generateFakeInternalPluginOptions(externalOptions);
-            const pluginContext = new PluginContext(internalOptions);
             context.mock.method(LOG, "message", context.mock.fn());
             const configureMock = context.mock.method(LOG, "configure", context.mock.fn());
             context.mock.method(globalContext, "initPluginOptions", () => internalOptions.plugin);
@@ -175,7 +174,6 @@ void describe(relative(cwd(), __filename), () => {
             context.mock.method(globalContext, "initXrayOptions", () => internalOptions.xray);
             context.mock.method(globalContext, "initHttpClients", () => httpClients);
             context.mock.method(globalContext, "initClients", () => clients);
-            context.mock.method(globalContext, "initGlobalContext", () => pluginContext);
             await configureXrayPlugin(context.mock.fn(), config, externalOptions);
             assert.deepStrictEqual(
                 configureMock.mock.calls.map((call) => call.arguments),
@@ -203,7 +201,6 @@ void describe(relative(cwd(), __filename), () => {
                 },
             });
             const internalOptions = generateFakeInternalPluginOptions(externalOptions);
-            const pluginContext = new PluginContext(internalOptions);
             context.mock.method(LOG, "message", context.mock.fn());
             const configureMock = context.mock.method(LOG, "configure", context.mock.fn());
             context.mock.method(globalContext, "initPluginOptions", () => internalOptions.plugin);
@@ -216,7 +213,6 @@ void describe(relative(cwd(), __filename), () => {
             context.mock.method(globalContext, "initXrayOptions", () => internalOptions.xray);
             context.mock.method(globalContext, "initHttpClients", () => httpClients);
             context.mock.method(globalContext, "initClients", () => clients);
-            context.mock.method(globalContext, "initGlobalContext", () => pluginContext);
             await configureXrayPlugin(context.mock.fn(), config, externalOptions);
             assert.deepStrictEqual(
                 configureMock.mock.calls.map((call) => call.arguments),
@@ -244,7 +240,6 @@ void describe(relative(cwd(), __filename), () => {
                 },
             });
             const internalOptions = generateFakeInternalPluginOptions(externalOptions);
-            const pluginContext = new PluginContext(internalOptions);
             context.mock.method(LOG, "message", context.mock.fn());
             const configureMock = context.mock.method(LOG, "configure", context.mock.fn());
             context.mock.method(globalContext, "initPluginOptions", () => internalOptions.plugin);
@@ -257,7 +252,6 @@ void describe(relative(cwd(), __filename), () => {
             context.mock.method(globalContext, "initXrayOptions", () => internalOptions.xray);
             context.mock.method(globalContext, "initHttpClients", () => httpClients);
             context.mock.method(globalContext, "initClients", () => clients);
-            context.mock.method(globalContext, "initGlobalContext", () => pluginContext);
             await configureXrayPlugin(context.mock.fn(), config, externalOptions);
             assert.deepStrictEqual(
                 configureMock.mock.calls.map((call) => call.arguments),
@@ -285,7 +279,6 @@ void describe(relative(cwd(), __filename), () => {
                 },
             });
             const internalOptions = generateFakeInternalPluginOptions(externalOptions);
-            const pluginContext = new PluginContext(internalOptions);
             context.mock.method(LOG, "message", context.mock.fn());
             const configureMock = context.mock.method(LOG, "configure", context.mock.fn());
             context.mock.method(globalContext, "initPluginOptions", () => internalOptions.plugin);
@@ -298,7 +291,6 @@ void describe(relative(cwd(), __filename), () => {
             context.mock.method(globalContext, "initXrayOptions", () => internalOptions.xray);
             context.mock.method(globalContext, "initHttpClients", () => httpClients);
             context.mock.method(globalContext, "initClients", () => clients);
-            context.mock.method(globalContext, "initGlobalContext", () => pluginContext);
             await configureXrayPlugin(context.mock.fn(), config, externalOptions);
             assert.deepStrictEqual(
                 configureMock.mock.calls.map((call) => call.arguments),
@@ -346,7 +338,6 @@ void describe(relative(cwd(), __filename), () => {
                 context.mock.method(globalContext, "initXrayOptions", () => internalOptions.xray);
                 context.mock.method(globalContext, "initHttpClients", () => httpClients);
                 context.mock.method(globalContext, "initClients", () => clients);
-                context.mock.method(globalContext, "initGlobalContext", () => pluginContext);
                 const runPluginMock = context.mock.method(
                     cypressXrayPlugin,
                     "runPlugin",
@@ -464,7 +455,6 @@ void describe(relative(cwd(), __filename), () => {
                 context.mock.method(globalContext, "initXrayOptions", () => internalOptions.xray);
                 context.mock.method(globalContext, "initHttpClients", () => httpClients);
                 context.mock.method(globalContext, "initClients", () => clients);
-                context.mock.method(globalContext, "initGlobalContext", () => pluginContext);
                 const runPluginMock = context.mock.method(
                     cypressXrayPlugin,
                     "runPlugin",
@@ -584,7 +574,6 @@ void describe(relative(cwd(), __filename), () => {
                 context.mock.method(globalContext, "initXrayOptions", () => internalOptions.xray);
                 context.mock.method(globalContext, "initHttpClients", () => httpClients);
                 context.mock.method(globalContext, "initClients", () => clients);
-                context.mock.method(globalContext, "initGlobalContext", () => pluginContext);
                 const runPluginMock = context.mock.method(
                     cypressXrayPlugin,
                     "runPlugin",
@@ -667,6 +656,63 @@ void describe(relative(cwd(), __filename), () => {
                     ]
                 );
             });
+
+            void it("forwards test plan issue keys from environment variables", async (context) => {
+                const afterRunResult = JSON.parse(
+                    fs.readFileSync("./test/resources/runResult.json", "utf-8")
+                ) as CypressCommandLine.CypressRunResult;
+                const { clients, httpClients } = generateFakeClientCombination();
+                const testPlanIssueKey = generateFakeIssueKey();
+                const externalOptions = generateFakeExternalPluginOptions({
+                    plugin: { enabled: true },
+                });
+                const internalOptions = generateFakeInternalPluginOptions(externalOptions);
+                context.mock.method(LOG, "message", context.mock.fn());
+                context.mock.method(
+                    globalContext,
+                    "initPluginOptions",
+                    () => internalOptions.plugin
+                );
+                context.mock.method(
+                    globalContext,
+                    "initCucumberOptions",
+                    () => internalOptions.cucumber
+                );
+                context.mock.method(globalContext, "initJiraOptions", () => {
+                    return { ...internalOptions.jira, testPlanIssueKey: testPlanIssueKey };
+                });
+                context.mock.method(globalContext, "initXrayOptions", () => internalOptions.xray);
+                context.mock.method(globalContext, "initHttpClients", () => httpClients);
+                context.mock.method(globalContext, "initClients", () => clients);
+                const runPluginMock = context.mock.method(
+                    cypressXrayPlugin,
+                    "runPlugin",
+                    context.mock.fn()
+                );
+                const mockedOn = context.mock.fn();
+                await configureXrayPlugin(mockedOn, config, externalOptions);
+                await (
+                    mockedOn.mock.calls[2].arguments[1] as (
+                        results: CypressFailedRunResult | CypressRunResult
+                    ) => Promise<void>
+                )(afterRunResult);
+                assert.partialDeepStrictEqual(
+                    runPluginMock.mock.calls.map((call) => call.arguments),
+                    [
+                        [
+                            {
+                                options: {
+                                    jira: {
+                                        testExecutionIssue: {
+                                            testPlan: testPlanIssueKey,
+                                        },
+                                    },
+                                },
+                            },
+                        ],
+                    ]
+                );
+            });
         });
 
         void it("displays an error for failed runs", async (context) => {
@@ -679,7 +725,6 @@ void describe(relative(cwd(), __filename), () => {
                 },
             });
             const internalOptions = generateFakeInternalPluginOptions(externalOptions);
-            const pluginContext = new PluginContext(internalOptions);
             const failedResults: CypressFailedRunResult = {
                 failures: faker().number.int(),
                 message: faker().book.title(),
@@ -695,7 +740,6 @@ void describe(relative(cwd(), __filename), () => {
             context.mock.method(globalContext, "initXrayOptions", () => internalOptions.xray);
             context.mock.method(globalContext, "initHttpClients", () => httpClients);
             context.mock.method(globalContext, "initClients", () => clients);
-            context.mock.method(globalContext, "initGlobalContext", () => pluginContext);
             const runPluginMock = context.mock.method(
                 cypressXrayPlugin,
                 "runPlugin",
