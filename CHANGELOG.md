@@ -1,5 +1,15 @@
 # Changelog
 
+# `8.6.4`
+
+- Fixed issue where configured test plan issue keys were being ignored ([#61](https://github.com/csvtuda/cypress-xray-plugin/issues/61))
+
+## Dependency updates
+
+- Bumped form-data from 4.0.4 to 4.0.5
+- Bumped @cucumber/messages from 27.2.0 to 31.1.0
+- Bumped @cucumber/gherkin from 35.1.0 to 37.0.1
+
 # `8.6.3`
 
 - Fixed issue where environment variables were being parsed incorrectly ([#50](https://github.com/csvtuda/cypress-xray-plugin/issues/50))
@@ -13,6 +23,10 @@
 
 - Deprecated `xray.uploadRequests` option
 - Un-deprecated `xray.uploadResults` option
+
+## Dependency updates
+
+- Bumped semver from 7.7.2 to 7.7.3
 
 # `8.6.0`
 
