@@ -151,9 +151,10 @@ export async function configureXrayPlugin(
                 context.getOptions().jira.testExecutionIssue,
                 { results: cypressRunResult }
             );
-            const resolvedTestPlanIssueKey = await getOrCall(options.jira.testPlanIssueKey, {
-                results: cypressRunResult,
-            });
+            const resolvedTestPlanIssueKey = await getOrCall(
+                context.getOptions().jira.testPlanIssueKey,
+                { results: cypressRunResult }
+            );
             await cypressXrayPlugin.runPlugin({
                 clients: { jira: jiraClient, xray: xrayClient },
                 context: {
@@ -168,43 +169,44 @@ export async function configureXrayPlugin(
                 logger: context.getLogger(),
                 options: {
                     cucumber: {
-                        featureFileExtension: internalOptions.cucumber?.featureFileExtension,
-                        prefixes: internalOptions.cucumber?.prefixes,
-                        preprocessor: internalOptions.cucumber?.preprocessor,
+                        featureFileExtension: context.getOptions().cucumber?.featureFileExtension,
+                        prefixes: context.getOptions().cucumber?.prefixes,
+                        preprocessor: context.getOptions().cucumber?.preprocessor,
                     },
                     jira: {
-                        attachVideos: internalOptions.jira.attachVideos,
+                        attachVideos: context.getOptions().jira.attachVideos,
                         fields: {
-                            testEnvironments: internalOptions.jira.fields.testEnvironments,
-                            testPlan: internalOptions.jira.fields.testPlan,
+                            testEnvironments: context.getOptions().jira.fields.testEnvironments,
+                            testPlan: context.getOptions().jira.fields.testPlan,
                         },
-                        projectKey: internalOptions.jira.projectKey,
+                        projectKey: context.getOptions().jira.projectKey,
                         testExecutionIssue: {
                             ...resolvedTestExecutionIssueData,
                             fields: {
                                 issuetype: {
-                                    name: internalOptions.jira.testExecutionIssueType,
+                                    name: context.getOptions().jira.testExecutionIssueType,
                                 },
-                                summary: internalOptions.jira.testExecutionIssueSummary,
+                                summary: context.getOptions().jira.testExecutionIssueSummary,
                                 ...resolvedTestExecutionIssueData?.fields,
                             },
                             key:
                                 resolvedTestExecutionIssueData?.key ??
-                                internalOptions.jira.testExecutionIssueKey,
-                            testEnvironments: internalOptions.xray.testEnvironments,
+                                context.getOptions().jira.testExecutionIssueKey,
+                            testEnvironments: context.getOptions().xray.testEnvironments,
                             testPlan: resolvedTestPlanIssueKey,
                         },
-                        url: internalOptions.jira.url,
+                        url: context.getOptions().jira.url,
                     },
                     plugin: {
-                        normalizeScreenshotNames: internalOptions.plugin.normalizeScreenshotNames,
-                        splitUpload: internalOptions.plugin.splitUpload,
-                        uploadLastAttempt: internalOptions.plugin.uploadLastAttempt,
+                        normalizeScreenshotNames:
+                            context.getOptions().plugin.normalizeScreenshotNames,
+                        splitUpload: context.getOptions().plugin.splitUpload,
+                        uploadLastAttempt: context.getOptions().plugin.uploadLastAttempt,
                     },
                     xray: {
-                        status: internalOptions.xray.status,
-                        uploadResults: internalOptions.xray.uploadResults,
-                        uploadScreenshots: internalOptions.xray.uploadScreenshots,
+                        status: context.getOptions().xray.status,
+                        uploadResults: context.getOptions().xray.uploadResults,
+                        uploadScreenshots: context.getOptions().xray.uploadScreenshots,
                     },
                 },
             });
