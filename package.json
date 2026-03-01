@@ -65,7 +65,7 @@
     "devDependencies": {
         "@badeball/cypress-cucumber-preprocessor": "^24.0.0",
         "@bahmutov/cypress-esbuild-preprocessor": "^2.2.7",
-        "@eslint/js": "^9.39.2",
+        "@eslint/js": "^10.0.1",
         "@faker-js/faker": "^9.9.0",
         "@qytera/xray-client": "^4.0.0",
         "@types/node": "^25.1.0",
