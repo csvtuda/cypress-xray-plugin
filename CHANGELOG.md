@@ -1,5 +1,12 @@
 # Changelog
 
+# `8.6.5`
+
+## Dependency updates
+
+- Bumped axios from 1.12.2 to 1.13.5
+- Bumped @cucumber/messages from 31.1.0 to 32.1.0
+
 # `8.6.4`
 
 - Fixed issue where configured test plan issue keys were being ignored ([#61](https://github.com/csvtuda/cypress-xray-plugin/issues/61))
