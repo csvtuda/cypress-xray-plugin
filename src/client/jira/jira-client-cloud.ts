@@ -16,7 +16,7 @@ export class JiraClientCloud extends BaseJiraClient implements HasSearchEndpoint
         const header = await this.credentials.getAuthorizationHeader();
         LOG.message("debug", "Searching issues...");
         const results: Record<string, Issue> = {};
-        let isLast = false;
+        let isLast: boolean;
         let nextPageToken = undefined;
         do {
             const paginatedRequest = { ...request, nextPageToken };

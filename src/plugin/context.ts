@@ -422,7 +422,8 @@ async function initCucumberOptions(
                     The plugin depends on the package and should automatically download it during installation, but might have failed to do so because of conflicting Node versions
 
                     Make sure to install the package manually using: npm install @badeball/cypress-cucumber-preprocessor --save-dev
-                `)
+                `),
+                { cause: error }
             );
         }
         LOG.message(
@@ -676,7 +677,8 @@ async function getXrayCloudClient(
                 For more information, set the plugin to debug mode: ${
                     HELP.plugin.configuration.plugin.debug
                 }
-            `)
+            `),
+            { cause: error }
         );
     }
     return xrayClient;
@@ -727,7 +729,8 @@ async function getXrayServerClient(
                 For more information, set the plugin to debug mode: ${
                     HELP.plugin.configuration.plugin.debug
                 }
-            `)
+            `),
+            { cause: error }
         );
     }
 }
@@ -776,7 +779,8 @@ async function getJiraClient<K extends "cloud" | "server">(
                 For more information, set the plugin to debug mode: ${
                     HELP.plugin.configuration.plugin.debug
                 }
-            `)
+            `),
+            { cause: error }
         );
     }
 }
