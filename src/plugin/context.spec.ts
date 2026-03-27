@@ -3,6 +3,7 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { beforeEach, describe, it } from "node:test";
+import { stub } from "../../test/mocks";
 import {
     BasicAuthCredentials,
     JwtCredentials,
@@ -20,6 +21,7 @@ import type {
     InternalJiraOptions,
     InternalPluginOptions,
     InternalXrayOptions,
+    XrayOptions,
 } from "../models/plugin";
 import globalContext, { SimpleEvidenceCollection } from "../plugin/context";
 import { dedent } from "../util/dedent";
@@ -427,6 +429,21 @@ void describe(relative(cwd(), __filename), () => {
 
                 void describe("xray", () => {
                     void describe("status", () => {
+                        void it("aggregate", () => {
+                            const aggregateFunction: Exclude<
+                                XrayOptions["status"],
+                                undefined
+                            >["aggregate"] = stub();
+                            const xrayOptions = globalContext.initXrayOptions(
+                                {},
+                                {
+                                    status: {
+                                        aggregate: aggregateFunction,
+                                    },
+                                }
+                            );
+                            assert.strictEqual(xrayOptions.status.aggregate, aggregateFunction);
+                        });
                         void it("failed", () => {
                             const xrayOptions = globalContext.initXrayOptions(
                                 {},

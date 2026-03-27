@@ -349,6 +349,7 @@ function initXrayOptions(
 ): InternalXrayOptions {
     return {
         status: {
+            aggregate: options?.status?.aggregate,
             failed: parse(env, ENV_NAMES.xray.status.failed, asString) ?? options?.status?.failed,
             passed: parse(env, ENV_NAMES.xray.status.passed, asString) ?? options?.status?.passed,
             pending:
