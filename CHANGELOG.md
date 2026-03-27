@@ -1,5 +1,10 @@
 # Changelog
 
+# `8.6.6`
+
+- Enhanced custom Xray status aggregate functions with new parameters
+- Fixed issue where custom Xray status aggregate functions were being ignored ([#82](https://github.com/csvtuda/cypress-xray-plugin/issues/82))
+
 # `8.6.5`
 
 ## Dependency updates
@@ -20,6 +25,9 @@
 # `8.6.3`
 
 - Fixed issue where environment variables were being parsed incorrectly ([#50](https://github.com/csvtuda/cypress-xray-plugin/issues/50))
+
+## Dependency updates
+
 - Bumped glob from 11.0.3 to 11.1.0
 
 # `8.6.2`
