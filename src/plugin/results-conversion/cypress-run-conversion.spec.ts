@@ -471,14 +471,34 @@ void describe(relative(cwd(), __filename), () => {
             const conversions = converter.getConversions({ onlyLastAttempt: false });
             assert.deepStrictEqual(conversions, [
                 {
-                    duration: 244,
-                    issueKey: null,
-                    kind: "success",
+                    cypressData: {
+                        spec: {
+                            absolute: "~/repositories/xray/cypress/e2e/demo/example.cy.ts",
+                            name: "cypress/e2e/demo/example.cy.ts",
+                            relative: "cypress/e2e/demo/example.cy.ts",
+                            relativeToCommonRoot: "example.cy.ts",
+                        },
+                        test: {
+                            attempts: [
+                                {
+                                    duration: 244,
+                                    error: null,
+                                    screenshots: [],
+                                    startedAt: "2022-11-28T17:41:15.091Z",
+                                    state: "passed",
+                                    videoTimestamp: 7910,
+                                },
+                            ],
+                            body: 'function(){cy.get("p").should("exist");}',
+                            displayError: null,
+                            state: "passed",
+                            title: ["xray upload demo", "should look for paragraph elements"],
+                        },
+                    },
+                    kind: "missing-issue-key",
                     spec: {
                         filepath: "~/repositories/xray/cypress/e2e/demo/example.cy.ts",
                     },
-                    startedAt: new Date("2022-11-28T17:41:15.091Z"),
-                    status: CypressStatus.PASSED,
                     title: "xray upload demo should look for paragraph elements",
                 },
             ]);
@@ -489,6 +509,131 @@ void describe(relative(cwd(), __filename), () => {
             const conversions = converter.getConversions({ onlyLastAttempt: true });
             assert.deepStrictEqual(conversions, [
                 {
+                    cypressData: {
+                        spec: {
+                            absolute:
+                                "/home/csvtuda/repositories/cypress/451/cypress/e2e/spec.cy.js",
+                            name: "cypress/e2e/spec.cy.js",
+                            relative: "cypress/e2e/spec.cy.js",
+                            relativeToCommonRoot: "spec.cy.js",
+                        },
+                        test: {
+                            attempts: [
+                                {
+                                    duration: 329,
+                                    error: {
+                                        message: "expected 0 to equal 5",
+                                        name: "AssertionError",
+                                        stack: "    at Context.eval (webpack://451/./cypress/e2e/spec.cy.js:3:36)",
+                                    },
+                                    screenshots: [
+                                        {
+                                            height: 720,
+                                            name: "null",
+                                            path: "/home/csvtuda/repositories/cypress/451/cypress/screenshots/spec.cy.js/template spec -- CYP-123 passes eventually (failed).png",
+                                            takenAt: "2025-02-28T22:08:42.565Z",
+                                            width: 1280,
+                                        },
+                                    ],
+                                    startedAt: "2025-02-28T22:08:42.502Z",
+                                    state: "failed",
+                                    videoTimestamp: 4094,
+                                },
+                                {
+                                    duration: 492,
+                                    error: {
+                                        message: "expected 1 to equal 5",
+                                        name: "AssertionError",
+                                        stack: "    at Context.eval (webpack://451/./cypress/e2e/spec.cy.js:3:36)",
+                                    },
+                                    screenshots: [
+                                        {
+                                            height: 720,
+                                            name: "null",
+                                            path: "/home/csvtuda/repositories/cypress/451/cypress/screenshots/spec.cy.js/template spec -- CYP-123 passes eventually (failed) (attempt 2).png",
+                                            takenAt: "2025-02-28T22:08:42.920Z",
+                                            width: 1280,
+                                        },
+                                    ],
+                                    startedAt: "2025-02-28T22:08:42.870Z",
+                                    state: "failed",
+                                    videoTimestamp: 4462,
+                                },
+                                {
+                                    duration: 220,
+                                    error: {
+                                        message: "expected 2 to equal 5",
+                                        name: "AssertionError",
+                                        stack: "    at Context.eval (webpack://451/./cypress/e2e/spec.cy.js:3:36)",
+                                    },
+                                    screenshots: [
+                                        {
+                                            height: 720,
+                                            name: "null",
+                                            path: "/home/csvtuda/repositories/cypress/451/cypress/screenshots/spec.cy.js/template spec -- CYP-123 passes eventually (failed) (attempt 3).png",
+                                            takenAt: "2025-02-28T22:08:43.447Z",
+                                            width: 1280,
+                                        },
+                                    ],
+                                    startedAt: "2025-02-28T22:08:43.380Z",
+                                    state: "failed",
+                                    videoTimestamp: 4972,
+                                },
+                                {
+                                    duration: 210,
+                                    error: {
+                                        message: "expected 3 to equal 5",
+                                        name: "AssertionError",
+                                        stack: "    at Context.eval (webpack://451/./cypress/e2e/spec.cy.js:3:36)",
+                                    },
+                                    screenshots: [
+                                        {
+                                            height: 720,
+                                            name: "null",
+                                            path: "/home/csvtuda/repositories/cypress/451/cypress/screenshots/spec.cy.js/template spec -- CYP-123 passes eventually (failed) (attempt 4).png",
+                                            takenAt: "2025-02-28T22:08:43.681Z",
+                                            width: 1280,
+                                        },
+                                    ],
+                                    startedAt: "2025-02-28T22:08:43.621Z",
+                                    state: "failed",
+                                    videoTimestamp: 5213,
+                                },
+                                {
+                                    duration: 225,
+                                    error: {
+                                        message: "expected 4 to equal 5",
+                                        name: "AssertionError",
+                                        stack: "    at Context.eval (webpack://451/./cypress/e2e/spec.cy.js:3:36)",
+                                    },
+                                    screenshots: [
+                                        {
+                                            height: 720,
+                                            name: "null",
+                                            path: "/home/csvtuda/repositories/cypress/451/cypress/screenshots/spec.cy.js/template spec -- CYP-123 passes eventually (failed) (attempt 5).png",
+                                            takenAt: "2025-02-28T22:08:43.933Z",
+                                            width: 1280,
+                                        },
+                                    ],
+                                    startedAt: "2025-02-28T22:08:43.857Z",
+                                    state: "failed",
+                                    videoTimestamp: 5449,
+                                },
+                                {
+                                    duration: 85,
+                                    error: null,
+                                    screenshots: [],
+                                    startedAt: "2025-02-28T22:08:44.112Z",
+                                    state: "passed",
+                                    videoTimestamp: 5704,
+                                },
+                            ],
+                            body: "() => {\n    expect(Cypress.currentRetry).to.eq(5);\n  }",
+                            displayError: null,
+                            state: "passed",
+                            title: ["template spec", "CYP-123 passes eventually"],
+                        },
+                    },
                     duration: 85,
                     issueKey: "CYP-123",
                     kind: "success",
@@ -500,6 +645,84 @@ void describe(relative(cwd(), __filename), () => {
                     title: "template spec CYP-123 passes eventually",
                 },
                 {
+                    cypressData: {
+                        spec: {
+                            absolute:
+                                "/home/csvtuda/repositories/cypress/451/cypress/e2e/spec.cy.js",
+                            name: "cypress/e2e/spec.cy.js",
+                            relative: "cypress/e2e/spec.cy.js",
+                            relativeToCommonRoot: "spec.cy.js",
+                        },
+                        test: {
+                            attempts: [
+                                {
+                                    duration: 176,
+                                    error: {
+                                        message: "expected true to be false",
+                                        name: "AssertionError",
+                                        stack: "    at Context.eval (webpack://451/./cypress/e2e/spec.cy.js:7:23)",
+                                    },
+                                    screenshots: [
+                                        {
+                                            height: 720,
+                                            name: "null",
+                                            path: "/home/csvtuda/repositories/cypress/451/cypress/screenshots/spec.cy.js/template spec -- CYP-456 split test (failed).png",
+                                            takenAt: "2025-02-28T22:08:44.231Z",
+                                            width: 1280,
+                                        },
+                                    ],
+                                    startedAt: "2025-02-28T22:08:44.202Z",
+                                    state: "failed",
+                                    videoTimestamp: 5794,
+                                },
+                                {
+                                    duration: 244,
+                                    error: {
+                                        message: "expected true to be false",
+                                        name: "AssertionError",
+                                        stack: "    at Context.eval (webpack://451/./cypress/e2e/spec.cy.js:7:23)",
+                                    },
+                                    screenshots: [
+                                        {
+                                            height: 720,
+                                            name: "null",
+                                            path: "/home/csvtuda/repositories/cypress/451/cypress/screenshots/spec.cy.js/template spec -- CYP-456 split test (failed) (attempt 2).png",
+                                            takenAt: "2025-02-28T22:08:44.426Z",
+                                            width: 1280,
+                                        },
+                                    ],
+                                    startedAt: "2025-02-28T22:08:44.387Z",
+                                    state: "failed",
+                                    videoTimestamp: 5979,
+                                },
+                                {
+                                    duration: 202,
+                                    error: {
+                                        message: "expected true to be false",
+                                        name: "AssertionError",
+                                        stack: "    at Context.eval (webpack://451/./cypress/e2e/spec.cy.js:7:23)",
+                                    },
+                                    screenshots: [
+                                        {
+                                            height: 720,
+                                            name: "null",
+                                            path: "/home/csvtuda/repositories/cypress/451/cypress/screenshots/spec.cy.js/template spec -- CYP-456 split test (failed) (attempt 3).png",
+                                            takenAt: "2025-02-28T22:08:44.688Z",
+                                            width: 1280,
+                                        },
+                                    ],
+                                    startedAt: "2025-02-28T22:08:44.644Z",
+                                    state: "failed",
+                                    videoTimestamp: 6236,
+                                },
+                            ],
+                            body: "() => {\n    expect(true).to.be.false;\n  }",
+                            displayError:
+                                "AssertionError: expected true to be false\n    at Context.eval (webpack://451/./cypress/e2e/spec.cy.js:7:23)",
+                            state: "failed",
+                            title: ["template spec", "CYP-456 split test"],
+                        },
+                    },
                     duration: 202,
                     issueKey: "CYP-456",
                     kind: "success",
@@ -511,6 +734,39 @@ void describe(relative(cwd(), __filename), () => {
                     title: "template spec CYP-456 split test",
                 },
                 {
+                    cypressData: {
+                        spec: {
+                            absolute:
+                                "/home/csvtuda/repositories/cypress/451/cypress/e2e/spec.cy.js",
+                            name: "cypress/e2e/spec.cy.js",
+                            relative: "cypress/e2e/spec.cy.js",
+                            relativeToCommonRoot: "spec.cy.js",
+                        },
+                        test: {
+                            attempts: [
+                                {
+                                    duration: 31,
+                                    error: null,
+                                    screenshots: [
+                                        {
+                                            height: 720,
+                                            name: "null",
+                                            path: "/home/csvtuda/repositories/cypress/451/cypress/screenshots/spec.cy.js/template spec -- CYP-456 split test manual screenshot.png",
+                                            takenAt: "2025-02-28T22:08:44.879Z",
+                                            width: 1280,
+                                        },
+                                    ],
+                                    startedAt: "2025-02-28T22:08:44.867Z",
+                                    state: "passed",
+                                    videoTimestamp: 6459,
+                                },
+                            ],
+                            body: "() => {\n    expect(true).to.be.true;\n  }",
+                            displayError: null,
+                            state: "passed",
+                            title: ["template spec", "CYP-456 split test"],
+                        },
+                    },
                     duration: 31,
                     issueKey: "CYP-456",
                     kind: "success",
@@ -566,12 +822,54 @@ void describe(relative(cwd(), __filename), () => {
             assert.deepStrictEqual(screenshots, []);
         });
 
-        void it("rejects invalid runs", () => {
+        void it("detects runs without issue keys", () => {
             const converter = new RunConverterV12("CYP", [invalidResult]);
             const conversions = converter.getConversions({ onlyLastAttempt: false });
-            assert.strictEqual(conversions[0].kind, "error");
-            const reason = conversions[0].error as Error;
-            assert.strictEqual(reason.message, "Unknown Cypress test status: broken");
+            assert.partialDeepStrictEqual(conversions, [
+                {
+                    cypressData: {
+                        spec: {
+                            absolute: "~/repositories/xray/cypress/e2e/demo/example.cy.ts",
+                            name: "cypress/e2e/demo/example.cy.ts",
+                            relative: "cypress/e2e/demo/example.cy.ts",
+                            relativeToCommonRoot: "example.cy.ts",
+                        },
+                        test: {
+                            attempts: [
+                                {
+                                    duration: 4413,
+                                    error: {
+                                        message:
+                                            "Timed out retrying after 4000ms: Expected to find element: `span`, but never found it.",
+                                        name: "AssertionError",
+                                        stack: "at Context.eval (webpack:///./cypress/e2e/demo/example.cy.ts:15:23)",
+                                    },
+                                    screenshots: [
+                                        {
+                                            height: 720,
+                                            name: "",
+                                            path: "./test/resources/turtle.png",
+                                            takenAt: "2022-11-28T17:41:19.702Z",
+                                            width: 1280,
+                                        },
+                                    ],
+                                    startedAt: "2022-11-28T17:41:15.526Z",
+                                    state: "broken",
+                                    videoTimestamp: 8345,
+                                },
+                            ],
+                            body: 'function(){cy.get("span").should("exist");}',
+                            state: "failed",
+                            title: ["xray upload demo", "should fail"],
+                        },
+                    },
+                    kind: "missing-issue-key",
+                    spec: {
+                        filepath: "~/repositories/xray/cypress/e2e/demo/example.cy.ts",
+                    },
+                    title: "xray upload demo should fail",
+                },
+            ]);
         });
     });
 
@@ -2150,8 +2448,24 @@ void describe(relative(cwd(), __filename), () => {
         void it("returns test data for valid runs", () => {
             const converter = new RunConverterLatest("CYP", [passedResult], []);
             const conversions = converter.getConversions({ onlyLastAttempt: false });
-            assert.deepStrictEqual(conversions, [
+            assert.partialDeepStrictEqual(conversions, [
                 {
+                    cypressData: {
+                        spec: {
+                            absolute:
+                                "~/Repositories/cypress/85/cypress/e2e/cyp/cypress.spec.cy.ts",
+                            fileExtension: ".ts",
+                            fileName: "cypress.spec",
+                            name: "cypress.spec.cy.ts",
+                            relative: "cypress/e2e/cyp/cypress.spec.cy.ts",
+                        },
+                        test: {
+                            attempts: [{ state: "passed" }],
+                            duration: 638,
+                            state: "passed",
+                            title: ["something", "CYP-237 happens"],
+                        },
+                    },
                     duration: 638,
                     issueKey: "CYP-237",
                     kind: "success",
@@ -2163,14 +2477,26 @@ void describe(relative(cwd(), __filename), () => {
                     title: "something CYP-237 happens",
                 },
                 {
-                    duration: 123,
-                    issueKey: null,
-                    kind: "success",
+                    cypressData: {
+                        spec: {
+                            absolute:
+                                "~/Repositories/cypress/85/cypress/e2e/cyp/cypress.spec.cy.ts",
+                            fileExtension: ".ts",
+                            fileName: "cypress.spec",
+                            name: "cypress.spec.cy.ts",
+                            relative: "cypress/e2e/cyp/cypress.spec.cy.ts",
+                        },
+                        test: {
+                            attempts: [{ state: "pending" }],
+                            duration: 123,
+                            state: "pending",
+                            title: ["something", "something"],
+                        },
+                    },
+                    kind: "missing-issue-key",
                     spec: {
                         filepath: "~/Repositories/cypress/85/cypress/e2e/cyp/cypress.spec.cy.ts",
                     },
-                    startedAt: new Date("2023-09-09T10:59:29.464Z"),
-                    status: CypressStatus.PENDING,
                     title: "something something",
                 },
             ]);
@@ -2179,8 +2505,30 @@ void describe(relative(cwd(), __filename), () => {
         void it("omits retries", () => {
             const converter = new RunConverterLatest("CYP", [retriedResult], []);
             const conversions = converter.getConversions({ onlyLastAttempt: true });
-            assert.deepStrictEqual(conversions, [
+            assert.partialDeepStrictEqual(conversions, [
                 {
+                    cypressData: {
+                        spec: {
+                            absolute: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js",
+                            fileExtension: ".js",
+                            fileName: "spec",
+                            name: "spec.cy.js",
+                            relative: "spec.cy.js",
+                        },
+                        test: {
+                            attempts: [
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "passed" },
+                            ],
+                            duration: 1145,
+                            state: "passed",
+                            title: ["template spec", "CYP-123 passes eventually"],
+                        },
+                    },
                     duration: 1145,
                     issueKey: "CYP-123",
                     kind: "success",
@@ -2192,6 +2540,25 @@ void describe(relative(cwd(), __filename), () => {
                     title: "template spec CYP-123 passes eventually",
                 },
                 {
+                    cypressData: {
+                        spec: {
+                            absolute: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js",
+                            fileExtension: ".js",
+                            fileName: "spec",
+                            name: "spec.cy.js",
+                            relative: "spec.cy.js",
+                        },
+                        test: {
+                            attempts: [
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                            ],
+                            duration: 398,
+                            state: "failed",
+                            title: ["template spec", "CYP-456 manual screenshot"],
+                        },
+                    },
                     duration: 398,
                     issueKey: "CYP-456",
                     kind: "success",
@@ -2208,58 +2575,155 @@ void describe(relative(cwd(), __filename), () => {
         void it("omits retries of iterated results", () => {
             const converter = new RunConverterLatest("CYP", [retriedIteratedResult], []);
             const conversions = converter.getConversions({ onlyLastAttempt: true });
-            assert.deepStrictEqual(conversions, [
+            assert.partialDeepStrictEqual(conversions, [
                 {
+                    cypressData: {
+                        spec: {
+                            absolute: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js",
+                            fileExtension: ".js",
+                            fileName: "spec",
+                            name: "spec.cy.js",
+                            relative: "spec.cy.js",
+                        },
+                        test: {
+                            attempts: [
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "passed" },
+                            ],
+                            duration: 3163,
+                            state: "passed",
+                            title: ["template spec", "CYP-123 passes eventually: 1"],
+                        },
+                    },
                     duration: 3163,
                     issueKey: "CYP-123",
                     kind: "success",
-                    spec: {
-                        filepath: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js",
-                    },
+                    spec: { filepath: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js" },
                     startedAt: new Date("2025-03-08T02:53:06.526Z"),
                     status: "passed",
                     title: "template spec CYP-123 passes eventually: 1",
                 },
                 {
+                    cypressData: {
+                        spec: {
+                            absolute: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js",
+                            fileExtension: ".js",
+                            fileName: "spec",
+                            name: "spec.cy.js",
+                            relative: "spec.cy.js",
+                        },
+                        test: {
+                            attempts: [
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "passed" },
+                            ],
+                            duration: 2836,
+                            state: "passed",
+                            title: ["template spec", "CYP-123 passes eventually: 2"],
+                        },
+                    },
                     duration: 2836,
                     issueKey: "CYP-123",
                     kind: "success",
-                    spec: {
-                        filepath: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js",
-                    },
+                    spec: { filepath: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js" },
                     startedAt: new Date("2025-03-08T02:53:09.689Z"),
                     status: "passed",
                     title: "template spec CYP-123 passes eventually: 2",
                 },
                 {
+                    cypressData: {
+                        spec: {
+                            absolute: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js",
+                            fileExtension: ".js",
+                            fileName: "spec",
+                            name: "spec.cy.js",
+                            relative: "spec.cy.js",
+                        },
+                        test: {
+                            attempts: [
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "passed" },
+                            ],
+                            duration: 2741,
+                            state: "passed",
+                            title: ["template spec", "CYP-123 passes eventually: 3"],
+                        },
+                    },
                     duration: 2741,
                     issueKey: "CYP-123",
                     kind: "success",
-                    spec: {
-                        filepath: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js",
-                    },
+                    spec: { filepath: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js" },
                     startedAt: new Date("2025-03-08T02:53:12.525Z"),
                     status: "passed",
                     title: "template spec CYP-123 passes eventually: 3",
                 },
                 {
+                    cypressData: {
+                        spec: {
+                            absolute: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js",
+                            fileExtension: ".js",
+                            fileName: "spec",
+                            name: "spec.cy.js",
+                            relative: "spec.cy.js",
+                        },
+                        test: {
+                            attempts: [
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "passed" },
+                            ],
+                            duration: 2766,
+                            state: "passed",
+                            title: ["template spec", "CYP-123 passes eventually: 4"],
+                        },
+                    },
                     duration: 2766,
                     issueKey: "CYP-123",
                     kind: "success",
-                    spec: {
-                        filepath: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js",
-                    },
+                    spec: { filepath: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js" },
                     startedAt: new Date("2025-03-08T02:53:15.266Z"),
                     status: "passed",
                     title: "template spec CYP-123 passes eventually: 4",
                 },
                 {
+                    cypressData: {
+                        spec: {
+                            absolute: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js",
+                            fileExtension: ".js",
+                            fileName: "spec",
+                            name: "spec.cy.js",
+                            relative: "spec.cy.js",
+                        },
+                        test: {
+                            attempts: [
+                                { state: "failed" },
+                                { state: "failed" },
+                                { state: "failed" },
+                            ],
+                            duration: 1389,
+                            state: "failed",
+                            title: ["template spec", "CYP-456 manual screenshot"],
+                        },
+                    },
                     duration: 1389,
                     issueKey: "CYP-456",
                     kind: "success",
-                    spec: {
-                        filepath: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js",
-                    },
+                    spec: { filepath: "/home/csvtuda/repositories/cypress/cloud/spec.cy.js" },
                     startedAt: new Date("2025-03-08T02:53:18.032Z"),
                     status: "failed",
                     title: "template spec CYP-456 manual screenshot",
@@ -2347,6 +2811,7 @@ void describe(relative(cwd(), __filename), () => {
                     {
                         spec: {
                             absolute: "/cypress/e2e/cyp/cypress.spec.cy.ts",
+                            relative: "cypress.spec.cy.ts",
                         },
                         stats: {
                             startedAt: "2023-09-09T10:59:28.826Z",
@@ -2417,6 +2882,7 @@ void describe(relative(cwd(), __filename), () => {
                     {
                         spec: {
                             absolute: "/opt/spec.cy.js",
+                            relative: "spec.cy.js",
                         },
                         stats: {
                             startedAt: "2025-03-14T18:33:35.464Z",
@@ -2516,7 +2982,7 @@ void describe(relative(cwd(), __filename), () => {
         void it("rejects invalid runs", () => {
             const converter = new RunConverterLatest("CYP", [invalidResult], []);
             const conversions = converter.getConversions({ onlyLastAttempt: false });
-            assert.strictEqual(conversions[0].kind, "error");
+            assert.strictEqual(conversions[0].kind, "failure");
             const reason = conversions[0].error as Error;
             assert.strictEqual(reason.message, "Unknown Cypress test status: broken");
         });

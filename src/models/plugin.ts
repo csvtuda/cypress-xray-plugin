@@ -422,6 +422,10 @@ export interface XrayOptions {
              */
             failed: number;
             /**
+             * The issue key of the aggregated test results.
+             */
+            issueKey: string;
+            /**
              * The number of iterations that have been reported as _passed_ by Cypress.
              *
              * @see https://docs.cypress.io/app/core-concepts/writing-and-organizing-tests#Passed
@@ -439,6 +443,14 @@ export interface XrayOptions {
              * @see https://docs.cypress.io/app/core-concepts/writing-and-organizing-tests#Skipped
              */
             skipped: number;
+            /**
+             * Contains all Cypress specs which ran at least one test with the grouped issue key.
+             */
+            specs: CypressCommandLine.RunResult["spec"][];
+            /**
+             * Contains all Cypress tests where the grouped issue key appears in the title.
+             */
+            tests: CypressCommandLine.RunResult["tests"];
         }) => string;
         /**
          * The Xray status name of a test marked as failed by Cypress. Should be used when custom

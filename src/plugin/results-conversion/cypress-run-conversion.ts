@@ -1,7 +1,8 @@
 import { basename, extname } from "node:path";
-import type { RunResult, ScreenshotDetails } from "../../models/cypress";
+import type { ScreenshotDetails } from "../../models/cypress";
 import type { CypressStatus } from "../../models/cypress/status";
 import { extractIssueKeys } from "../../util/extraction";
+import type { MinimalRunResult } from "../cypress-xray-plugin";
 import { toCypressStatus } from "./cypress-status";
 
 export interface RunConverter {
@@ -16,7 +17,7 @@ export interface RunConverter {
          * Whether to convert and return the last attempts only.
          */
         onlyLastAttempt: boolean;
-    }): (FailedConversion | SuccessfulConversion)[];
+    }): ProcessedResult[];
     /**
      * Returns all screenshots that cannot be attributed to any test issue.
      *
@@ -34,22 +35,20 @@ export interface RunConverter {
     getScreenshots(issueKey: string, options: { onlyLastAttempt: boolean }): string[];
 }
 
-/**
- * Test data extracted from Cypress tests, ready to be converted into an Xray JSON test.
- */
-export interface SuccessfulConversion {
+interface ProcessedResultBase {
     /**
-     * The duration of the test in milliseconds.
+     * The original Cypress data.
      */
-    duration: number;
-    /**
-     * The Jira test issue key or `null` if the test could not be mapped to an issue.
-     */
-    issueKey: null | string;
-    /**
-     * Denotes a successful test run conversion.
-     */
-    kind: "success";
+    cypressData: {
+        /**
+         * The spec the test was extracted from.
+         */
+        spec: MinimalRunResult["spec"];
+        /**
+         * The actual test result.
+         */
+        test: MinimalRunResult["tests"][number];
+    };
     /**
      * Information about the spec the test was run in.
      */
@@ -60,60 +59,60 @@ export interface SuccessfulConversion {
         filepath: string;
     };
     /**
-     * When the test was started.
+     * The title of the test.
+     */
+    title: string;
+}
+
+export interface ProcessedResultMissingIssueKey extends ProcessedResultBase {
+    /**
+     * The type of the processing result.
+     */
+    kind: "missing-issue-key";
+}
+
+export interface ProcessedResultSuccess extends ProcessedResultBase {
+    /**
+     * The duration of the tests in milliseconds.
+     */
+    duration: number;
+    /**
+     * The Jira test issue key.
+     */
+    issueKey: string;
+    /**
+     * The type of the processing result.
+     */
+    kind: "success";
+    /**
+     * When the tests were started.
      */
     startedAt: Date;
     /**
      * The test's status.
      */
     status: CypressStatus;
-    /**
-     * The test's title.
-     */
-    title: string;
 }
 
-/**
- * Models a failed test run conversion.
- */
-export interface FailedConversion {
+export interface ProcessedResultFailure extends ProcessedResultBase {
     /**
      * The conversion failure.
      */
     error: unknown;
     /**
-     * Denotes a failed test run conversion.
+     * The type of the processing result.
      */
-    kind: "error";
-    /**
-     * Information about the spec the test was run in.
-     */
-    spec: {
-        /**
-         * The spec's file path.
-         */
-        filepath: string;
-    };
-    /**
-     * The test's title.
-     */
-    title: string;
+    kind: "failure";
 }
 
+export type ProcessedResult =
+    | ProcessedResultFailure
+    | ProcessedResultMissingIssueKey
+    | ProcessedResultSuccess;
+
 interface RunParametersV12 {
-    spec: Pick<RunResult<"<13">["spec"], "absolute">;
-    tests: {
-        attempts: {
-            duration: RunResult<"<13">["tests"][number]["attempts"][number]["duration"];
-            screenshots: Pick<
-                RunResult<"<13">["tests"][number]["attempts"][number]["screenshots"][number],
-                "path"
-            >[];
-            startedAt: RunResult<"<13">["tests"][number]["attempts"][number]["startedAt"];
-            state: RunResult<"<13">["tests"][number]["attempts"][number]["state"];
-        }[];
-        title: RunResult<"<13">["tests"][number]["title"];
-    }[];
+    spec: MinimalRunResult<"<13">["spec"];
+    tests: MinimalRunResult<"<13">["tests"];
 }
 
 /**
@@ -134,10 +133,8 @@ export class RunConverterV12 implements RunConverter {
         this.runResults = runResults;
     }
 
-    public getConversions(options: {
-        onlyLastAttempt: boolean;
-    }): (FailedConversion | SuccessfulConversion)[] {
-        const conversions: (FailedConversion | SuccessfulConversion)[] = [];
+    public getConversions(options: { onlyLastAttempt: boolean }): ProcessedResult[] {
+        const conversions: ProcessedResult[] = [];
         for (const run of this.runResults) {
             for (const test of run.tests) {
                 const title = test.title.join(" ");
@@ -153,19 +150,30 @@ export class RunConverterV12 implements RunConverter {
                 for (const attempt of attempts) {
                     for (const issueKey of issueKeys) {
                         try {
-                            conversions.push({
-                                duration: attempt.duration,
-                                issueKey,
-                                kind: "success",
-                                spec: { filepath: run.spec.absolute },
-                                startedAt: new Date(attempt.startedAt),
-                                status: toCypressStatus(attempt.state),
-                                title: title,
-                            });
+                            if (issueKey === null) {
+                                conversions.push({
+                                    cypressData: { spec: run.spec, test },
+                                    kind: "missing-issue-key",
+                                    spec: { filepath: run.spec.absolute },
+                                    title,
+                                });
+                            } else {
+                                conversions.push({
+                                    cypressData: { spec: run.spec, test },
+                                    duration: attempt.duration,
+                                    issueKey,
+                                    kind: "success",
+                                    spec: { filepath: run.spec.absolute },
+                                    startedAt: new Date(attempt.startedAt),
+                                    status: toCypressStatus(attempt.state),
+                                    title,
+                                });
+                            }
                         } catch (error: unknown) {
                             conversions.push({
+                                cypressData: { spec: run.spec, test },
                                 error,
-                                kind: "error",
+                                kind: "failure",
                                 spec: { filepath: run.spec.absolute },
                                 title,
                             });
@@ -208,14 +216,9 @@ export class RunConverterV12 implements RunConverter {
 }
 
 interface RunParametersLatest {
-    spec: Pick<RunResult<"<13">["spec"], "absolute">;
-    stats: Pick<RunResult<">=14" | "13">["stats"], "startedAt">;
-    tests: {
-        attempts: Pick<RunResult<">=14" | "13">["tests"][number]["attempts"][number], "state">[];
-        duration: RunResult<">=14" | "13">["tests"][number]["duration"];
-        state: RunResult<">=14" | "13">["tests"][number]["state"];
-        title: RunResult<">=14" | "13">["tests"][number]["title"];
-    }[];
+    spec: MinimalRunResult<">=14" | "13">["spec"];
+    stats: Pick<MinimalRunResult<">=14" | "13">["stats"], "startedAt">;
+    tests: MinimalRunResult<">=14" | "13">["tests"];
 }
 
 export type ScreenshotDetailsLatest = Pick<
@@ -263,10 +266,8 @@ export class RunConverterLatest implements RunConverter {
         this.screenshotDetails = screenshotDetails;
     }
 
-    public getConversions(options: {
-        onlyLastAttempt: boolean;
-    }): (FailedConversion | SuccessfulConversion)[] {
-        const conversions: (FailedConversion | SuccessfulConversion)[] = [];
+    public getConversions(options: { onlyLastAttempt: boolean }): ProcessedResult[] {
+        const conversions: ProcessedResult[] = [];
         const testStarts: Record<string, Date> = {};
         for (const run of this.runResults) {
             const startTime = new Date(run.stats.startedAt).getTime();
@@ -297,19 +298,30 @@ export class RunConverterLatest implements RunConverter {
                 for (const attempt of attempts) {
                     for (const issueKey of issueKeys) {
                         try {
-                            conversions.push({
-                                duration: test.duration,
-                                issueKey,
-                                kind: "success",
-                                spec: { filepath: run.spec.absolute },
-                                startedAt: testStarts[title],
-                                status: toCypressStatus(attempt.state),
-                                title: title,
-                            });
+                            if (issueKey === null) {
+                                conversions.push({
+                                    cypressData: { spec: run.spec, test },
+                                    kind: "missing-issue-key",
+                                    spec: { filepath: run.spec.absolute },
+                                    title,
+                                });
+                            } else {
+                                conversions.push({
+                                    cypressData: { spec: run.spec, test },
+                                    duration: test.duration,
+                                    issueKey,
+                                    kind: "success",
+                                    spec: { filepath: run.spec.absolute },
+                                    startedAt: testStarts[title],
+                                    status: toCypressStatus(attempt.state),
+                                    title,
+                                });
+                            }
                         } catch (error: unknown) {
                             conversions.push({
+                                cypressData: { spec: run.spec, test },
                                 error,
-                                kind: "error",
+                                kind: "failure",
                                 spec: { filepath: run.spec.absolute },
                                 title,
                             });

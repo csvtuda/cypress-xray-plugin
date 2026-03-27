@@ -1151,6 +1151,117 @@ void describe(relative(cwd(), __filename), () => {
                 assert.strictEqual(result.tests[0].iterations[3].status, "PASSED");
             });
 
+            void it("calls the custom aggregation function with correct arguments", (context) => {
+                const aggregationFunction = context.mock.fn(() => "PASS");
+                cypressResultConversion.convertCypressResults({
+                    context: {
+                        evidence: {
+                            getEvidence() {
+                                return [];
+                            },
+                        },
+                        iterationParameters: {
+                            getIterationParameters() {
+                                return {};
+                            },
+                        },
+                        screenshots: [],
+                    },
+                    cypress: {
+                        results: {
+                            cypressVersion: "13.16.0",
+                            runs: [
+                                {
+                                    spec: {
+                                        absolute:
+                                            "/home/user/cypress-xray-plugin/test/integration/iterations-using-describe/server/spec.cy.js",
+                                        relative: "spec.cy.js",
+                                    },
+                                    stats: { startedAt: "2024-12-20T23:19:14.969Z" },
+                                    tests: [
+                                        {
+                                            attempts: [
+                                                { state: "failed" },
+                                                { state: "failed" },
+                                                { state: "passed" },
+                                            ],
+                                            duration: 1003,
+                                            state: "passed",
+                                            title: [
+                                                "CYP-237 Test Suite Name",
+                                                "Test Method Name 1",
+                                            ],
+                                        },
+                                        {
+                                            attempts: [{ state: "passed" }],
+                                            duration: 52,
+                                            state: "passed",
+                                            title: [
+                                                "CYP-237 Test Suite Name",
+                                                "Test Method Name 2",
+                                            ],
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    },
+                    isCloudEnvironment: true,
+                    logger: { message: stub() },
+                    options: {
+                        cucumber: {},
+                        jira: { projectKey: "CYP" },
+                        plugin: {
+                            normalizeScreenshotNames: false,
+                            uploadLastAttempt: false,
+                        },
+                        xray: {
+                            uploadScreenshots: true,
+                            xrayStatus: { aggregate: aggregationFunction },
+                        },
+                    },
+                });
+                assert.deepStrictEqual(
+                    aggregationFunction.mock.calls.map((call) => call.arguments),
+                    [
+                        [
+                            {
+                                failed: 2,
+                                issueKey: "CYP-237",
+                                passed: 2,
+                                pending: 0,
+                                skipped: 0,
+                                specs: [
+                                    {
+                                        absolute:
+                                            "/home/user/cypress-xray-plugin/test/integration/iterations-using-describe/server/spec.cy.js",
+                                        relative: "spec.cy.js",
+                                    },
+                                ],
+                                tests: [
+                                    {
+                                        attempts: [
+                                            { state: "failed" },
+                                            { state: "failed" },
+                                            { state: "passed" },
+                                        ],
+                                        duration: 1003,
+                                        state: "passed",
+                                        title: ["CYP-237 Test Suite Name", "Test Method Name 1"],
+                                    },
+                                    {
+                                        attempts: [{ state: "passed" }],
+                                        duration: 52,
+                                        state: "passed",
+                                        title: ["CYP-237 Test Suite Name", "Test Method Name 2"],
+                                    },
+                                ],
+                            },
+                        ],
+                    ]
+                );
+            });
+
             void it("skips tests when encountering unknown statuses", (context) => {
                 const messageMock = context.mock.fn<Logger["message"]>();
                 assert.throws(
@@ -1193,7 +1304,10 @@ void describe(relative(cwd(), __filename), () => {
                                                             state: "broken",
                                                         },
                                                     ],
-                                                    title: ["TodoMVC", "hides footer initially"],
+                                                    title: [
+                                                        "CYP-789 | TodoMVC",
+                                                        "hides footer initially",
+                                                    ],
                                                 },
                                                 {
                                                     attempts: [
@@ -1235,7 +1349,7 @@ void describe(relative(cwd(), __filename), () => {
                             dedent(`
                                 /home/csvtuda/cypress/cypress/e2e/statusSkipped.cy.js
 
-                                  Test: TodoMVC hides footer initially
+                                  Test: CYP-789 | TodoMVC hides footer initially
 
                                     Skipping result upload.
 
@@ -1251,7 +1365,18 @@ void describe(relative(cwd(), __filename), () => {
 
                                     Skipping result upload.
 
-                                      Caused by: Unknown Cypress test status: california
+                                      Caused by: Test: TodoMVC adds 2 todos
+
+                                        No test issue keys found in title.
+
+                                        You can target existing test issues by adding a corresponding issue key:
+
+                                          it("CYP-123 TodoMVC adds 2 todos", () => {
+                                            // ...
+                                          });
+
+                                        For more information, visit:
+                                        - https://csvtuda.github.io/docs/cypress-xray-plugin/guides/targetingExistingIssues/
                             `),
                         ],
                     ]

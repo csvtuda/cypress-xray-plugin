@@ -1,6 +1,6 @@
 import { basename, extname, parse } from "node:path";
 import { lt } from "semver";
-import type { RunResult, ScreenshotDetails } from "../../models/cypress";
+import type { ScreenshotDetails } from "../../models/cypress";
 import { CypressStatus } from "../../models/cypress/status";
 import type { InternalXrayOptions } from "../../models/plugin";
 import type {
@@ -17,10 +17,11 @@ import { HELP } from "../../util/help";
 import type { Logger } from "../../util/logging";
 import { earliestDate, latestDate, truncateIsoTime } from "../../util/time";
 import type { EvidenceCollection, IterationParameterCollection } from "../context";
+import type { MinimalRunResult } from "../cypress-xray-plugin";
 import type {
-    FailedConversion,
+    ProcessedResultFailure,
+    ProcessedResultSuccess,
     RunConverter,
-    SuccessfulConversion,
 } from "./cypress-run-conversion";
 import { RunConverterLatest, RunConverterV12 } from "./cypress-run-conversion";
 import { getXrayStatus } from "./cypress-status";
@@ -188,7 +189,7 @@ function convertCypressTests(parameters: {
         },
         version: version,
     });
-    const runsByKey = new Map<string, [SuccessfulConversion, ...SuccessfulConversion[]]>();
+    const runsByKey = new Map<string, [ProcessedResultSuccess, ...ProcessedResultSuccess[]]>();
     for (const { error, spec, title } of conversionResult.failedConversions) {
         failedConversions.push({ error: error, filePath: spec.filepath, testTitle: title });
     }
@@ -270,29 +271,30 @@ function convertTestRuns(parameters: {
                   cypressRuns as RunConversionParametersLatest[],
                   parameters.context.screenshots
               );
-    const conversions = converter.getConversions({
+    const processedRuns = converter.getConversions({
         onlyLastAttempt: parameters.options.plugin.uploadLastAttempt,
     });
-    const successfulConversions: (SuccessfulConversion & { issueKey: string })[] = [];
-    const failedConversions: FailedConversion[] = [];
+    const successfulConversions: ProcessedResultSuccess[] = [];
+    const failedConversions: ProcessedResultFailure[] = [];
     const nonAttributableScreenshots: string[] = [];
     const screenshotsByIssueKey = new Map<string, XrayEvidenceItem[]>();
-    for (const conversion of conversions) {
-        if (conversion.kind === "error") {
-            failedConversions.push(conversion);
+    for (const processedRun of processedRuns) {
+        if (processedRun.kind === "failure") {
+            failedConversions.push(processedRun);
             continue;
         }
-        if (conversion.issueKey === null) {
+        if (processedRun.kind === "missing-issue-key") {
             failedConversions.push({
+                ...processedRun,
                 error: new Error(
                     dedent(`
-                        Test: ${conversion.title}
+                        Test: ${processedRun.title}
 
                           No test issue keys found in title.
 
                           You can target existing test issues by adding a corresponding issue key:
 
-                            it("${parameters.options.jira.projectKey}-123 ${conversion.title}", () => {
+                            it("${parameters.options.jira.projectKey}-123 ${processedRun.title}", () => {
                               // ...
                             });
 
@@ -300,16 +302,11 @@ function convertTestRuns(parameters: {
                           - ${HELP.plugin.guides.targetingExistingIssues}
                     `)
                 ),
-                kind: "error",
-                spec: conversion.spec,
-                title: conversion.title,
+                kind: "failure",
             });
             continue;
         }
-        successfulConversions.push({
-            ...conversion,
-            issueKey: conversion.issueKey,
-        });
+        successfulConversions.push(processedRun);
     }
     if (parameters.options.xray.uploadScreenshots) {
         const evidence = getScreenshotEvidence(
@@ -332,7 +329,7 @@ function convertTestRuns(parameters: {
 }
 
 function getScreenshotEvidence(
-    conversions: SuccessfulConversion[],
+    conversions: ProcessedResultSuccess[],
     converter: RunConverter,
     uploadLastAttempt: boolean,
     normalizeScreenshotNames: boolean
@@ -340,9 +337,7 @@ function getScreenshotEvidence(
     nonAttributableScreenshots: string[];
     screenshotsByIssueKey: Map<string, Required<XrayEvidenceItem>[]>;
 } {
-    const testIssueKeys = conversions
-        .map((conversion) => conversion.issueKey)
-        .filter((key) => key !== null);
+    const testIssueKeys = conversions.map((conversion) => conversion.issueKey);
     const screenshotsByIssueKey = new Map<string, Required<XrayEvidenceItem>[]>();
     for (const issueKey of new Set(testIssueKeys)) {
         const screenshots = converter.getScreenshots(issueKey, {
@@ -379,7 +374,7 @@ function getTest(parameters: {
     getIterationParameters: (issueKey: string, testId: string) => Record<string, string>;
     isCloudEnvironment?: boolean;
     issueKey: string;
-    runs: [SuccessfulConversion, ...SuccessfulConversion[]];
+    runs: [ProcessedResultSuccess, ...ProcessedResultSuccess[]];
     xrayStatus: InternalXrayOptions["status"];
 }): XrayTest {
     const xrayTest: XrayTest = {
@@ -392,6 +387,7 @@ function getTest(parameters: {
             earliestDate(...parameters.runs.map((test) => test.startedAt)).toISOString()
         ),
         status: aggregateXrayStatus(
+            parameters.issueKey,
             parameters.runs,
             parameters.xrayStatus,
             parameters.isCloudEnvironment
@@ -434,18 +430,37 @@ function getTest(parameters: {
 }
 
 function aggregateXrayStatus(
-    tests: [SuccessfulConversion, ...SuccessfulConversion[]],
+    issueKey: string,
+    processedTests: [ProcessedResultSuccess, ...ProcessedResultSuccess[]],
     xrayStatus: InternalXrayOptions["status"],
     isCloudEnvironment?: boolean
 ): string {
-    const statuses = tests.map((test) => test.status);
+    const statuses = processedTests.map((test) => test.status);
     if (statuses.length > 1) {
         const passed = statuses.filter((s) => s === CypressStatus.PASSED).length;
         const failed = statuses.filter((s) => s === CypressStatus.FAILED).length;
         const pending = statuses.filter((s) => s === CypressStatus.PENDING).length;
         const skipped = statuses.filter((s) => s === CypressStatus.SKIPPED).length;
         if (xrayStatus.aggregate) {
-            return xrayStatus.aggregate({ failed, passed, pending, skipped });
+            // We need to cast here because the plugin internally works with the intersection of
+            // result types of all Cypress versions (for type safety), but at runtime it will always
+            // be the installed Cypress results type, so it should not be a problem.
+            // Use sets to filter out duplicates (i.e. no need to pass the same spec twice).
+            const specs = [
+                ...new Set(processedTests.map((test) => test.cypressData.spec)),
+            ] as CypressCommandLine.RunResult["spec"][];
+            const tests = [
+                ...new Set(processedTests.map((test) => test.cypressData.test)),
+            ] as CypressCommandLine.RunResult["tests"];
+            return xrayStatus.aggregate({
+                failed,
+                issueKey,
+                passed,
+                pending,
+                skipped,
+                specs,
+                tests,
+            });
         }
         if (passed > 0 && failed === 0 && skipped === 0) {
             return getXrayStatus(CypressStatus.PASSED, isCloudEnvironment === true, xrayStatus);
@@ -462,30 +477,14 @@ function aggregateXrayStatus(
 }
 
 interface RunConversionParametersV12 {
-    spec: Pick<RunResult<"<13">["spec"], "absolute" | "relative">;
-    tests: {
-        attempts: {
-            duration: RunResult<"<13">["tests"][number]["attempts"][number]["duration"];
-            screenshots: Pick<
-                RunResult<"<13">["tests"][number]["attempts"][number]["screenshots"][number],
-                "path"
-            >[];
-            startedAt: RunResult<"<13">["tests"][number]["attempts"][number]["startedAt"];
-            state: RunResult<"<13">["tests"][number]["attempts"][number]["state"];
-        }[];
-        title: RunResult<"<13">["tests"][number]["title"];
-    }[];
+    spec: MinimalRunResult<"<13">["spec"];
+    tests: MinimalRunResult<"<13">["tests"];
 }
 
 interface RunConversionParametersLatest {
-    spec: Pick<RunResult<">=14">["spec"], "absolute" | "relative">;
-    stats: Pick<RunResult<">=14" | "13">["stats"], "startedAt">;
-    tests: {
-        attempts: Pick<RunResult<">=14" | "13">["tests"][number]["attempts"][number], "state">[];
-        duration: RunResult<">=14" | "13">["tests"][number]["duration"];
-        state: RunResult<">=14" | "13">["tests"][number]["state"];
-        title: RunResult<">=14" | "13">["tests"][number]["title"];
-    }[];
+    spec: MinimalRunResult<">=14" | "13">["spec"];
+    stats: Pick<MinimalRunResult<">=14" | "13">["stats"], "startedAt">;
+    tests: MinimalRunResult<">=14" | "13">["tests"];
 }
 
 /**
