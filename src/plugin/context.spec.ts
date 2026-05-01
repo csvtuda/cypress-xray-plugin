@@ -14,7 +14,6 @@ import { JiraClientCloud } from "../client/jira/jira-client-cloud";
 import { JiraClientServer } from "../client/jira/jira-client-server";
 import { XrayClientCloud } from "../client/xray/xray-client-cloud";
 import { XrayClientServer } from "../client/xray/xray-client-server";
-import type { User } from "../models/jira/responses/user";
 import type {
     InternalCucumberOptions,
     InternalHttpOptions,
@@ -1626,7 +1625,7 @@ void describe(relative(cwd(), __filename), () => {
                 const get = context.mock.method(httpClients.jira, "get", () => {
                     return {
                         config: { headers: new AxiosHeaders() },
-                        data: { active: true, displayName: "Jeff" } as User,
+                        data: { active: true, displayName: "Jeff" },
                         headers: {},
                         status: HttpStatusCode.Ok,
                         statusText: HttpStatusCode[HttpStatusCode.Ok],
@@ -1650,8 +1649,7 @@ void describe(relative(cwd(), __filename), () => {
                 assert.strictEqual(jiraClient instanceof JiraClientCloud, true);
                 assert.strictEqual(xrayClient instanceof XrayClientCloud, true);
                 assert.strictEqual(
-                    (jiraClient as JiraClientCloud).getCredentials() instanceof
-                        BasicAuthCredentials,
+                    jiraClient.getCredentials() instanceof BasicAuthCredentials,
                     true
                 );
                 assert.strictEqual(
@@ -1685,7 +1683,7 @@ void describe(relative(cwd(), __filename), () => {
                 context.mock.method(httpClients.jira, "get", () => {
                     return {
                         config: { headers: new AxiosHeaders() },
-                        data: { active: true, displayName: "Jeff" } as User,
+                        data: { active: true, displayName: "Jeff" },
                         headers: {},
                         status: HttpStatusCode.Ok,
                         statusText: HttpStatusCode[HttpStatusCode.Ok],
@@ -1721,7 +1719,7 @@ void describe(relative(cwd(), __filename), () => {
                 context.mock.method(httpClients.jira, "get", () => {
                     return {
                         config: { headers: new AxiosHeaders() },
-                        data: { active: true, displayName: "Jeff" } as User,
+                        data: { active: true, displayName: "Jeff" },
                         headers: {},
                         status: HttpStatusCode.Ok,
                         statusText: HttpStatusCode[HttpStatusCode.Ok],
@@ -1755,7 +1753,7 @@ void describe(relative(cwd(), __filename), () => {
                 const getJira = context.mock.method(httpClients.jira, "get", () => {
                     return {
                         config: { headers: new AxiosHeaders() },
-                        data: { active: true, displayName: "Jeff" } as User,
+                        data: { active: true, displayName: "Jeff" },
                         headers: {},
                         status: HttpStatusCode.Ok,
                         statusText: HttpStatusCode[HttpStatusCode.Ok],
@@ -1781,10 +1779,7 @@ void describe(relative(cwd(), __filename), () => {
                 );
                 assert.strictEqual(jiraClient instanceof JiraClientServer, true);
                 assert.strictEqual(xrayClient instanceof XrayClientServer, true);
-                assert.strictEqual(
-                    (jiraClient as JiraClientServer).getCredentials() instanceof PatCredentials,
-                    true
-                );
+                assert.strictEqual(jiraClient.getCredentials() instanceof PatCredentials, true);
                 assert.strictEqual(
                     (xrayClient as XrayClientServer).getCredentials() instanceof PatCredentials,
                     true
@@ -1814,7 +1809,7 @@ void describe(relative(cwd(), __filename), () => {
                 const getJira = context.mock.method(httpClients.jira, "get", () => {
                     return {
                         config: { headers: new AxiosHeaders() },
-                        data: { active: true, displayName: "Jeff" } as User,
+                        data: { active: true, displayName: "Jeff" },
                         headers: {},
                         status: HttpStatusCode.Ok,
                         statusText: HttpStatusCode[HttpStatusCode.Ok],
@@ -1841,8 +1836,7 @@ void describe(relative(cwd(), __filename), () => {
                 assert.strictEqual(jiraClient instanceof JiraClientServer, true);
                 assert.strictEqual(xrayClient instanceof XrayClientServer, true);
                 assert.strictEqual(
-                    (jiraClient as JiraClientServer).getCredentials() instanceof
-                        BasicAuthCredentials,
+                    jiraClient.getCredentials() instanceof BasicAuthCredentials,
                     true
                 );
                 assert.strictEqual(
@@ -1878,7 +1872,7 @@ void describe(relative(cwd(), __filename), () => {
                 context.mock.method(httpClients.jira, "get", () => {
                     return {
                         config: { headers: new AxiosHeaders() },
-                        data: { active: true, displayName: "Jeff" } as User,
+                        data: { active: true, displayName: "Jeff" },
                         headers: {},
                         status: HttpStatusCode.Ok,
                         statusText: HttpStatusCode[HttpStatusCode.Ok],
@@ -1902,8 +1896,7 @@ void describe(relative(cwd(), __filename), () => {
                 assert.strictEqual(jiraClient instanceof JiraClientCloud, true);
                 assert.strictEqual(xrayClient instanceof XrayClientCloud, true);
                 assert.strictEqual(
-                    (jiraClient as JiraClientCloud).getCredentials() instanceof
-                        BasicAuthCredentials,
+                    jiraClient.getCredentials() instanceof BasicAuthCredentials,
                     true
                 );
                 assert.strictEqual(
