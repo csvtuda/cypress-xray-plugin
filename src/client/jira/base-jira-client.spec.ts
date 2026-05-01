@@ -6,7 +6,6 @@ import { cwd } from "node:process";
 import { beforeEach, describe, it } from "node:test";
 import type { Attachment } from "../../models/jira/responses/attachment";
 import type { IssueTypeDetails } from "../../models/jira/responses/issue-type-details";
-import type { User } from "../../models/jira/responses/user";
 import type { Logger } from "../../util/logging";
 import { LOG } from "../../util/logging";
 import { BasicAuthCredentials } from "../authentication/credentials";
@@ -381,7 +380,7 @@ void describe(relative(cwd(), __filename), () => {
                         data: {
                             active: true,
                             displayName: "Demo User",
-                        } as User,
+                        },
                         headers: {},
                         status: HttpStatusCode.Ok,
                         statusText: HttpStatusCode[HttpStatusCode.Ok],
