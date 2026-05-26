@@ -68,10 +68,3 @@ jobs:
           CYPRESS_XRAY_CLIENT_ID_CLOUD: ${{ secrets.XRAY_CLIENT_ID }}
           CYPRESS_XRAY_CLIENT_SECRET_CLOUD: ${{ secrets.XRAY_CLIENT_SECRET }}
           INTEGRATION_TESTS_ENVIRONMENT: ${{ matrix.environment }}
-      - uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          check_name: Integration Test Results ${{ matrix.environment }}
-          files: |
-            integration.xml
-          time_unit: seconds
