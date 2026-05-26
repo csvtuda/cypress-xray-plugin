@@ -1,6 +1,5 @@
 import { AstBuilder, GherkinClassicTokenMatcher, Parser } from "@cucumber/gherkin";
 import type { GherkinDocument } from "@cucumber/messages";
-import { IdGenerator } from "@cucumber/messages";
 import fs from "fs";
 
 /**
@@ -18,9 +17,18 @@ export function parseFeatureFile(
     file: string,
     encoding: BufferEncoding = "utf-8"
 ): GherkinDocument {
-    const uuidFn = IdGenerator.uuid();
-    const builder = new AstBuilder(uuidFn);
+    const builder = new AstBuilder(idGenerator());
     const matcher = new GherkinClassicTokenMatcher();
     const parser = new Parser(builder, matcher);
     return parser.parse(fs.readFileSync(file, { encoding: encoding }));
+}
+
+/**
+ * See: https://github.com/cucumber/messages/blob/134afe9532a951b14527b30f0dbf3065c7f47e5f/javascript/src/IdGenerator.ts
+ */
+function idGenerator(): () => string {
+    let next = 0;
+    return () => {
+        return (next++).toString();
+    };
 }
