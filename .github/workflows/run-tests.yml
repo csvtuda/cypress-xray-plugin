@@ -45,6 +45,7 @@ jobs:
     strategy:
       matrix:
         environment: [server, cloud]
+        shard: [1, 2, 3]
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
@@ -68,3 +69,5 @@ jobs:
           CYPRESS_XRAY_CLIENT_ID_CLOUD: ${{ secrets.XRAY_CLIENT_ID }}
           CYPRESS_XRAY_CLIENT_SECRET_CLOUD: ${{ secrets.XRAY_CLIENT_SECRET }}
           INTEGRATION_TESTS_ENVIRONMENT: ${{ matrix.environment }}
+          INTEGRATION_TESTS_SHARD_INDEX: ${{ matrix.shard }}
+          INTEGRATION_TESTS_SHARD_TOTAL: 3
