@@ -1,5 +1,11 @@
 # Changelog
 
+# `8.6.7`
+
+- Moved @cucumber/messages to dev dependencies ([#105](https://github.com/csvtuda/cypress-xray-plugin/issues/105))
+- Bumped axios from 1.13.5 to 1.15.2
+- Bumped @cucumber/gherkin from 37.0.1 to 39.0.0
+
 # `8.6.6`
 
 - Enhanced custom Xray status aggregate functions with new parameters
