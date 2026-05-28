@@ -1,7 +1,9 @@
+import { createWriteStream } from "node:fs";
 import { resolve } from "node:path";
 import type { TestShard } from "node:test";
 import { run } from "node:test";
 import { spec } from "node:test/reporters";
+import { jsonReporter } from "./reporter";
 import { startServer, stopServer } from "./server";
 import { findFiles } from "./util";
 
@@ -23,6 +25,7 @@ const TEST_STREAM = run({
     });
 
 TEST_STREAM.pipe(spec()).pipe(process.stdout);
+TEST_STREAM.compose(jsonReporter).pipe(createWriteStream("integration.json", "utf-8"));
 
 function getShard(): TestShard {
     const index = Number.parseInt(process.env.INTEGRATION_TESTS_SHARD_INDEX ?? "1", 10);
