@@ -138,7 +138,9 @@ dist
 # ================================================================================================ #
 
 unit.xml
+unit.json
 integration.xml
+integration.json
 
 test/integration/**/cypress.env.json
 test/integration/**/cucumber-report.json
