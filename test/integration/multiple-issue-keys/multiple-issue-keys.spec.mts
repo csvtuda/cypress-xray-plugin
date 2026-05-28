@@ -4,7 +4,11 @@ import { cwd } from "node:process";
 import { describe, it } from "node:test";
 import { runCypress } from "../../sh.mjs";
 import { getIntegrationClient } from "../clients.mjs";
-import { getCreatedTestExecutionIssueKey, shouldRunIntegrationTests } from "../util.mjs";
+import {
+    getCreatedTestExecutionIssueKey,
+    searchIssues,
+    shouldRunIntegrationTests,
+} from "../util.mjs";
 
 // ============================================================================================== //
 // https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues/328
@@ -21,7 +25,7 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 title: "results upload works for tests with multiple issue keys (cloud)",
             },
         ] as const) {
-            void it(testCase.title, async () => {
+            void it(testCase.title, async (context) => {
                 const output = runCypress(testCase.projectDirectory, {
                     includeDefaultEnv: "cloud",
                 });
@@ -32,11 +36,11 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     "both"
                 );
 
-                const execution = await getIntegrationClient("jira", "cloud").issues.getIssue({
-                    fields: ["id"],
-                    issueIdOrKey: testExecutionIssueKey,
-                });
-                assert.ok(execution.id);
+                const [execution] = await searchIssues(
+                    getIntegrationClient("jira", "cloud"),
+                    [testExecutionIssueKey],
+                    { logger: context.diagnostic.bind(context), fields: ["id"] }
+                );
                 const query = await getIntegrationClient("xray", "cloud").graphql.getTestExecution(
                     { issueId: execution.id },
                     (testExecution) => [
@@ -45,10 +49,16 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                         ]),
                     ]
                 );
-                assert.strictEqual(query.tests?.results?.[0]?.jira.key, testCase.manualTests[0]);
-                assert.strictEqual(query.tests.results[1]?.jira.key, testCase.manualTests[1]);
-                assert.strictEqual(query.tests.results[2]?.jira.key, testCase.cucumberTests[0]);
-                assert.strictEqual(query.tests.results[3]?.jira.key, testCase.cucumberTests[1]);
+                assert.partialDeepStrictEqual(query, {
+                    tests: {
+                        results: [
+                            { jira: { key: testCase.manualTests[0] } },
+                            { jira: { key: testCase.manualTests[1] } },
+                            { jira: { key: testCase.cucumberTests[0] } },
+                            { jira: { key: testCase.cucumberTests[1] } },
+                        ],
+                    },
+                });
             });
         }
     }
@@ -78,15 +88,12 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     "xray",
                     "server"
                 ).testExecution.getTests(testExecutionIssueKey);
-                assert.deepStrictEqual(
-                    testResults.map((result) => result.key),
-                    [
-                        testCase.manualTests[0],
-                        testCase.manualTests[1],
-                        testCase.cucumberTests[0],
-                        testCase.cucumberTests[1],
-                    ]
-                );
+                assert.partialDeepStrictEqual(testResults, [
+                    { key: testCase.manualTests[0] },
+                    { key: testCase.manualTests[1] },
+                    { key: testCase.cucumberTests[0] },
+                    { key: testCase.cucumberTests[1] },
+                ]);
             });
         }
     }

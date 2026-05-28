@@ -2,10 +2,18 @@ import assert from "node:assert";
 import { join, relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { setTimeout } from "node:timers/promises";
 import { runCypress } from "../../sh.mjs";
-import { JIRA_CLIENT_CLOUD, XRAY_CLIENT_CLOUD, XRAY_CLIENT_SERVER } from "../clients.mjs";
-import { getCreatedTestExecutionIssueKey, shouldRunIntegrationTests } from "../util.mjs";
+import {
+    JIRA_CLIENT_CLOUD,
+    JIRA_CLIENT_SERVER,
+    XRAY_CLIENT_CLOUD,
+    XRAY_CLIENT_SERVER,
+} from "../clients.mjs";
+import {
+    getCreatedTestExecutionIssueKey,
+    searchIssues,
+    shouldRunIntegrationTests,
+} from "../util.mjs";
 
 // ============================================================================================== //
 // https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues/451
@@ -21,7 +29,7 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 title: "only last attempts are uploaded (cloud)",
             },
         ] as const) {
-            void it(testCase.title, async () => {
+            void it(testCase.title, async (context) => {
                 const output = runCypress(testCase.projectDirectory, {
                     expectedStatusCode: 1,
                     includeDefaultEnv: "cloud",
@@ -33,21 +41,12 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     "cypress"
                 );
 
-                const executionIssue = await JIRA_CLIENT_CLOUD.issues.getIssue({
-                    fields: ["id"],
-                    issueIdOrKey: testExecutionIssueKey,
-                });
-                const testIssueRetried = await JIRA_CLIENT_CLOUD.issues.getIssue({
-                    fields: ["id"],
-                    issueIdOrKey: testCase.linkedTests[0],
-                });
-                const testIssueRetriedScreenshot = await JIRA_CLIENT_CLOUD.issues.getIssue({
-                    fields: ["id"],
-                    issueIdOrKey: testCase.linkedTests[1],
-                });
-                assert.ok(executionIssue.id);
-                assert.ok(testIssueRetried.id);
-                assert.ok(testIssueRetriedScreenshot.id);
+                const [executionIssue, testIssueRetried, testIssueRetriedScreenshot] =
+                    await searchIssues(
+                        JIRA_CLIENT_CLOUD,
+                        [testExecutionIssueKey, testCase.linkedTests[0], testCase.linkedTests[1]],
+                        { logger: context.diagnostic.bind(context), fields: ["id"] }
+                    );
                 const testResultsRetried = await XRAY_CLIENT_CLOUD.graphql.getTestRuns(
                     {
                         limit: 1,
@@ -67,19 +66,14 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                         ]),
                     ]
                 );
-                assert.strictEqual(testResultsRetried.results?.length, 1);
-                assert.deepStrictEqual(testResultsRetried.results[0]?.status, { name: "PASSED" });
-                assert.deepStrictEqual(testResultsRetried.results[0].test, {
-                    jira: {
-                        key: testCase.linkedTests[0],
+                assert.partialDeepStrictEqual(testResultsRetried.results, [
+                    {
+                        status: { name: "PASSED" },
+                        test: { jira: { key: testCase.linkedTests[0] } },
+                        evidence: [{ filename: "CXP-17 my screenshot (attempt 6).png" }],
+                        iterations: { results: [] },
                     },
-                });
-                assert.strictEqual(testResultsRetried.results[0].evidence?.length, 1);
-                assert.strictEqual(
-                    testResultsRetried.results[0].evidence[0]?.filename,
-                    "CXP-17 my screenshot (attempt 6).png"
-                );
-                assert.deepStrictEqual(testResultsRetried.results[0].iterations, { results: [] });
+                ]);
                 const testResultsRetriedScreenshot = await XRAY_CLIENT_CLOUD.graphql.getTestRuns(
                     {
                         limit: 1,
@@ -99,26 +93,21 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                         ]),
                     ]
                 );
-                assert.deepStrictEqual(testResultsRetriedScreenshot.results?.[0]?.status, {
-                    name: "FAILED",
-                });
-                assert.deepStrictEqual(testResultsRetriedScreenshot.results[0].test, {
-                    jira: {
-                        key: testCase.linkedTests[1],
+
+                assert.partialDeepStrictEqual(testResultsRetriedScreenshot.results, [
+                    {
+                        status: { name: "FAILED" },
+                        test: { jira: { key: testCase.linkedTests[1] } },
+                        evidence: [
+                            { filename: "CXP-18 my other screenshot (attempt 3).png" },
+                            {
+                                filename:
+                                    "template spec -- CXP-18 manual screenshot (failed) (attempt 3).png",
+                            },
+                        ],
+                        iterations: { results: [] },
                     },
-                });
-                assert.strictEqual(testResultsRetriedScreenshot.results[0].evidence?.length, 2);
-                assert.strictEqual(
-                    testResultsRetriedScreenshot.results[0].evidence[0]?.filename,
-                    "CXP-18 my other screenshot (attempt 3).png"
-                );
-                assert.strictEqual(
-                    testResultsRetriedScreenshot.results[0].evidence[1]?.filename,
-                    "template spec -- CXP-18 manual screenshot (failed) (attempt 3).png"
-                );
-                assert.deepStrictEqual(testResultsRetriedScreenshot.results[0].iterations, {
-                    results: [],
-                });
+                ]);
             });
         }
     }
@@ -132,7 +121,7 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 title: "only last attempts are uploaded (server)",
             },
         ] as const) {
-            void it(testCase.title, async () => {
+            void it(testCase.title, async (context) => {
                 const output = runCypress(testCase.projectDirectory, {
                     expectedStatusCode: 1,
                     includeDefaultEnv: "server",
@@ -144,32 +133,34 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     "cypress"
                 );
 
-                // Jira server does not like searches immediately after issue creation (socket hang up).
-                await setTimeout(10000);
+                // Asserts the new execution issue exists.
+                await searchIssues(
+                    JIRA_CLIENT_SERVER,
+                    [testExecutionIssueKey, testCase.linkedTests[0]],
+                    { logger: context.diagnostic.bind(context) }
+                );
                 const testRunRetried = await XRAY_CLIENT_SERVER.testRun.getTestRun({
                     testExecIssueKey: testExecutionIssueKey,
                     testIssueKey: testCase.linkedTests[0],
                 });
-                assert.strictEqual(testRunRetried.evidences.length, 1);
-                assert.strictEqual(
-                    testRunRetried.evidences[0].fileName,
-                    "CYPLUG-1692 my screenshot (attempt 6).png"
-                );
-                assert.strictEqual(testRunRetried.iterations, undefined);
+                assert.partialDeepStrictEqual(testRunRetried, {
+                    evidences: [{ fileName: "CYPLUG-1692 my screenshot (attempt 6).png" }],
+                });
                 const testResultsRetriedScreenshot = await XRAY_CLIENT_SERVER.testRun.getTestRun({
                     testExecIssueKey: testExecutionIssueKey,
                     testIssueKey: testCase.linkedTests[1],
                 });
-                assert.strictEqual(testResultsRetriedScreenshot.evidences.length, 2);
-                assert.strictEqual(
-                    testResultsRetriedScreenshot.evidences[0].fileName,
-                    "CYPLUG-1694 my other screenshot (attempt 3).png"
-                );
-                assert.strictEqual(
-                    testResultsRetriedScreenshot.evidences[1].fileName,
-                    "template spec -- CYPLUG-1694 manual screenshot (failed) (attempt 3).png"
-                );
-                assert.strictEqual(testResultsRetriedScreenshot.iterations, undefined);
+                assert.partialDeepStrictEqual(testResultsRetriedScreenshot, {
+                    evidences: [
+                        {
+                            fileName: "CYPLUG-1694 my other screenshot (attempt 3).png",
+                        },
+                        {
+                            fileName:
+                                "template spec -- CYPLUG-1694 manual screenshot (failed) (attempt 3).png",
+                        },
+                    ],
+                });
             });
         }
     }

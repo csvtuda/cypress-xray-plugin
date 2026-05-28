@@ -2,10 +2,18 @@ import assert from "node:assert";
 import { join, relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { setTimeout } from "node:timers/promises";
 import { runCypress } from "../../sh.mjs";
-import { JIRA_CLIENT_CLOUD, XRAY_CLIENT_CLOUD, XRAY_CLIENT_SERVER } from "../clients.mjs";
-import { getCreatedTestExecutionIssueKey, shouldRunIntegrationTests } from "../util.mjs";
+import {
+    JIRA_CLIENT_CLOUD,
+    JIRA_CLIENT_SERVER,
+    XRAY_CLIENT_CLOUD,
+    XRAY_CLIENT_SERVER,
+} from "../clients.mjs";
+import {
+    getCreatedTestExecutionIssueKey,
+    searchIssues,
+    shouldRunIntegrationTests,
+} from "../util.mjs";
 
 // ============================================================================================== //
 // https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues/452
@@ -21,7 +29,7 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 title: "iteration parameters can be provided (cloud)",
             },
         ] as const) {
-            void it(testCase.title, async () => {
+            void it(testCase.title, async (context) => {
                 const output = runCypress(testCase.projectDirectory, {
                     expectedStatusCode: 0,
                     includeDefaultEnv: "cloud",
@@ -32,17 +40,11 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     output,
                     "cypress"
                 );
-
-                const executionIssue = await JIRA_CLIENT_CLOUD.issues.getIssue({
-                    fields: ["id"],
-                    issueIdOrKey: testExecutionIssueKey,
-                });
-                const testIssue = await JIRA_CLIENT_CLOUD.issues.getIssue({
-                    fields: ["id"],
-                    issueIdOrKey: testCase.linkedTest,
-                });
-                assert.ok(executionIssue.id);
-                assert.ok(testIssue.id);
+                const [executionIssue, testIssue] = await searchIssues(
+                    JIRA_CLIENT_CLOUD,
+                    [testExecutionIssueKey, testCase.linkedTest],
+                    { logger: context.diagnostic.bind(context), fields: ["id"] }
+                );
                 const testResults = await XRAY_CLIENT_CLOUD.graphql.getTestRuns(
                     {
                         limit: 1,
@@ -66,54 +68,55 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                         ]),
                     ]
                 );
-                assert.strictEqual(testResults.results?.length, 1);
-                assert.deepStrictEqual(testResults.results[0]?.status, { name: "PASSED" });
-                assert.deepStrictEqual(testResults.results[0].test, {
-                    jira: {
-                        key: testCase.linkedTest,
-                    },
-                });
-                assert.deepStrictEqual(testResults.results[0].iterations, {
+                assert.partialDeepStrictEqual(testResults, {
                     results: [
                         {
-                            parameters: [
-                                { name: "iteration", value: "1" },
-                                { name: "hello", value: "there" },
-                                { name: "good", value: "morning" },
-                                { name: "using", value: "cy.task" },
-                                { name: "id", value: "#1" },
-                            ],
                             status: { name: "PASSED" },
-                        },
-                        {
-                            parameters: [
-                                { name: "iteration", value: "2" },
-                                { name: "hello", value: "there" },
-                                { name: "good", value: "morning" },
-                                { name: "using", value: "cy.task" },
-                                { name: "id", value: "#2" },
-                            ],
-                            status: { name: "PASSED" },
-                        },
-                        {
-                            parameters: [
-                                { name: "iteration", value: "3" },
-                                { name: "hello", value: "there" },
-                                { name: "good", value: "morning" },
-                                { name: "using", value: "cy.task" },
-                                { name: "id", value: "#3" },
-                            ],
-                            status: { name: "PASSED" },
-                        },
-                        {
-                            parameters: [
-                                { name: "iteration", value: "4" },
-                                { name: "hello", value: "there" },
-                                { name: "good", value: "morning" },
-                                { name: "using", value: "enqueueTask" },
-                                { name: "id", value: "" },
-                            ],
-                            status: { name: "PASSED" },
+                            test: { jira: { key: testCase.linkedTest } },
+                            iterations: {
+                                results: [
+                                    {
+                                        parameters: [
+                                            { name: "iteration", value: "1" },
+                                            { name: "hello", value: "there" },
+                                            { name: "good", value: "morning" },
+                                            { name: "using", value: "cy.task" },
+                                            { name: "id", value: "#1" },
+                                        ],
+                                        status: { name: "PASSED" },
+                                    },
+                                    {
+                                        parameters: [
+                                            { name: "iteration", value: "2" },
+                                            { name: "hello", value: "there" },
+                                            { name: "good", value: "morning" },
+                                            { name: "using", value: "cy.task" },
+                                            { name: "id", value: "#2" },
+                                        ],
+                                        status: { name: "PASSED" },
+                                    },
+                                    {
+                                        parameters: [
+                                            { name: "iteration", value: "3" },
+                                            { name: "hello", value: "there" },
+                                            { name: "good", value: "morning" },
+                                            { name: "using", value: "cy.task" },
+                                            { name: "id", value: "#3" },
+                                        ],
+                                        status: { name: "PASSED" },
+                                    },
+                                    {
+                                        parameters: [
+                                            { name: "iteration", value: "4" },
+                                            { name: "hello", value: "there" },
+                                            { name: "good", value: "morning" },
+                                            { name: "using", value: "enqueueTask" },
+                                            { name: "id", value: "" },
+                                        ],
+                                        status: { name: "PASSED" },
+                                    },
+                                ],
+                            },
                         },
                     ],
                 });
@@ -130,7 +133,7 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 title: "iteration parameters can be provided (server)",
             },
         ] as const) {
-            void it(testCase.title, async () => {
+            void it(testCase.title, async (context) => {
                 const output = runCypress(testCase.projectDirectory, {
                     expectedStatusCode: 0,
                     includeDefaultEnv: "server",
@@ -142,49 +145,64 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     "cypress"
                 );
 
-                // Jira server does not like searches immediately after issue creation (socket hang up).
-                await setTimeout(10000);
+                // Asserts the new execution issue exists.
+                await searchIssues(
+                    JIRA_CLIENT_SERVER,
+                    [testExecutionIssueKey, testCase.linkedTest],
+                    { logger: context.diagnostic.bind(context) }
+                );
                 const testRun = await XRAY_CLIENT_SERVER.testRun.getTestRun({
                     testExecIssueKey: testExecutionIssueKey,
                     testIssueKey: testCase.linkedTest,
                 });
-                assert.deepStrictEqual(testRun.status, "PASS");
-                assert.deepStrictEqual(testRun.testKey, testCase.linkedTest);
-                assert.strictEqual(testRun.iterations?.length, 4);
-                // Workarounds because of configured status automations for which I don't have permission.
-                // "TODO" Would be "PASS" normally.
-                assert.strictEqual(testRun.iterations[0].status, "TODO");
-                assert.deepStrictEqual(testRun.iterations[0].parameters, [
-                    { name: "iteration", value: "1" },
-                    { name: "hello", value: "there" },
-                    { name: "good", value: "morning" },
-                    { name: "using", value: "cy.task" },
-                    { name: "id", value: "#1" },
-                ]);
-                assert.strictEqual(testRun.iterations[1].status, "TODO");
-                assert.deepStrictEqual(testRun.iterations[1].parameters, [
-                    { name: "iteration", value: "2" },
-                    { name: "hello", value: "there" },
-                    { name: "good", value: "morning" },
-                    { name: "using", value: "cy.task" },
-                    { name: "id", value: "#2" },
-                ]);
-                assert.strictEqual(testRun.iterations[2].status, "TODO");
-                assert.deepStrictEqual(testRun.iterations[2].parameters, [
-                    { name: "iteration", value: "3" },
-                    { name: "hello", value: "there" },
-                    { name: "good", value: "morning" },
-                    { name: "using", value: "cy.task" },
-                    { name: "id", value: "#3" },
-                ]);
-                assert.strictEqual(testRun.iterations[3].status, "TODO");
-                assert.deepStrictEqual(testRun.iterations[3].parameters, [
-                    { name: "iteration", value: "4" },
-                    { name: "hello", value: "there" },
-                    { name: "good", value: "morning" },
-                    { name: "using", value: "enqueueTask" },
-                    { name: "id", value: "" },
-                ]);
+                assert.partialDeepStrictEqual(testRun, {
+                    status: "PASS",
+                    testKey: testCase.linkedTest,
+                    iterations: [
+                        {
+                            // Workarounds because of configured status automations for which I don't have permission.
+                            // "TODO" Would be "PASS" normally.
+                            status: "TODO",
+                            parameters: [
+                                { name: "iteration", value: "1" },
+                                { name: "hello", value: "there" },
+                                { name: "good", value: "morning" },
+                                { name: "using", value: "cy.task" },
+                                { name: "id", value: "#1" },
+                            ],
+                        },
+                        {
+                            status: "TODO",
+                            parameters: [
+                                { name: "iteration", value: "2" },
+                                { name: "hello", value: "there" },
+                                { name: "good", value: "morning" },
+                                { name: "using", value: "cy.task" },
+                                { name: "id", value: "#2" },
+                            ],
+                        },
+                        {
+                            status: "TODO",
+                            parameters: [
+                                { name: "iteration", value: "3" },
+                                { name: "hello", value: "there" },
+                                { name: "good", value: "morning" },
+                                { name: "using", value: "cy.task" },
+                                { name: "id", value: "#3" },
+                            ],
+                        },
+                        {
+                            status: "TODO",
+                            parameters: [
+                                { name: "iteration", value: "4" },
+                                { name: "hello", value: "there" },
+                                { name: "good", value: "morning" },
+                                { name: "using", value: "enqueueTask" },
+                                { name: "id", value: "" },
+                            ],
+                        },
+                    ],
+                });
             });
         }
     }
