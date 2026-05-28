@@ -2,10 +2,13 @@ import assert from "node:assert";
 import { join, relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { setTimeout } from "node:timers/promises";
 import { runCypress } from "../../sh.mjs";
-import { getIntegrationClient } from "../clients.mjs";
-import { getCreatedTestExecutionIssueKey, shouldRunIntegrationTests } from "../util.mjs";
+import { getIntegrationClient, JIRA_CLIENT_SERVER } from "../clients.mjs";
+import {
+    getCreatedTestExecutionIssueKey,
+    searchIssues,
+    shouldRunIntegrationTests,
+} from "../util.mjs";
 
 // ============================================================================================== //
 // https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues/359
@@ -29,7 +32,7 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 title: "test execution issue data is wrapped (cloud)",
             },
         ] as const) {
-            void it(test.title, async () => {
+            void it(test.title, async (context) => {
                 const output = runCypress(test.projectDirectory, { includeDefaultEnv: "cloud" });
 
                 const testExecutionIssueKey = getCreatedTestExecutionIssueKey(
@@ -38,11 +41,14 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     "cypress"
                 );
 
-                // Duplication necessary because of TypeScript errors (jira.js problem).
-                const searchResult = await getIntegrationClient("jira", "cloud").issues.getIssue({
-                    fields: ["labels", "summary"],
-                    issueIdOrKey: testExecutionIssueKey,
-                });
+                const [searchResult] = await searchIssues(
+                    getIntegrationClient("jira", "cloud"),
+                    [testExecutionIssueKey],
+                    {
+                        logger: context.diagnostic.bind(context),
+                        fields: ["labels", "summary"],
+                    }
+                );
 
                 assert.deepStrictEqual(searchResult.fields.labels, test.expectedLabels);
                 assert.deepStrictEqual(searchResult.fields.summary, test.expectedSummary);
@@ -67,7 +73,7 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 title: "test execution issue data is wrapped (server)",
             },
         ] as const) {
-            void it(test.title, async () => {
+            void it(test.title, async (context) => {
                 const output = runCypress(test.projectDirectory, { includeDefaultEnv: "server" });
 
                 const testExecutionIssueKey = getCreatedTestExecutionIssueKey(
@@ -76,15 +82,17 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     "cypress"
                 );
 
-                // Jira server does not like searches immediately after issue creation (socket hang up).
-                await setTimeout(10000);
-                const searchResult = await getIntegrationClient("jira", "server").issues.getIssue({
-                    fields: ["labels", "summary"],
-                    issueIdOrKey: testExecutionIssueKey,
-                });
+                const [executionIssue] = await searchIssues(
+                    JIRA_CLIENT_SERVER,
+                    [testExecutionIssueKey],
+                    {
+                        logger: context.diagnostic.bind(context),
+                        fields: ["labels", "summary"],
+                    }
+                );
 
-                assert.deepStrictEqual(searchResult.fields.labels, test.expectedLabels);
-                assert.deepStrictEqual(searchResult.fields.summary, test.expectedSummary);
+                assert.deepStrictEqual(executionIssue.fields.labels, test.expectedLabels);
+                assert.deepStrictEqual(executionIssue.fields.summary, test.expectedSummary);
             });
         }
     }

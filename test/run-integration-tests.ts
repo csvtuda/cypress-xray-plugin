@@ -9,6 +9,7 @@ const INTEGRATION_DIR = resolve("test", "integration");
 
 const TEST_STREAM = run({
     files: findFiles(INTEGRATION_DIR, (filepath: string) => filepath.endsWith(".spec.mts")),
+    only: Boolean(process.env.ONLY ?? false),
     shard: getShard(),
 })
     .once("test:fail", () => {

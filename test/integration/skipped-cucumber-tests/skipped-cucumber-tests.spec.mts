@@ -4,7 +4,11 @@ import { cwd } from "node:process";
 import { describe, it } from "node:test";
 import { runCypress } from "../../sh.mjs";
 import { getIntegrationClient } from "../clients.mjs";
-import { getCreatedTestExecutionIssueKey, shouldRunIntegrationTests } from "../util.mjs";
+import {
+    getCreatedTestExecutionIssueKey,
+    searchIssues,
+    shouldRunIntegrationTests,
+} from "../util.mjs";
 
 // ============================================================================================== //
 // https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues/341
@@ -25,7 +29,7 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 xraySkippedStatus: "SKIPPED",
             },
         ] as const) {
-            void it(testCase.title, async () => {
+            void it(testCase.title, async (context) => {
                 const output = runCypress(testCase.projectDirectory, {
                     includeDefaultEnv: "cloud",
                 });
@@ -36,11 +40,11 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     "cucumber"
                 );
 
-                const execution = await getIntegrationClient("jira", "cloud").issues.getIssue({
-                    fields: ["id"],
-                    issueIdOrKey: testExecutionIssueKey,
-                });
-                assert.ok(execution.id);
+                const [execution] = await searchIssues(
+                    getIntegrationClient("jira", "cloud"),
+                    [testExecutionIssueKey],
+                    { logger: context.diagnostic.bind(context), fields: ["id"] }
+                );
                 const query = await getIntegrationClient("xray", "cloud").graphql.getTestExecution(
                     { issueId: execution.id },
                     (testExecution) => [

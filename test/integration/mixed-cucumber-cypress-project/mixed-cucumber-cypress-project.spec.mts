@@ -4,7 +4,11 @@ import { cwd } from "node:process";
 import { describe, it } from "node:test";
 import { runCypress } from "../../sh.mjs";
 import { getIntegrationClient } from "../clients.mjs";
-import { getCreatedTestExecutionIssueKey, shouldRunIntegrationTests } from "../util.mjs";
+import {
+    getCreatedTestExecutionIssueKey,
+    searchIssues,
+    shouldRunIntegrationTests,
+} from "../util.mjs";
 
 // ============================================================================================== //
 // https://github.com/Qytera-Gmbh/cypress-xray-plugin/issues/282
@@ -21,7 +25,7 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 title: "results upload works for mixed cypress and cucumber projects (cloud)",
             },
         ] as const) {
-            void it(testCase.title, async () => {
+            void it(testCase.title, async (context) => {
                 const output = runCypress(testCase.projectDirectory, {
                     includeDefaultEnv: "cloud",
                 });
@@ -32,11 +36,11 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     "both"
                 );
 
-                const issue = await getIntegrationClient("jira", "cloud").issues.getIssue({
-                    fields: ["id"],
-                    issueIdOrKey: testExecutionIssueKey,
-                });
-                assert.ok(issue.id);
+                const [issue] = await searchIssues(
+                    getIntegrationClient("jira", "cloud"),
+                    [testExecutionIssueKey],
+                    { logger: context.diagnostic.bind(context), fields: ["id"] }
+                );
                 const execution = await getIntegrationClient(
                     "xray",
                     "cloud"
@@ -45,8 +49,14 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                         testResults.results((test) => [test.jira({ fields: ["key"] })]),
                     ]),
                 ]);
-                assert.strictEqual(execution.tests?.results?.[0]?.jira.key, testCase.testIssueKey);
-                assert.strictEqual(execution.tests.results[1]?.jira.key, testCase.scenarioIssueKey);
+                assert.partialDeepStrictEqual(execution, {
+                    tests: {
+                        results: [
+                            { jira: { key: testCase.testIssueKey } },
+                            { jira: { key: testCase.scenarioIssueKey } },
+                        ],
+                    },
+                });
             });
         }
     }
