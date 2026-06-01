@@ -3,6 +3,9 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
+const WATERMARK = "<!-- ## -- COMMENT FOR TEST RESULTS -- ## -->";
+const UPDATE_REMARK = "<sub>This comment has been updated with the latest test results.</sub>";
+
 /**
  * @typedef {Object} TestResult
  * @property {string} file
@@ -27,20 +30,18 @@ module.exports = async ({ github, context }, header, resultFilePaths, listPassed
         .sort((a, b) => (a.file + a.name).localeCompare(b.file + b.name));
     const passedTests = results.filter((t) => t.status === "passed");
     const failedTests = results.filter((t) => t.status === "failed");
-    const watermark = `<!-- ## RESULT COMMENT FOR "${header}" ## -->`;
-    const body = [`## ${header}`, "", `🧪 **Total**: ${results.length}`];
+    const section = [`## ${header}`, "", `🧪 **Total**: ${results.length}`];
     if (failedTests.length > 0) {
-        body.push("", renderFailedTable(failedTests));
+        section.push("", renderFailedTable(failedTests));
     }
     if (listPassedTests) {
         if (passedTests.length > 0) {
-            body.push("", renderPassedTable(passedTests));
+            section.push("", renderPassedTable(passedTests));
         }
     } else {
-        body.push("", `✅ **Passed**: ${passedTests.length}`);
+        section.push("", `✅ **Passed**: ${passedTests.length}`);
     }
-    body.push("", watermark);
-    await postOrUpdateComment(github, context, body.join("\n"), watermark);
+    await postOrUpdateComment(github, context, header, section.join("\n"), WATERMARK);
 };
 
 /**
@@ -113,10 +114,11 @@ function renderFailedTable(failedTests) {
  *
  * @param {import('@actions/github-script').AsyncFunctionArguments["github"]} github
  * @param {import('@actions/github-script').AsyncFunctionArguments["context"]} context
- * @param {string} body
+ * @param {string} sectionTitle
+ * @param {string} sectionBody
  * @param {string} watermark
  */
-async function postOrUpdateComment(github, context, body, watermark) {
+async function postOrUpdateComment(github, context, sectionTitle, sectionBody, watermark) {
     const { owner, repo } = context.repo;
     const issue_number = context.issue.number;
     const comments = await github.rest.issues.listComments({
@@ -124,24 +126,38 @@ async function postOrUpdateComment(github, context, body, watermark) {
         repo,
         issue_number,
     });
-    const commentExists = comments.data.find((c) =>
-        c.body?.toLocaleLowerCase().includes(watermark.toLocaleLowerCase())
-    );
-    if (commentExists) {
-        await github.rest.issues.updateComment({
-            owner,
-            repo,
-            comment_id: commentExists.id,
-            body,
-        });
-    } else {
+    const comment = comments.data.find((c) => c.body?.includes(watermark));
+    const sectionStart = `<!-- BEGIN SECTION: ${sectionTitle} -->`;
+    const sectionEnd = `<!-- END SECTION: ${sectionTitle} -->`;
+    const section = `${sectionStart}\n${sectionBody}\n${sectionEnd}`;
+    if (!comment) {
+        const body = `${watermark}\n${section}`;
         await github.rest.issues.createComment({
             owner,
             repo,
             issue_number,
             body,
         });
+        return;
     }
+    let body = comment.body ?? "";
+    const startIndex = body.indexOf(sectionStart);
+    const endIndex =
+        startIndex >= 0 ? body.indexOf(sectionEnd, startIndex + sectionStart.length) : -1;
+    if (startIndex >= 0 && endIndex >= 0) {
+        body = `${body.slice(0, startIndex)}${section}${body.slice(endIndex + sectionEnd.length)}`;
+    } else {
+        body = `${body}\n${section}`;
+    }
+    if (!body.includes(UPDATE_REMARK)) {
+        body = `${body}\n${UPDATE_REMARK}`;
+    }
+    await github.rest.issues.updateComment({
+        owner,
+        repo,
+        comment_id: comment.id,
+        body,
+    });
 }
 
 /**
