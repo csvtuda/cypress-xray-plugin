@@ -18,8 +18,9 @@ const path = require("node:path");
  * @param {import('@actions/github-script').AsyncFunctionArguments} params
  * @param {string} header
  * @param {string[]} resultFilePaths
+ * @param {boolean} listPassedTests
  */
-module.exports = async ({ github, context }, header, resultFilePaths) => {
+module.exports = async ({ github, context }, header, resultFilePaths, listPassedTests) => {
     const results = resultFilePaths
         .flatMap(collectJsonFiles)
         .flatMap(parseJsonFiles)
@@ -27,17 +28,19 @@ module.exports = async ({ github, context }, header, resultFilePaths) => {
     const passedTests = results.filter((t) => t.status === "passed");
     const failedTests = results.filter((t) => t.status === "failed");
     const watermark = `<!-- ## RESULT COMMENT FOR "${header}" ## -->`;
-    const body = [
-        `## ${header}`,
-        "",
-        `🧪 **Total**: ${results.length}`,
-        "",
-        renderFailedTable(failedTests),
-        renderPassedTable(passedTests),
-        "",
-        watermark,
-    ].join("\n");
-    await postOrUpdateComment(github, context, body, watermark);
+    const body = [`## ${header}`, "", `🧪 **Total**: ${results.length}`];
+    if (failedTests.length > 0) {
+        body.push("", renderFailedTable(failedTests));
+    }
+    if (listPassedTests) {
+        if (passedTests.length > 0) {
+            body.push("", renderPassedTable(passedTests));
+        }
+    } else {
+        body.push("", `✅ **Passed**: ${passedTests.length}`);
+    }
+    body.push("", watermark);
+    await postOrUpdateComment(github, context, body.join("\n"), watermark);
 };
 
 /**
@@ -78,9 +81,6 @@ function parseJsonFiles(file) {
  * @returns {string}
  */
 function renderPassedTable(passedTests) {
-    if (!passedTests.length) {
-        return "";
-    }
     return [
         "<details>",
         `<summary>✅ Passed Tests (${passedTests.length})</summary>`,
@@ -98,9 +98,6 @@ function renderPassedTable(passedTests) {
  * @returns {string}
  */
 function renderFailedTable(failedTests) {
-    if (!failedTests.length) {
-        return "";
-    }
     return [
         "<details open>",
         `<summary>❌ Failed Tests (${failedTests.length})</summary>`,
