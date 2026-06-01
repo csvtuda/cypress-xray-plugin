@@ -36,7 +36,7 @@ jobs:
         with:
           script: |
             const script = require('./.github/comment-test-results.js');
-            await script({github, context, core}, 'Unit Test Results', ['unit.json']);
+            await script({github, context, core}, 'Unit Tests', ['unit.json'], false);
 
   run-integration-tests:
     runs-on: ubuntu-latest
@@ -91,4 +91,4 @@ jobs:
         with:
           script: |
             const script = require('./.github/comment-test-results.js');
-            await script({github, context, core}, 'Integration Test Results', ['integration-artifacts']);
+            await script({github, context, core}, 'Integration Tests', ['integration-artifacts'], true);
