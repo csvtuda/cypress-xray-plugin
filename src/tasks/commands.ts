@@ -1,5 +1,5 @@
-import { normalizedFilename } from "../util/files";
-import { enqueueTask } from "./tasks";
+import { normalizedFilename } from "../util/files.js";
+import { enqueueTask } from "./tasks.js";
 
 Cypress.Commands.overwrite(
     "request",

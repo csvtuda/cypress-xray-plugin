@@ -2,12 +2,12 @@ import assert from "node:assert";
 import { relative, resolve } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { stub } from "../../../test/mocks";
-import { dedent } from "../../util/dedent";
-import type { Logger } from "../../util/logging";
-import cucumberResultConversion from "./cucumber-result-conversion";
+import { stub } from "../../../test/mocks.js";
+import { dedent } from "../../util/dedent.js";
+import type { Logger } from "../../util/logging.js";
+import cucumberResultConversion from "./cucumber-result-conversion.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(cucumberResultConversion.readCucumberReport.name, () => {
         void it("reads cucumber json data", async () => {
             const result = await cucumberResultConversion.readCucumberReport({

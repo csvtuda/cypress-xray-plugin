@@ -1,9 +1,9 @@
 import { basename, extname } from "node:path";
-import type { ScreenshotDetails } from "../../models/cypress";
-import type { CypressStatus } from "../../models/cypress/status";
-import { extractIssueKeys } from "../../util/extraction";
-import type { MinimalRunResult } from "../cypress-xray-plugin";
-import { toCypressStatus } from "./cypress-status";
+import type { ScreenshotDetails } from "../../models/cypress/index.js";
+import type { CypressStatus } from "../../models/cypress/status.js";
+import { extractIssueKeys } from "../../util/extraction.js";
+import type { MinimalRunResult } from "../cypress-xray-plugin.js";
+import { toCypressStatus } from "./cypress-status.js";
 
 export interface RunConverter {
     /**

@@ -1,18 +1,18 @@
 import path from "path";
-import type { CypressFailedRunResult, CypressRunResult } from "./models/cypress";
+import type { CypressFailedRunResult, CypressRunResult } from "./models/cypress/index.js";
 import type {
     CypressXrayPluginOptions,
     InternalCypressXrayPluginOptions,
     InternalPluginOptions,
-} from "./models/plugin";
-import globalContext from "./plugin/context";
-import cypressXrayPlugin from "./plugin/cypress-xray-plugin";
-import type { PluginTaskParameterType } from "./tasks/tasks";
-import { CypressTaskListener } from "./tasks/tasks";
-import { dedent } from "./util/dedent";
-import { getOrCall } from "./util/functions";
-import { HELP } from "./util/help";
-import { LOG } from "./util/logging";
+} from "./models/plugin.js";
+import globalContext from "./plugin/context.js";
+import cypressXrayPlugin from "./plugin/cypress-xray-plugin.js";
+import type { PluginTaskParameterType } from "./tasks/tasks.js";
+import { CypressTaskListener } from "./tasks/tasks.js";
+import { dedent } from "./util/dedent.js";
+import { getOrCall } from "./util/functions.js";
+import { HELP } from "./util/help.js";
+import { LOG } from "./util/logging.js";
 
 /**
  * Configures the plugin. The plugin will check all environment variables passed in

@@ -1,8 +1,8 @@
 import ansiColors from "ansi-colors";
 import { isAxiosError } from "axios";
-import fs from "fs";
-import path from "path";
-import { isLoggedError } from "./errors";
+import fs from "node:fs";
+import path from "node:path";
+import { isLoggedError } from "./errors.js";
 
 const LOG_LEVELS = ["debug", "error", "info", "notice", "warning"] as const;
 /**

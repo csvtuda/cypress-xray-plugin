@@ -4,44 +4,44 @@ import type {
     HasGetFieldsEndpoint,
     HasSearchEndpoint,
     HasTransitionIssueEndpoint,
-} from "../client/jira/jira-client";
+} from "../client/jira/jira-client.js";
+import type {
+    HasAddEvidenceToTestRunEndpoint,
+    HasGetTestRunResultsEndpoint,
+} from "../client/xray/xray-client-cloud.js";
+import type {
+    HasAddEvidenceEndpoint,
+    HasGetTestRunEndpoint,
+} from "../client/xray/xray-client-server.js";
 import type {
     HasImportExecutionCucumberMultipartEndpoint,
     HasImportExecutionMultipartEndpoint,
     HasImportFeatureEndpoint,
-} from "../client/xray/xray-client";
-import type {
-    HasAddEvidenceToTestRunEndpoint,
-    HasGetTestRunResultsEndpoint,
-} from "../client/xray/xray-client-cloud";
-import type {
-    HasAddEvidenceEndpoint,
-    HasGetTestRunEndpoint,
-} from "../client/xray/xray-client-server";
+} from "../client/xray/xray-client.js";
 import type {
     CypressRunResult,
     CypressVersion,
     PluginConfigOptions,
     RunResult,
     ScreenshotDetails,
-} from "../models/cypress";
+} from "../models/cypress/index.js";
 import type {
     InternalCucumberOptions,
     InternalJiraOptions,
     InternalPluginOptions,
     InternalXrayOptions,
     PluginIssueUpdate,
-} from "../models/plugin";
-import { errorMessage } from "../util/errors";
-import type { Logger } from "../util/logging";
+} from "../models/plugin.js";
+import { errorMessage } from "../util/errors.js";
+import type { Logger } from "../util/logging.js";
 import type {
     EvidenceCollection,
     IterationParameterCollection,
     PluginEventEmitter,
-} from "./context";
-import pluginPhases from "./plugin-phases";
-import uploadValidation from "./results-upload/upload-validation";
-import videoUpload from "./results-upload/video-upload";
+} from "./context.js";
+import pluginPhases from "./plugin-phases.js";
+import uploadValidation from "./results-upload/upload-validation.js";
+import videoUpload from "./results-upload/video-upload.js";
 
 async function runPlugin(parameters: RuntimeParameters) {
     // First, we upload all feature files to make sure the steps are up to date.

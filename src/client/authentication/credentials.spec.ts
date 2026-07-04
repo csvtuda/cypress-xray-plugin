@@ -3,11 +3,11 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { beforeEach, describe, it } from "node:test";
-import { LOG } from "../../util/logging";
-import { AxiosRestClient } from "../https/requests";
-import { JwtCredentials } from "./credentials";
+import { LOG } from "../../util/logging.js";
+import { AxiosRestClient } from "../https/requests.js";
+import { JwtCredentials } from "./credentials.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(JwtCredentials.name, () => {
         let restClient: AxiosRestClient;
         let credentials: JwtCredentials;

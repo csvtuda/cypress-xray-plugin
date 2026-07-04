@@ -1,30 +1,30 @@
 import { basename, extname, parse } from "node:path";
 import { lt } from "semver";
-import type { ScreenshotDetails } from "../../models/cypress";
-import { CypressStatus } from "../../models/cypress/status";
-import type { InternalXrayOptions } from "../../models/plugin";
+import type { ScreenshotDetails } from "../../models/cypress/index.js";
+import { CypressStatus } from "../../models/cypress/status.js";
+import type { InternalXrayOptions } from "../../models/plugin.js";
 import type {
     XrayEvidenceItem,
     XrayIterationResult,
     XrayTest,
     XrayTestExecutionResults,
-} from "../../models/xray/import-test-execution-results";
-import { encodeFile } from "../../util/base64";
-import { dedent } from "../../util/dedent";
-import { errorMessage } from "../../util/errors";
-import { normalizedFilename } from "../../util/files";
-import { HELP } from "../../util/help";
-import type { Logger } from "../../util/logging";
-import { earliestDate, latestDate, truncateIsoTime } from "../../util/time";
-import type { EvidenceCollection, IterationParameterCollection } from "../context";
-import type { MinimalRunResult } from "../cypress-xray-plugin";
+} from "../../models/xray/import-test-execution-results.js";
+import { encodeFile } from "../../util/base64.js";
+import { dedent } from "../../util/dedent.js";
+import { errorMessage } from "../../util/errors.js";
+import { normalizedFilename } from "../../util/files.js";
+import { HELP } from "../../util/help.js";
+import type { Logger } from "../../util/logging.js";
+import { earliestDate, latestDate, truncateIsoTime } from "../../util/time.js";
+import type { EvidenceCollection, IterationParameterCollection } from "../context.js";
+import type { MinimalRunResult } from "../cypress-xray-plugin.js";
 import type {
     ProcessedResultFailure,
     ProcessedResultSuccess,
     RunConverter,
-} from "./cypress-run-conversion";
-import { RunConverterLatest, RunConverterV12 } from "./cypress-run-conversion";
-import { getXrayStatus } from "./cypress-status";
+} from "./cypress-run-conversion.js";
+import { RunConverterLatest, RunConverterV12 } from "./cypress-run-conversion.js";
+import { getXrayStatus } from "./cypress-status.js";
 
 function convertCypressResults(parameters: {
     context: {

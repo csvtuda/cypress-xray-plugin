@@ -3,9 +3,9 @@ import { resolve } from "node:path";
 import type { TestShard } from "node:test";
 import { run } from "node:test";
 import { spec } from "node:test/reporters";
-import { jsonReporter } from "./reporter";
-import { startServer, stopServer } from "./server";
-import { findFiles } from "./util";
+import { jsonReporter } from "./reporter.js";
+import { startServer, stopServer } from "./server.js";
+import { findFiles } from "./util.js";
 
 const INTEGRATION_DIR = resolve("test", "integration");
 

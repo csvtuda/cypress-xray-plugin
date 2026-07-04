@@ -1,15 +1,15 @@
 import type { AxiosResponse } from "axios";
 import FormData from "form-data";
 import fs from "fs";
-import type { Attachment } from "../../models/jira/responses/attachment";
-import type { FieldDetail } from "../../models/jira/responses/field-detail";
-import type { IssueTypeDetails } from "../../models/jira/responses/issue-type-details";
-import type { IssueUpdate } from "../../models/jira/responses/issue-update";
-import type { User } from "../../models/jira/responses/user";
-import { dedent } from "../../util/dedent";
-import { LOG } from "../../util/logging";
-import { Client } from "../client";
-import { loggedRequest } from "../util";
+import type { Attachment } from "../../models/jira/responses/attachment.js";
+import type { FieldDetail } from "../../models/jira/responses/field-detail.js";
+import type { IssueTypeDetails } from "../../models/jira/responses/issue-type-details.js";
+import type { IssueUpdate } from "../../models/jira/responses/issue-update.js";
+import type { User } from "../../models/jira/responses/user.js";
+import { dedent } from "../../util/dedent.js";
+import { LOG } from "../../util/logging.js";
+import { Client } from "../client.js";
+import { loggedRequest } from "../util.js";
 import type {
     HasAddAttachmentEndpoint,
     HasEditIssueEndpoint,
@@ -17,7 +17,7 @@ import type {
     HasGetIssueTypesEndpoint,
     HasMyselfEndpoint,
     HasTransitionIssueEndpoint,
-} from "./jira-client";
+} from "./jira-client.js";
 
 /**
  * A Jira client class for communicating with Jira instances.

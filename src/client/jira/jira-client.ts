@@ -1,10 +1,10 @@
-import type { SearchRequest } from "../../models/jira/requests/search";
-import type { Attachment } from "../../models/jira/responses/attachment";
-import type { FieldDetail } from "../../models/jira/responses/field-detail";
-import type { Issue } from "../../models/jira/responses/issue";
-import type { IssueTypeDetails } from "../../models/jira/responses/issue-type-details";
-import type { IssueUpdate } from "../../models/jira/responses/issue-update";
-import type { User } from "../../models/jira/responses/user";
+import type { SearchRequest } from "../../models/jira/requests/search.js";
+import type { Attachment } from "../../models/jira/responses/attachment.js";
+import type { FieldDetail } from "../../models/jira/responses/field-detail.js";
+import type { IssueTypeDetails } from "../../models/jira/responses/issue-type-details.js";
+import type { IssueUpdate } from "../../models/jira/responses/issue-update.js";
+import type { Issue } from "../../models/jira/responses/issue.js";
+import type { User } from "../../models/jira/responses/user.js";
 
 /**
  * Search endpoint of Jira clients.

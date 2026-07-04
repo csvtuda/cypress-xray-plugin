@@ -1,7 +1,7 @@
-import type { HasAddAttachmentEndpoint } from "../../client/jira/jira-client";
-import { dedent } from "../../util/dedent";
-import { errorMessage } from "../../util/errors";
-import type { Logger } from "../../util/logging";
+import type { HasAddAttachmentEndpoint } from "../../client/jira/jira-client.js";
+import { dedent } from "../../util/dedent.js";
+import { errorMessage } from "../../util/errors.js";
+import type { Logger } from "../../util/logging.js";
 
 async function uploadVideos(parameters: {
     client: HasAddAttachmentEndpoint;

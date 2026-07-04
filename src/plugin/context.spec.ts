@@ -3,17 +3,17 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { beforeEach, describe, it } from "node:test";
-import { stub } from "../../test/mocks";
+import { stub } from "../../test/mocks.js";
 import {
     BasicAuthCredentials,
     JwtCredentials,
     PatCredentials,
-} from "../client/authentication/credentials";
-import { AxiosRestClient } from "../client/https/requests";
-import { JiraClientCloud } from "../client/jira/jira-client-cloud";
-import { JiraClientServer } from "../client/jira/jira-client-server";
-import { XrayClientCloud } from "../client/xray/xray-client-cloud";
-import { XrayClientServer } from "../client/xray/xray-client-server";
+} from "../client/authentication/credentials.js";
+import { AxiosRestClient } from "../client/https/requests.js";
+import { JiraClientCloud } from "../client/jira/jira-client-cloud.js";
+import { JiraClientServer } from "../client/jira/jira-client-server.js";
+import { XrayClientCloud } from "../client/xray/xray-client-cloud.js";
+import { XrayClientServer } from "../client/xray/xray-client-server.js";
 import type {
     InternalCucumberOptions,
     InternalHttpOptions,
@@ -21,14 +21,14 @@ import type {
     InternalPluginOptions,
     InternalXrayOptions,
     XrayOptions,
-} from "../models/plugin";
-import globalContext, { SimpleEvidenceCollection } from "../plugin/context";
-import { dedent } from "../util/dedent";
-import dependencies from "../util/dependencies";
-import type { Level } from "../util/logging";
-import { LOG } from "../util/logging";
+} from "../models/plugin.js";
+import globalContext, { SimpleEvidenceCollection } from "../plugin/context.js";
+import { dedent } from "../util/dedent.js";
+import dependencies from "../util/dependencies.js";
+import type { Level } from "../util/logging.js";
+import { LOG } from "../util/logging.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe("the plugin context configuration", () => {
         void describe("the option initialization", () => {
             void describe("should have certain default values", () => {

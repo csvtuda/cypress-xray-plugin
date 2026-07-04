@@ -3,8 +3,12 @@ import { existsSync, readdirSync, rmSync } from "node:fs";
 import { before } from "node:test";
 import os from "os";
 import path from "path";
-import type { CypressFailedRunResult, CypressRunResult, RunResult } from "../src/models/cypress";
-import { unknownToString } from "../src/util/string";
+import type {
+    CypressFailedRunResult,
+    CypressRunResult,
+    RunResult,
+} from "../src/models/cypress/index.js";
+import { unknownToString } from "../src/util/string.js";
 
 export const TEST_TMP_DIR = path.join(os.tmpdir(), "cypress-xray-plugin");
 console.log(ansiColors.gray(`Temporary directory: ${TEST_TMP_DIR}`));

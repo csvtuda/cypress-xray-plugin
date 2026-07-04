@@ -2,9 +2,9 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { dedent } from "./dedent";
+import { dedent } from "./dedent.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void it("strips leading whitespace", () => {
         assert.strictEqual(dedent(`   Hello\nthere\nyo`), "Hello\nthere\nyo");
     });

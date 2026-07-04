@@ -1,5 +1,5 @@
-import { dedent } from "../../util/dedent";
-import type { Logger } from "../../util/logging";
+import { dedent } from "../../util/dedent.js";
+import type { Logger } from "../../util/logging.js";
 
 function validateUploads(parameters: {
     cucumberExecutionIssueKey?: string;

@@ -1,15 +1,15 @@
 import type { Background, Comment, Scenario } from "@cucumber/messages";
-import type { CucumberOptions } from "../../models/plugin";
-import { dedent } from "../../util/dedent";
-import { errorMessage } from "../../util/errors";
-import { HELP } from "../../util/help";
-import type { Logger } from "../../util/logging";
-import { parseFeatureFile } from "./gherkin";
+import type { CucumberOptions } from "../../models/plugin.js";
+import { dedent } from "../../util/dedent.js";
+import { errorMessage } from "../../util/errors.js";
+import { HELP } from "../../util/help.js";
+import type { Logger } from "../../util/logging.js";
+import { parseFeatureFile } from "./gherkin.js";
 import {
     getCucumberPreconditionIssueComments,
     getCucumberPreconditionIssueTags,
-} from "./precondition";
-import { getCucumberScenarioIssueTags } from "./scenario";
+} from "./precondition.js";
+import { getCucumberScenarioIssueTags } from "./scenario.js";
 
 export interface FeatureFileData {
     allIssueKeys: string[];

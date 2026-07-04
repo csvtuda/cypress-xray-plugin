@@ -1,10 +1,10 @@
-import type { CypressRunResult } from "../../models/cypress";
-import type { IssueUpdate } from "../../models/jira/responses/issue-update";
+import type { CypressRunResult } from "../../models/cypress/index.js";
+import type { IssueUpdate } from "../../models/jira/responses/issue-update.js";
 import type {
     MultipartInfo,
     MultipartInfoCloud,
-} from "../../models/xray/requests/import-execution-multipart-info";
-import { dedent } from "../../util/dedent";
+} from "../../models/xray/requests/import-execution-multipart-info.js";
+import { dedent } from "../../util/dedent.js";
 
 /**
  * Interface containing general/minimal Cypress run data.

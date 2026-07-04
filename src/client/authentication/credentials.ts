@@ -1,7 +1,7 @@
-import { encode } from "../../util/base64";
-import { LOG } from "../../util/logging";
-import type { AxiosRestClient } from "../https/requests";
-import { loggedRequest } from "../util";
+import { encode } from "../../util/base64.js";
+import { LOG } from "../../util/logging.js";
+import type { AxiosRestClient } from "../https/requests.js";
+import { loggedRequest } from "../util.js";
 
 /**
  * A basic HTTP authorization header.

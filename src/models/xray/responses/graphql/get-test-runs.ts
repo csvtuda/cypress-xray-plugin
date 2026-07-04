@@ -1,4 +1,4 @@
-import type { TestExecution } from "./xray";
+import type { TestExecution } from "./xray.js";
 
 /**
  * @see https://us.xray.cloud.getxray.app/doc/graphql/gettestruns.doc.html

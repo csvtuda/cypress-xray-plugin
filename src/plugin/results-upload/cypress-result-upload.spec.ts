@@ -2,14 +2,14 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import type { HasAddEvidenceToTestRunEndpoint } from "../../client/xray/xray-client-cloud";
-import type { HasAddEvidenceEndpoint } from "../../client/xray/xray-client-server";
-import type { GetTestRunResponseServer } from "../../models/xray/responses/graphql/get-test-runs";
-import { dedent } from "../../util/dedent";
-import type { Logger } from "../../util/logging";
-import cypressResultUpload from "./cypress-result-upload";
+import type { HasAddEvidenceToTestRunEndpoint } from "../../client/xray/xray-client-cloud.js";
+import type { HasAddEvidenceEndpoint } from "../../client/xray/xray-client-server.js";
+import type { GetTestRunResponseServer } from "../../models/xray/responses/graphql/get-test-runs.js";
+import { dedent } from "../../util/dedent.js";
+import type { Logger } from "../../util/logging.js";
+import cypressResultUpload from "./cypress-result-upload.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(cypressResultUpload.uploadCypressResults.name, () => {
         void it("imports cypress xray json", async (context) => {
             const messageMock = context.mock.fn<Logger["message"]>();

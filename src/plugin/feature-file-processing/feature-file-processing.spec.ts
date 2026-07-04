@@ -2,11 +2,11 @@ import assert from "node:assert";
 import path, { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { dedent } from "../../util/dedent";
-import type { Logger } from "../../util/logging";
-import featureFileProcessing from "./feature-file-processing";
+import { dedent } from "../../util/dedent.js";
+import type { Logger } from "../../util/logging.js";
+import featureFileProcessing from "./feature-file-processing.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(featureFileProcessing.processFeatureFiles.name, () => {
         void it("does nothing if no feature files are specified", (context) => {
             const messageMock = context.mock.fn<Logger["message"]>();

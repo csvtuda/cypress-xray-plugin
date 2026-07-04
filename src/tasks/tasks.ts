@@ -1,10 +1,10 @@
-import type { XrayEvidenceItem } from "../models/xray/import-test-execution-results";
-import type { EvidenceCollection, IterationParameterCollection } from "../plugin/context";
-import { encode } from "../util/base64";
-import { dedent } from "../util/dedent";
-import { errorMessage } from "../util/errors";
-import { extractIssueKeys } from "../util/extraction";
-import type { Logger } from "../util/logging";
+import type { XrayEvidenceItem } from "../models/xray/import-test-execution-results.js";
+import type { EvidenceCollection, IterationParameterCollection } from "../plugin/context.js";
+import { encode } from "../util/base64.js";
+import { dedent } from "../util/dedent.js";
+import { errorMessage } from "../util/errors.js";
+import { extractIssueKeys } from "../util/extraction.js";
+import type { Logger } from "../util/logging.js";
 
 type Task =
     | "cypress-xray-plugin:task:evidence:attachment"

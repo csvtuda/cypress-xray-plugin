@@ -4,15 +4,15 @@ import { readFileSync } from "node:fs";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { beforeEach, describe, it } from "node:test";
-import type { Attachment } from "../../models/jira/responses/attachment";
-import type { IssueTypeDetails } from "../../models/jira/responses/issue-type-details";
-import type { Logger } from "../../util/logging";
-import { LOG } from "../../util/logging";
-import { BasicAuthCredentials } from "../authentication/credentials";
-import { AxiosRestClient } from "../https/requests";
-import { BaseJiraClient } from "./base-jira-client";
+import type { Attachment } from "../../models/jira/responses/attachment.js";
+import type { IssueTypeDetails } from "../../models/jira/responses/issue-type-details.js";
+import type { Logger } from "../../util/logging.js";
+import { LOG } from "../../util/logging.js";
+import { BasicAuthCredentials } from "../authentication/credentials.js";
+import { AxiosRestClient } from "../https/requests.js";
+import { BaseJiraClient } from "./base-jira-client.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(BaseJiraClient.name, () => {
         let client: BaseJiraClient;
         let restClient: AxiosRestClient;

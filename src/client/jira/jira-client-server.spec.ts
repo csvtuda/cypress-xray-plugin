@@ -4,14 +4,14 @@ import { readFileSync } from "node:fs";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { beforeEach, describe, it } from "node:test";
-import type { SearchResultsServer } from "../../models/jira/responses/search-results";
-import type { Logger } from "../../util/logging";
-import { LOG } from "../../util/logging";
-import { BasicAuthCredentials } from "../authentication/credentials";
-import { AxiosRestClient } from "../https/requests";
-import { JiraClientServer } from "./jira-client-server";
+import type { SearchResultsServer } from "../../models/jira/responses/search-results.js";
+import type { Logger } from "../../util/logging.js";
+import { LOG } from "../../util/logging.js";
+import { BasicAuthCredentials } from "../authentication/credentials.js";
+import { AxiosRestClient } from "../https/requests.js";
+import { JiraClientServer } from "./jira-client-server.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(JiraClientServer.name, () => {
         let client: JiraClientServer;
         let restClient: AxiosRestClient;

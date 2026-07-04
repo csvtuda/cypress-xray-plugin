@@ -1,6 +1,6 @@
-import { dedent } from "./dedent";
-import { HELP } from "./help";
-import { unknownToString } from "./string";
+import { dedent } from "./dedent.js";
+import { HELP } from "./help.js";
+import { unknownToString } from "./string.js";
 
 /**
  * Extracts Jira issue keys from a Cypress test title, based on the provided project key.

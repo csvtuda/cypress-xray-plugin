@@ -1,21 +1,21 @@
-import type { HasImportExecutionMultipartEndpoint } from "../../client/xray/xray-client";
 import type {
     HasAddEvidenceToTestRunEndpoint,
     HasGetTestRunResultsEndpoint,
-} from "../../client/xray/xray-client-cloud";
+} from "../../client/xray/xray-client-cloud.js";
 import type {
     HasAddEvidenceEndpoint,
     HasGetTestRunEndpoint,
-} from "../../client/xray/xray-client-server";
+} from "../../client/xray/xray-client-server.js";
+import type { HasImportExecutionMultipartEndpoint } from "../../client/xray/xray-client.js";
 import type {
     XrayEvidenceItem,
     XrayTestExecutionResults,
-} from "../../models/xray/import-test-execution-results";
-import type { MultipartInfo } from "../../models/xray/requests/import-execution-multipart-info";
-import { dedent } from "../../util/dedent";
-import { errorMessage } from "../../util/errors";
-import type { Logger } from "../../util/logging";
-import { unknownToString } from "../../util/string";
+} from "../../models/xray/import-test-execution-results.js";
+import type { MultipartInfo } from "../../models/xray/requests/import-execution-multipart-info.js";
+import { dedent } from "../../util/dedent.js";
+import { errorMessage } from "../../util/errors.js";
+import type { Logger } from "../../util/logging.js";
+import { unknownToString } from "../../util/string.js";
 
 async function uploadCypressResults(parameters: {
     client: HasImportExecutionMultipartEndpoint &

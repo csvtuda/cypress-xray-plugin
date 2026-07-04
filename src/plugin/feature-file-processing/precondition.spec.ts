@@ -3,13 +3,13 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { parseFeatureFile } from "./gherkin";
+import { parseFeatureFile } from "./gherkin.js";
 import {
     getCucumberPreconditionIssueComments,
     getCucumberPreconditionIssueTags,
-} from "./precondition";
+} from "./precondition.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(getCucumberPreconditionIssueComments.name, () => {
         void it("extracts relevant comments without prefix", () => {
             const document = parseFeatureFile(

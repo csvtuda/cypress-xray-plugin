@@ -2,11 +2,11 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import type { RunResult, ScreenshotDetails } from "../../models/cypress";
-import { CypressStatus } from "../../models/cypress/status";
-import { RunConverterLatest, RunConverterV12 } from "./cypress-run-conversion";
+import type { RunResult, ScreenshotDetails } from "../../models/cypress/index.js";
+import { CypressStatus } from "../../models/cypress/status.js";
+import { RunConverterLatest, RunConverterV12 } from "./cypress-run-conversion.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(RunConverterV12.name, () => {
         const passedResult: RunResult<"<13"> = {
             error: null,

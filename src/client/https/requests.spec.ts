@@ -5,12 +5,12 @@ import { createReadStream } from "node:fs";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { beforeEach, describe, it } from "node:test";
-import { LOCAL_SERVER } from "../../../test/server";
-import type { Logger } from "../../util/logging";
-import { LOG } from "../../util/logging";
-import { AxiosRestClient } from "./requests";
+import { LOCAL_SERVER } from "../../../test/server.js";
+import type { Logger } from "../../util/logging.js";
+import { LOG } from "../../util/logging.js";
+import { AxiosRestClient } from "./requests.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     beforeEach(() => {
         axios.interceptors.request.clear();
         axios.interceptors.response.clear();

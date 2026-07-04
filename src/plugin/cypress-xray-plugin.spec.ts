@@ -13,15 +13,15 @@ import {
     generateFakeRunResultV13,
     generateFakeRunResultV14,
     generateFakeScreenshotDetails,
-} from "../../test/faker";
-import { stub } from "../../test/mocks";
-import type { HasTransitionIssueEndpoint } from "../client/jira/jira-client";
-import type { Logger } from "../util/logging";
-import type { RuntimeParameters } from "./cypress-xray-plugin";
-import cypressXrayPlugin from "./cypress-xray-plugin";
-import pluginPhases from "./plugin-phases";
-import uploadValidation from "./results-upload/upload-validation";
-import videoUpload from "./results-upload/video-upload";
+} from "../../test/faker.js";
+import { stub } from "../../test/mocks.js";
+import type { HasTransitionIssueEndpoint } from "../client/jira/jira-client.js";
+import type { Logger } from "../util/logging.js";
+import type { RuntimeParameters } from "./cypress-xray-plugin.js";
+import cypressXrayPlugin from "./cypress-xray-plugin.js";
+import pluginPhases from "./plugin-phases.js";
+import uploadValidation from "./results-upload/upload-validation.js";
+import videoUpload from "./results-upload/video-upload.js";
 
 // | #     | Scenario Description                          | Key Parameter Values                                                                            |
 // | ----- | --------------------------------------------- | ----------------------------------------------------------------------------------------------- |
