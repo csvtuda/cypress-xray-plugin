@@ -1,11 +1,11 @@
-import type { HasGetFieldsEndpoint } from "../../client/jira/jira-client";
-import type { FieldDetail } from "../../models/jira/responses/field-detail";
-import type { JiraFieldIds, PluginIssueUpdate } from "../../models/plugin";
-import { dedent } from "../../util/dedent";
-import { errorMessage } from "../../util/errors";
-import { prettyPadObjects, prettyPadValues } from "../../util/pretty";
-import type { TestExecutionIssueData, TestExecutionIssueDataServer } from "./multipart-info";
-import { buildMultipartInfoCloud, buildMultipartInfoServer } from "./multipart-info";
+import type { HasGetFieldsEndpoint } from "../../client/jira/jira-client.js";
+import type { FieldDetail } from "../../models/jira/responses/field-detail.js";
+import type { JiraFieldIds, PluginIssueUpdate } from "../../models/plugin.js";
+import { dedent } from "../../util/dedent.js";
+import { errorMessage } from "../../util/errors.js";
+import { prettyPadObjects, prettyPadValues } from "../../util/pretty.js";
+import type { TestExecutionIssueData, TestExecutionIssueDataServer } from "./multipart-info.js";
+import { buildMultipartInfoCloud, buildMultipartInfoServer } from "./multipart-info.js";
 
 function convertMultipartInfoCloud(parameters: {
     cypress: {

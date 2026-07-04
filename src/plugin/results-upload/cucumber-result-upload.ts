@@ -1,6 +1,6 @@
-import type { HasImportExecutionCucumberMultipartEndpoint } from "../../client/xray/xray-client";
-import type { CucumberMultipartFeature } from "../../models/xray/requests/import-execution-cucumber-multipart";
-import type { MultipartInfo } from "../../models/xray/requests/import-execution-multipart-info";
+import type { HasImportExecutionCucumberMultipartEndpoint } from "../../client/xray/xray-client.js";
+import type { CucumberMultipartFeature } from "../../models/xray/requests/import-execution-cucumber-multipart.js";
+import type { MultipartInfo } from "../../models/xray/requests/import-execution-multipart-info.js";
 
 async function uploadCucumberResults(parameters: {
     client: HasImportExecutionCucumberMultipartEndpoint;

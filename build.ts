@@ -2,7 +2,7 @@ import { execSync } from "node:child_process";
 import { copyFileSync, existsSync, rmSync } from "node:fs";
 import { join } from "node:path";
 
-const DIST_DIR = join(__dirname, "dist");
+const DIST_DIR = join(import.meta.dirname, "dist");
 
 if (existsSync(DIST_DIR)) {
     rmSync(DIST_DIR, { recursive: true });

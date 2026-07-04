@@ -2,13 +2,13 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import type { HasImportFeatureEndpoint } from "../../client/xray/xray-client";
-import { dedent } from "../../util/dedent";
-import type { Logger } from "../../util/logging";
-import { unknownToString } from "../../util/string";
-import featureFileUpload from "./feature-file-upload";
+import type { HasImportFeatureEndpoint } from "../../client/xray/xray-client.js";
+import { dedent } from "../../util/dedent.js";
+import type { Logger } from "../../util/logging.js";
+import { unknownToString } from "../../util/string.js";
+import featureFileUpload from "./feature-file-upload.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(featureFileUpload.uploadFeatureFiles.name, () => {
         void it("does nothing if no feature files are specified", async (context) => {
             const importFeatureMock = context.mock.fn<HasImportFeatureEndpoint["importFeature"]>();

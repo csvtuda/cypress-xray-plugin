@@ -1,9 +1,9 @@
-import type { HasEditIssueEndpoint, HasSearchEndpoint } from "../../client/jira/jira-client";
-import type { Issue } from "../../models/jira/responses/issue";
-import { dedent } from "../../util/dedent";
-import { errorMessage } from "../../util/errors";
-import { extractArrayOfStrings, extractString } from "../../util/extraction";
-import type { Logger } from "../../util/logging";
+import type { HasEditIssueEndpoint, HasSearchEndpoint } from "../../client/jira/jira-client.js";
+import type { Issue } from "../../models/jira/responses/issue.js";
+import { dedent } from "../../util/dedent.js";
+import { errorMessage } from "../../util/errors.js";
+import { extractArrayOfStrings, extractString } from "../../util/extraction.js";
+import type { Logger } from "../../util/logging.js";
 
 export interface JiraSnapshot {
     errorMessages: string[];

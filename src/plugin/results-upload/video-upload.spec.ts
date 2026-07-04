@@ -2,13 +2,13 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import type { HasAddAttachmentEndpoint } from "../../client/jira/jira-client";
-import type { Attachment } from "../../models/jira/responses/attachment";
-import { dedent } from "../../util/dedent";
-import type { Logger } from "../../util/logging";
-import videoUpload from ".//video-upload";
+import type { HasAddAttachmentEndpoint } from "../../client/jira/jira-client.js";
+import type { Attachment } from "../../models/jira/responses/attachment.js";
+import { dedent } from "../../util/dedent.js";
+import type { Logger } from "../../util/logging.js";
+import videoUpload from ".//video-upload.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(videoUpload.uploadVideos.name, () => {
         void it("does nothing if no videos were captured", async (context) => {
             const addAttachmentMock = context.mock.fn<HasAddAttachmentEndpoint["addAttachment"]>();

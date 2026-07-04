@@ -5,13 +5,13 @@ import type {
     CucumberMultipartFeature,
     CucumberMultipartStep,
     CucumberMultipartTag,
-} from "../../models/xray/requests/import-execution-cucumber-multipart";
-import { dedent } from "../../util/dedent";
-import { errorMessage } from "../../util/errors";
-import { HELP } from "../../util/help";
-import type { Logger } from "../../util/logging";
-import { getScenarioTagRegex } from "../feature-file-processing/scenario";
-import { getXrayStatus } from "./cucumber-status";
+} from "../../models/xray/requests/import-execution-cucumber-multipart.js";
+import { dedent } from "../../util/dedent.js";
+import { errorMessage } from "../../util/errors.js";
+import { HELP } from "../../util/help.js";
+import type { Logger } from "../../util/logging.js";
+import { getScenarioTagRegex } from "../feature-file-processing/scenario.js";
+import { getXrayStatus } from "./cucumber-status.js";
 
 async function readCucumberReport(parameters: {
     cypress: {

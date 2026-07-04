@@ -8,16 +8,16 @@ import {
     generateFakeProjectKey,
     generateFakeTitles,
     generateFakeXrayEvidenceItem,
-} from "../../test/faker";
-import { getMockedCypress } from "../../test/mocks";
-import type { RequestOptions } from "../models/cypress";
-import { SimpleEvidenceCollection, SimpleIterationParameterCollection } from "../plugin/context";
-import { dedent } from "../util/dedent";
-import type { Logger } from "../util/logging";
-import { LOG } from "../util/logging";
-import * as tasks from "./tasks";
+} from "../../test/faker.js";
+import { getMockedCypress } from "../../test/mocks.js";
+import type { RequestOptions } from "../models/cypress/index.js";
+import { SimpleEvidenceCollection, SimpleIterationParameterCollection } from "../plugin/context.js";
+import { dedent } from "../util/dedent.js";
+import type { Logger } from "../util/logging.js";
+import { LOG } from "../util/logging.js";
+import * as tasks from "./tasks.js";
 
-void describe(path.relative(process.cwd(), __filename), () => {
+void describe(path.relative(process.cwd(), import.meta.filename), () => {
     void describe(tasks.enqueueTask.name, () => {
         void it("enqueues tasks for outgoing requests (url only)", (context) => {
             const { cy, cypress } = getMockedCypress();

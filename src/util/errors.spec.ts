@@ -2,9 +2,9 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { LoggedError, errorMessage, isLoggedError } from "./errors";
+import { LoggedError, errorMessage, isLoggedError } from "./errors.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(errorMessage.name, () => {
         void it("returns error messages", () => {
             assert.strictEqual(errorMessage(new Error("Hi")), "Hi");

@@ -2,11 +2,11 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { dedent } from "../../util/dedent";
-import type { Logger } from "../../util/logging";
-import uploadValidation from "./upload-validation";
+import { dedent } from "../../util/dedent.js";
+import type { Logger } from "../../util/logging.js";
+import uploadValidation from "./upload-validation.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(uploadValidation.validateUploads.name, () => {
         void it("does nothing if no nothing was uploaded", (context) => {
             const messageMock = context.mock.fn<Logger["message"]>();

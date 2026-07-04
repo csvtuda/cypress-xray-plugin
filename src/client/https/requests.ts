@@ -7,10 +7,10 @@ import {
     isAxiosError,
 } from "axios";
 import FormData from "form-data";
-import { normalizedFilename } from "../../util/files";
-import { LOG } from "../../util/logging";
-import { unknownToString } from "../../util/string";
-import { startInterval } from "../../util/time";
+import { normalizedFilename } from "../../util/files.js";
+import { LOG } from "../../util/logging.js";
+import { unknownToString } from "../../util/string.js";
+import { startInterval } from "../../util/time.js";
 
 /**
  * Options which affect the way the requests module works.

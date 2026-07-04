@@ -1,4 +1,4 @@
-import { unknownToString } from "./string";
+import { unknownToString } from "./string.js";
 
 /**
  * Returns an error message of any error.

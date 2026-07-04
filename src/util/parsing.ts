@@ -1,6 +1,6 @@
-import type { ObjectLike } from "../models/cypress";
-import { dedent } from "./dedent";
-import { unknownToString } from "./string";
+import type { ObjectLike } from "../models/cypress/index.js";
+import { dedent } from "./dedent.js";
+import { unknownToString } from "./string.js";
 
 /**
  * Parses and returns a boolean value.

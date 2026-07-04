@@ -1,22 +1,22 @@
 import type { AxiosResponse } from "axios";
 import FormData from "form-data";
-import type { XrayTestExecutionResults } from "../../models/xray/import-test-execution-results";
-import type { CucumberMultipartFeature } from "../../models/xray/requests/import-execution-cucumber-multipart";
-import type { MultipartInfo } from "../../models/xray/requests/import-execution-multipart-info";
-import type { GetTestRunResponseServer } from "../../models/xray/responses/graphql/get-test-runs";
-import type { ImportExecutionResponseServer } from "../../models/xray/responses/import-execution";
+import type { XrayTestExecutionResults } from "../../models/xray/import-test-execution-results.js";
+import type { CucumberMultipartFeature } from "../../models/xray/requests/import-execution-cucumber-multipart.js";
+import type { MultipartInfo } from "../../models/xray/requests/import-execution-multipart-info.js";
+import type { GetTestRunResponseServer } from "../../models/xray/responses/graphql/get-test-runs.js";
+import type { ImportExecutionResponseServer } from "../../models/xray/responses/import-execution.js";
 import type {
     ImportFeatureResponse,
     ImportFeatureResponseServer,
     IssueDetails,
-} from "../../models/xray/responses/import-feature";
-import type { XrayLicenseStatus } from "../../models/xray/responses/license";
-import { dedent } from "../../util/dedent";
-import { LOG } from "../../util/logging";
-import type { HttpCredentials } from "../authentication/credentials";
-import type { AxiosRestClient } from "../https/requests";
-import { loggedRequest } from "../util";
-import { BaseXrayClient } from "./base-xray-client";
+} from "../../models/xray/responses/import-feature.js";
+import type { XrayLicenseStatus } from "../../models/xray/responses/license.js";
+import { dedent } from "../../util/dedent.js";
+import { LOG } from "../../util/logging.js";
+import type { HttpCredentials } from "../authentication/credentials.js";
+import type { AxiosRestClient } from "../https/requests.js";
+import { loggedRequest } from "../util.js";
+import { BaseXrayClient } from "./base-xray-client.js";
 
 /**
  * Add evidence endpoint of Xray clients.

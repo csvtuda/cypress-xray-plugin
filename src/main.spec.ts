@@ -11,22 +11,22 @@ import {
     generateFakeInternalPluginOptions,
     generateFakeIssueKey,
     generateFakePluginIssueUpdate,
-} from "../test/faker";
-import { stub } from "../test/mocks";
-import { mockedCypressEventEmitter } from "../test/util";
-import { configureXrayPlugin, syncFeatureFile } from "./main";
+} from "../test/faker.js";
+import { stub } from "../test/mocks.js";
+import { mockedCypressEventEmitter } from "../test/util.js";
+import { configureXrayPlugin, syncFeatureFile } from "./main.js";
 import type {
     CypressFailedRunResult,
     CypressRunResult,
     PluginConfigOptions,
-} from "./models/cypress";
-import type { PluginOptions } from "./models/plugin";
-import globalContext, { PluginContext } from "./plugin/context";
-import cypressXrayPlugin from "./plugin/cypress-xray-plugin";
-import { dedent } from "./util/dedent";
-import { LOG } from "./util/logging";
+} from "./models/cypress/index.js";
+import type { PluginOptions } from "./models/plugin.js";
+import globalContext, { PluginContext } from "./plugin/context.js";
+import cypressXrayPlugin from "./plugin/cypress-xray-plugin.js";
+import { dedent } from "./util/dedent.js";
+import { LOG } from "./util/logging.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     let config: PluginConfigOptions<">=14">;
 
     beforeEach(() => {

@@ -2,10 +2,10 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { dedent } from "../../util/dedent";
-import { buildMultipartInfoCloud, buildMultipartInfoServer } from "./multipart-info";
+import { dedent } from "../../util/dedent.js";
+import { buildMultipartInfoCloud, buildMultipartInfoServer } from "./multipart-info.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(buildMultipartInfoCloud.name, () => {
         void it("adds default information", () => {
             const info = buildMultipartInfoCloud({

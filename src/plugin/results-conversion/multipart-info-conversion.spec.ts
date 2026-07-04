@@ -2,11 +2,11 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import type { HasGetFieldsEndpoint } from "../../client/jira/jira-client";
-import { dedent } from "../../util/dedent";
-import multipartInfoConversion from "./multipart-info-conversion";
+import type { HasGetFieldsEndpoint } from "../../client/jira/jira-client.js";
+import { dedent } from "../../util/dedent.js";
+import multipartInfoConversion from "./multipart-info-conversion.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(multipartInfoConversion.convertMultipartInfoCloud.name, () => {
         void it("returns cloud info data", () => {
             const result = multipartInfoConversion.convertMultipartInfoCloud({

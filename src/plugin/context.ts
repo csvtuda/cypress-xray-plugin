@@ -1,16 +1,16 @@
 import axios from "axios";
-import type { HttpCredentials } from "../client/authentication/credentials";
+import type { HttpCredentials } from "../client/authentication/credentials.js";
 import {
     BasicAuthCredentials,
     JwtCredentials,
     PatCredentials,
-} from "../client/authentication/credentials";
-import { AxiosRestClient } from "../client/https/requests";
-import { JiraClientCloud } from "../client/jira/jira-client-cloud";
-import { JiraClientServer } from "../client/jira/jira-client-server";
-import { XrayClientCloud } from "../client/xray/xray-client-cloud";
-import { XrayClientServer } from "../client/xray/xray-client-server";
-import type { ObjectLike, ScreenshotDetails } from "../models/cypress";
+} from "../client/authentication/credentials.js";
+import { AxiosRestClient } from "../client/https/requests.js";
+import { JiraClientCloud } from "../client/jira/jira-client-cloud.js";
+import { JiraClientServer } from "../client/jira/jira-client-server.js";
+import { XrayClientCloud } from "../client/xray/xray-client-cloud.js";
+import { XrayClientServer } from "../client/xray/xray-client-server.js";
+import type { ObjectLike, ScreenshotDetails } from "../models/cypress/index.js";
 import type {
     ClientCombination,
     CypressXrayPluginOptions,
@@ -22,16 +22,19 @@ import type {
     InternalPluginOptions,
     InternalXrayOptions,
     PluginEvent,
-} from "../models/plugin";
-import type { XrayEvidenceItem } from "../models/xray/import-test-execution-results";
-import { dedent } from "../util/dedent";
-import type { CucumberPreprocessorArgs, CucumberPreprocessorExports } from "../util/dependencies";
-import dependencies from "../util/dependencies";
-import { ENV_NAMES, isEnvVariableDefined } from "../util/env";
-import { errorMessage } from "../util/errors";
-import { HELP } from "../util/help";
-import { CapturingLogger, LOG } from "../util/logging";
-import { asArrayOfStrings, asBoolean, asObject, asString, parse } from "../util/parsing";
+} from "../models/plugin.js";
+import type { XrayEvidenceItem } from "../models/xray/import-test-execution-results.js";
+import { dedent } from "../util/dedent.js";
+import type {
+    CucumberPreprocessorArgs,
+    CucumberPreprocessorExports,
+} from "../util/dependencies.js";
+import dependencies from "../util/dependencies.js";
+import { ENV_NAMES, isEnvVariableDefined } from "../util/env.js";
+import { errorMessage } from "../util/errors.js";
+import { HELP } from "../util/help.js";
+import { CapturingLogger, LOG } from "../util/logging.js";
+import { asArrayOfStrings, asBoolean, asObject, asString, parse } from "../util/parsing.js";
 
 export class PluginContext {
     private readonly internalOptions: InternalCypressXrayPluginOptions;

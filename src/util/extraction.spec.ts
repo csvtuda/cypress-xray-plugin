@@ -2,10 +2,10 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { dedent } from "./dedent";
-import { extractArrayOfStrings, extractIssueKeys, extractString } from "./extraction";
+import { dedent } from "./dedent.js";
+import { extractArrayOfStrings, extractIssueKeys, extractString } from "./extraction.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(extractIssueKeys.name, () => {
         void it("extracts single test issue keys", () => {
             assert.deepStrictEqual(extractIssueKeys("this is CYP-123 a test", "CYP"), ["CYP-123"]);

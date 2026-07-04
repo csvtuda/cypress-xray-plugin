@@ -3,10 +3,10 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { parseFeatureFile } from "./gherkin";
-import { getCucumberScenarioIssueTags } from "./scenario";
+import { parseFeatureFile } from "./gherkin.js";
+import { getCucumberScenarioIssueTags } from "./scenario.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(getCucumberScenarioIssueTags.name, () => {
         void it("extracts scenario tags without prefix", () => {
             const feature = parseFeatureFile(

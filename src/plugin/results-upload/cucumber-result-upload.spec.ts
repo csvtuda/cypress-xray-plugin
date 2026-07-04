@@ -2,9 +2,9 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import cucumberResultUpload from "./cucumber-result-upload";
+import cucumberResultUpload from "./cucumber-result-upload.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(cucumberResultUpload.uploadCucumberResults.name, () => {
         void it("imports cucumber multipart data", async (context) => {
             const importExecutionCucumberMultipartMock = context.mock.fn(() =>

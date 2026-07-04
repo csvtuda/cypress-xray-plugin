@@ -1,4 +1,4 @@
-import type { CucumberJsonStatus } from "../../models/cucumber/status";
+import type { CucumberJsonStatus } from "../../models/cucumber/status.js";
 
 /**
  * Converts the given Cucumber status to an Xray status. Returns the original status if no matching

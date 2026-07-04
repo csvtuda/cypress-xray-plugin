@@ -16,42 +16,42 @@ import {
     generateFakeXrayJsonV12,
     generateFakeXrayJsonV13,
     generateFakeXrayJsonV14,
-} from "../../test/faker";
-import { countingMock, stub } from "../../test/mocks";
+} from "../../test/faker.js";
+import { countingMock, stub } from "../../test/mocks.js";
 import type {
     HasEditIssueEndpoint,
     HasGetFieldsEndpoint,
     HasSearchEndpoint,
-} from "../client/jira/jira-client";
+} from "../client/jira/jira-client.js";
+import type {
+    HasAddEvidenceToTestRunEndpoint,
+    HasGetTestRunResultsEndpoint,
+} from "../client/xray/xray-client-cloud.js";
+import type {
+    HasAddEvidenceEndpoint,
+    HasGetTestRunEndpoint,
+} from "../client/xray/xray-client-server.js";
 import type {
     HasImportExecutionCucumberMultipartEndpoint,
     HasImportExecutionMultipartEndpoint,
     HasImportFeatureEndpoint,
-} from "../client/xray/xray-client";
-import type {
-    HasAddEvidenceToTestRunEndpoint,
-    HasGetTestRunResultsEndpoint,
-} from "../client/xray/xray-client-cloud";
-import type {
-    HasAddEvidenceEndpoint,
-    HasGetTestRunEndpoint,
-} from "../client/xray/xray-client-server";
-import { dedent } from "../util/dedent";
-import type { Logger } from "../util/logging";
+} from "../client/xray/xray-client.js";
+import { dedent } from "../util/dedent.js";
+import type { Logger } from "../util/logging.js";
 import type {
     EvidenceCollection,
     IterationParameterCollection,
     PluginEventEmitter,
-} from "./context";
-import featureFileProcessing from "./feature-file-processing/feature-file-processing";
-import featureFileUpload from "./feature-file-upload/feature-file-upload";
-import jiraIssueSnapshots from "./jira-issue-snapshots/jira-issue-snapshots";
-import pluginPhases from "./plugin-phases";
-import cucumberResultConversion from "./results-conversion/cucumber-result-conversion";
-import cypressResultConversion from "./results-conversion/cypress-result-conversion";
-import multipartInfoConversion from "./results-conversion/multipart-info-conversion";
-import cucumberResultUpload from "./results-upload/cucumber-result-upload";
-import cypressResultUpload from "./results-upload/cypress-result-upload";
+} from "./context.js";
+import featureFileProcessing from "./feature-file-processing/feature-file-processing.js";
+import featureFileUpload from "./feature-file-upload/feature-file-upload.js";
+import jiraIssueSnapshots from "./jira-issue-snapshots/jira-issue-snapshots.js";
+import pluginPhases from "./plugin-phases.js";
+import cucumberResultConversion from "./results-conversion/cucumber-result-conversion.js";
+import cypressResultConversion from "./results-conversion/cypress-result-conversion.js";
+import multipartInfoConversion from "./results-conversion/multipart-info-conversion.js";
+import cucumberResultUpload from "./results-upload/cucumber-result-upload.js";
+import cypressResultUpload from "./results-upload/cypress-result-upload.js";
 
 void describe(pluginPhases.runFeatureFileUpload.name, () => {
     const projectKey = generateFakeProjectKey();

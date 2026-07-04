@@ -1,5 +1,5 @@
-import type * as CypressV12 from "./cypress-v12";
-import type * as CypressV13 from "./cypress-v13";
+import type * as CypressV12 from "./cypress-v12.js";
+import type * as CypressV13 from "./cypress-v13.js";
 
 export type CypressVersion = "<13" | ">=14" | "13";
 

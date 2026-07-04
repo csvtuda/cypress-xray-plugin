@@ -154,7 +154,7 @@ export function runCypress(
         );
     }
     const output = result.output
-        .filter((buffer): buffer is Buffer => buffer !== null)
+        .filter((buffer): buffer is Buffer<ArrayBuffer> => buffer !== null)
         .map((buffer) => buffer.toString("utf8"));
     fs.writeFileSync(path.join(cwd, "integration-test.log"), output.join("\n"));
     return output;

@@ -1,22 +1,22 @@
 import { type AxiosResponse, HttpStatusCode, isAxiosError } from "axios";
 import FormData from "form-data";
 import fs from "fs";
-import type { XrayTestExecutionResults } from "../../models/xray/import-test-execution-results";
-import type { CucumberMultipartFeature } from "../../models/xray/requests/import-execution-cucumber-multipart";
-import type { MultipartInfo } from "../../models/xray/requests/import-execution-multipart-info";
-import type { ImportFeatureResponse } from "../../models/xray/responses/import-feature";
-import { dedent } from "../../util/dedent";
-import { LoggedError, errorMessage } from "../../util/errors";
-import { HELP } from "../../util/help";
-import { LOG } from "../../util/logging";
-import { Client } from "../client";
-import { loggedRequest } from "../util";
+import type { XrayTestExecutionResults } from "../../models/xray/import-test-execution-results.js";
+import type { CucumberMultipartFeature } from "../../models/xray/requests/import-execution-cucumber-multipart.js";
+import type { MultipartInfo } from "../../models/xray/requests/import-execution-multipart-info.js";
+import type { ImportFeatureResponse } from "../../models/xray/responses/import-feature.js";
+import { dedent } from "../../util/dedent.js";
+import { LoggedError, errorMessage } from "../../util/errors.js";
+import { HELP } from "../../util/help.js";
+import { LOG } from "../../util/logging.js";
+import { Client } from "../client.js";
+import { loggedRequest } from "../util.js";
 import type {
     HasImportExecutionCucumberMultipartEndpoint,
     HasImportExecutionEndpoint,
     HasImportExecutionMultipartEndpoint,
     HasImportFeatureEndpoint,
-} from "./xray-client";
+} from "./xray-client.js";
 
 /**
  * An abstract Xray client class for communicating with Xray instances.

@@ -1,10 +1,10 @@
-import type { HasImportFeatureEndpoint } from "../../client/xray/xray-client";
-import { dedent } from "../../util/dedent";
-import { errorMessage } from "../../util/errors";
-import { HELP } from "../../util/help";
-import type { Logger } from "../../util/logging";
-import { computeOverlap } from "../../util/set";
-import type { FeatureFileData } from "../feature-file-processing/feature-file-processing";
+import type { HasImportFeatureEndpoint } from "../../client/xray/xray-client.js";
+import { dedent } from "../../util/dedent.js";
+import { errorMessage } from "../../util/errors.js";
+import { HELP } from "../../util/help.js";
+import type { Logger } from "../../util/logging.js";
+import { computeOverlap } from "../../util/set.js";
+import type { FeatureFileData } from "../feature-file-processing/feature-file-processing.js";
 
 async function uploadFeatureFiles(parameters: {
     clients: { xray: HasImportFeatureEndpoint };

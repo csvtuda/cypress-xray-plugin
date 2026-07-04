@@ -2,9 +2,9 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { getXrayStatus } from "./cucumber-status";
+import { getXrayStatus } from "./cucumber-status.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(getXrayStatus.name, () => {
         void it("uses passed as default status name for passed tests", () => {
             assert.strictEqual(getXrayStatus("passed"), "passed");

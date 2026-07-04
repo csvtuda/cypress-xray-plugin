@@ -2,45 +2,45 @@ import type {
     HasEditIssueEndpoint,
     HasGetFieldsEndpoint,
     HasSearchEndpoint,
-} from "../client/jira/jira-client";
+} from "../client/jira/jira-client.js";
+import type {
+    HasAddEvidenceToTestRunEndpoint,
+    HasGetTestRunResultsEndpoint,
+} from "../client/xray/xray-client-cloud.js";
+import type {
+    HasAddEvidenceEndpoint,
+    HasGetTestRunEndpoint,
+} from "../client/xray/xray-client-server.js";
 import type {
     HasImportExecutionCucumberMultipartEndpoint,
     HasImportExecutionMultipartEndpoint,
     HasImportFeatureEndpoint,
-} from "../client/xray/xray-client";
-import type {
-    HasAddEvidenceToTestRunEndpoint,
-    HasGetTestRunResultsEndpoint,
-} from "../client/xray/xray-client-cloud";
-import type {
-    HasAddEvidenceEndpoint,
-    HasGetTestRunEndpoint,
-} from "../client/xray/xray-client-server";
-import type { PluginConfigOptions, ScreenshotDetails } from "../models/cypress";
+} from "../client/xray/xray-client.js";
+import type { PluginConfigOptions, ScreenshotDetails } from "../models/cypress/index.js";
 import type {
     InternalCucumberOptions,
     InternalJiraOptions,
     InternalPluginOptions,
     InternalXrayOptions,
     PluginIssueUpdate,
-} from "../models/plugin";
-import type { MultipartInfo } from "../models/xray/requests/import-execution-multipart-info";
-import { dedent } from "../util/dedent";
-import type { Logger } from "../util/logging";
+} from "../models/plugin.js";
+import type { MultipartInfo } from "../models/xray/requests/import-execution-multipart-info.js";
+import { dedent } from "../util/dedent.js";
+import type { Logger } from "../util/logging.js";
 import type {
     EvidenceCollection,
     IterationParameterCollection,
     PluginEventEmitter,
-} from "./context";
-import type { MinimalCypressRunResult } from "./cypress-xray-plugin";
-import featureFileProcessing from "./feature-file-processing/feature-file-processing";
-import featureFileUpload from "./feature-file-upload/feature-file-upload";
-import jiraIssueSnapshots from "./jira-issue-snapshots/jira-issue-snapshots";
-import cucumberResultConversion from "./results-conversion/cucumber-result-conversion";
-import cypressResultConversion from "./results-conversion/cypress-result-conversion";
-import multipartInfoConversion from "./results-conversion/multipart-info-conversion";
-import cucumberResultUpload from "./results-upload/cucumber-result-upload";
-import cypressResultUpload from "./results-upload/cypress-result-upload";
+} from "./context.js";
+import type { MinimalCypressRunResult } from "./cypress-xray-plugin.js";
+import featureFileProcessing from "./feature-file-processing/feature-file-processing.js";
+import featureFileUpload from "./feature-file-upload/feature-file-upload.js";
+import jiraIssueSnapshots from "./jira-issue-snapshots/jira-issue-snapshots.js";
+import cucumberResultConversion from "./results-conversion/cucumber-result-conversion.js";
+import cypressResultConversion from "./results-conversion/cypress-result-conversion.js";
+import multipartInfoConversion from "./results-conversion/multipart-info-conversion.js";
+import cucumberResultUpload from "./results-upload/cucumber-result-upload.js";
+import cypressResultUpload from "./results-upload/cypress-result-upload.js";
 
 async function runFeatureFileUpload(parameters: {
     clients: {

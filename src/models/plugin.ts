@@ -1,18 +1,18 @@
 import type { IPreprocessorConfiguration } from "@badeball/cypress-cucumber-preprocessor";
 import type { AxiosRequestConfig } from "axios";
-import type { AxiosRestClient, RequestsOptions } from "../client/https/requests";
-import type { JiraClientCloud } from "../client/jira/jira-client-cloud";
-import type { JiraClientServer } from "../client/jira/jira-client-server";
-import type { XrayClientCloud } from "../client/xray/xray-client-cloud";
-import type { XrayClientServer } from "../client/xray/xray-client-server";
-import type { Level } from "../util/logging";
-import type { IssueUpdate } from "./jira/responses/issue-update";
-import type { XrayTestExecutionResults } from "./xray/import-test-execution-results";
-import type { CucumberMultipart } from "./xray/requests/import-execution-cucumber-multipart";
+import type { AxiosRestClient, RequestsOptions } from "../client/https/requests.js";
+import type { JiraClientCloud } from "../client/jira/jira-client-cloud.js";
+import type { JiraClientServer } from "../client/jira/jira-client-server.js";
+import type { XrayClientCloud } from "../client/xray/xray-client-cloud.js";
+import type { XrayClientServer } from "../client/xray/xray-client-server.js";
+import type { Level } from "../util/logging.js";
+import type { IssueUpdate } from "./jira/responses/issue-update.js";
+import type { XrayTestExecutionResults } from "./xray/import-test-execution-results.js";
+import type { CucumberMultipart } from "./xray/requests/import-execution-cucumber-multipart.js";
 import type {
     MultipartInfo,
     MultipartInfoCloud,
-} from "./xray/requests/import-execution-multipart-info";
+} from "./xray/requests/import-execution-multipart-info.js";
 
 /**
  * Models all options for configuring the behaviour of the plugin.

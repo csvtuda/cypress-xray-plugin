@@ -1,11 +1,11 @@
 import type { AxiosResponse } from "axios";
-import type { SearchRequestServer } from "../../models/jira/requests/search";
-import type { Issue } from "../../models/jira/responses/issue";
-import type { SearchResultsServer } from "../../models/jira/responses/search-results";
-import { LOG } from "../../util/logging";
-import { loggedRequest } from "../util";
-import { BaseJiraClient } from "./base-jira-client";
-import type { HasSearchEndpoint } from "./jira-client";
+import type { SearchRequestServer } from "../../models/jira/requests/search.js";
+import type { Issue } from "../../models/jira/responses/issue.js";
+import type { SearchResultsServer } from "../../models/jira/responses/search-results.js";
+import { LOG } from "../../util/logging.js";
+import { loggedRequest } from "../util.js";
+import { BaseJiraClient } from "./base-jira-client.js";
+import type { HasSearchEndpoint } from "./jira-client.js";
 
 /**
  * A Jira client class for communicating with Jira instances.

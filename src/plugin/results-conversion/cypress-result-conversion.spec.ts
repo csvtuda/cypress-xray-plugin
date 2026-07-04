@@ -2,13 +2,13 @@ import assert from "node:assert";
 import { join, relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { stub } from "../../../test/mocks";
-import { dedent } from "../../util/dedent";
-import type { Logger } from "../../util/logging";
-import { unknownToString } from "../../util/string";
-import cypressResultConversion from "./cypress-result-conversion";
+import { stub } from "../../../test/mocks.js";
+import { dedent } from "../../util/dedent.js";
+import type { Logger } from "../../util/logging.js";
+import { unknownToString } from "../../util/string.js";
+import cypressResultConversion from "./cypress-result-conversion.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(cypressResultConversion.convertCypressResults.name, () => {
         void describe("<13", () => {
             void it("converts test results into xray results json", () => {

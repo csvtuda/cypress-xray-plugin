@@ -2,10 +2,10 @@ import { createWriteStream } from "node:fs";
 import { resolve } from "node:path";
 import { run } from "node:test";
 import { junit, spec } from "node:test/reporters";
-import { initFaker } from "./faker";
-import { jsonReporter } from "./reporter";
-import { startServer, stopServer } from "./server";
-import { findFiles } from "./util";
+import { initFaker } from "./faker.js";
+import { jsonReporter } from "./reporter.js";
+import { startServer, stopServer } from "./server.js";
+import { findFiles } from "./util.js";
 
 const SRC_DIR = resolve("src");
 

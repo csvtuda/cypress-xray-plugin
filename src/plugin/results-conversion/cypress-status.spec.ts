@@ -2,10 +2,10 @@ import assert from "node:assert";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { CypressStatus } from "../../models/cypress/status";
-import { getXrayStatus, toCypressStatus } from "./cypress-status";
+import { CypressStatus } from "../../models/cypress/status.js";
+import { getXrayStatus, toCypressStatus } from "./cypress-status.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(toCypressStatus.name, () => {
         void it("parses passed statuses", () => {
             assert.strictEqual(toCypressStatus("passed"), CypressStatus.PASSED);

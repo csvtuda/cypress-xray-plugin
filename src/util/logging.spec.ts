@@ -6,11 +6,11 @@ import fs from "node:fs";
 import { relative } from "node:path";
 import { cwd } from "node:process";
 import { describe, it } from "node:test";
-import { resolveTestDirPath } from "../../test/util";
-import { LoggedError } from "./errors";
-import { CapturingLogger, PluginLogger } from "./logging";
+import { resolveTestDirPath } from "../../test/util.js";
+import { LoggedError } from "./errors.js";
+import { CapturingLogger, PluginLogger } from "./logging.js";
 
-void describe(relative(cwd(), __filename), () => {
+void describe(relative(cwd(), import.meta.filename), () => {
     void describe(PluginLogger.name, () => {
         void describe("message", () => {
             void it("handles single line messages", (context) => {

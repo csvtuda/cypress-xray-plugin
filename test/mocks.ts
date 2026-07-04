@@ -1,4 +1,4 @@
-import { unknownToString } from "../src/util/string";
+import { unknownToString } from "../src/util/string.js";
 
 export function getMockedCypress(): {
     cy: Cypress.cy & CyEventEmitter;
