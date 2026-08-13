@@ -71,7 +71,7 @@
         "@qytera/xray-client": "^4.0.0",
         "@types/node": "^25.9.4",
         "@types/semver": "^7.7.1",
-        "c8": "^11.0.0",
+        "c8": "^12.0.0",
         "cypress": "^15.19.0",
         "cypress-on-fix": "^1.1.0",
         "dotenv": "^17.4.2",
