@@ -69,7 +69,7 @@
         "@eslint/js": "^10.0.1",
         "@faker-js/faker": "^10.5.0",
         "@qytera/xray-client": "^4.0.0",
-        "@types/node": "^25.9.4",
+        "@types/node": "^26.1.2",
         "@types/semver": "^7.7.1",
         "c8": "^12.0.0",
         "cypress": "^15.19.0",
