@@ -1,9 +1,6 @@
 import ansiColors from "ansi-colors";
-import { Version2Client, Version3Client } from "jira.js";
-import type { Issue as IssueVersion2 } from "jira.js/version2/models/issue";
-import type { SearchAndReconcileResults as SearchAndReconcileResultsVersion2 } from "jira.js/version2/models/searchAndReconcileResults";
-import type { Issue as IssueVersion3 } from "jira.js/version3/models/issue";
-import type { SearchAndReconcileResults as SearchAndReconcileResultsVersion3 } from "jira.js/version3/models/searchAndReconcileResults";
+import { CloudClient } from "jira.js";
+import { Issue, SearchAndReconcileResults } from "jira.js/cloud";
 import assert from "node:assert";
 import { setTimeout } from "node:timers/promises";
 
@@ -59,7 +56,7 @@ export function getCreatedTestExecutionIssueKey(
  * @returns The matching Jira issues once all requested issues and fields are available.
  */
 export async function searchIssues(
-    client: Version2Client | Version3Client,
+    client: CloudClient,
     issueKeys: readonly string[],
     options?: {
         /**
@@ -73,7 +70,7 @@ export async function searchIssues(
          */
         logger?: (message: string) => void;
     }
-): Promise<(IssueVersion2 | IssueVersion3)[]> {
+): Promise<Issue[]> {
     const sortedIssueKeys = sortJiraIssueKeys(issueKeys);
     if (options?.logger) {
         options.logger(ansiColors.gray(`Searching for Jira issues: ${sortedIssueKeys.join(", ")}`));
@@ -91,10 +88,7 @@ export async function searchIssues(
                 options
             );
             responses.push(searchResult);
-            return sortByIssueKeyOrder<IssueVersion2 | IssueVersion3>(
-                issueKeys,
-                searchResult.issues
-            );
+            return sortByIssueKeyOrder<Issue>(issueKeys, searchResult.issues);
         } catch (error: unknown) {
             if (options?.logger) {
                 options.logger(
@@ -117,7 +111,7 @@ export async function searchIssues(
     );
 }
 
-function sortByIssueKeyOrder<T extends { key: string }>(
+function sortByIssueKeyOrder<T extends { key?: string }>(
     order: readonly string[],
     items: readonly T[]
 ): T[] {
@@ -126,8 +120,8 @@ function sortByIssueKeyOrder<T extends { key: string }>(
         rank.set(key, index);
     });
     return [...items].sort((a, b) => {
-        const aRank = rank.get(a.key);
-        const bRank = rank.get(b.key);
+        const aRank = rank.get(a.key ?? "");
+        const bRank = rank.get(b.key ?? "");
         if (aRank === undefined && bRank === undefined) return 0;
         if (aRank === undefined) return 1;
         if (bRank === undefined) return -1;
@@ -135,12 +129,10 @@ function sortByIssueKeyOrder<T extends { key: string }>(
     });
 }
 
-type IssueSearchResult =
-    | (SearchAndReconcileResultsVersion2 & { issues: IssueVersion2[] })
-    | (SearchAndReconcileResultsVersion3 & { issues: IssueVersion3[] });
+type IssueSearchResult = SearchAndReconcileResults & { issues: Issue[] };
 
 async function searchIssuesAndVerifyResponse(
-    client: Version2Client | Version3Client,
+    client: CloudClient,
     issueKeys: readonly string[],
     options:
         | {
@@ -158,31 +150,31 @@ async function searchIssuesAndVerifyResponse(
         | undefined
 ): Promise<IssueSearchResult> {
     const jql = `issue in (${issueKeys.join(",")})`;
-    let issueData;
-    if (client instanceof Version3Client) {
-        issueData = await client.issueSearch.searchForIssuesUsingJqlEnhancedSearchPost({
-            fields: [...(options?.fields ?? []), "key"],
-            jql,
-        });
-    } else if (client instanceof Version2Client) {
-        issueData = await client.issueSearch.searchForIssuesUsingJqlPost({
-            fields: [...(options?.fields ?? []), "key"],
-            jql,
-        });
-    } else {
-        throw new TypeError(`Unsupported Jira client type: ${String(client)}`);
-    }
+    const issueData = await client.issueSearch.searchAndReconsileIssuesUsingJqlPost({
+        fields: [...(options?.fields ?? []), "key"],
+        jql,
+    });
     assert.ok(issueData.issues, `No issues were returned: ${JSON.stringify(issueData, null, 2)}`);
     assert.deepStrictEqual(
         issueKeys,
-        sortJiraIssueKeys(issueData.issues.map((issue) => issue.key))
+        sortJiraIssueKeys(
+            issueData.issues.map((issue) => {
+                assert.ok(issue.key, `Issue has no key: ${JSON.stringify(issueData, null, 2)}`);
+                return issue.key;
+            })
+        )
     );
-    if (options?.fields !== undefined) {
+    const requiredFields = options?.fields;
+    if (requiredFields !== undefined) {
         for (const issue of issueData.issues) {
-            for (const field of options.fields) {
+            for (const field of requiredFields) {
                 if (["id", "key"].includes(field)) {
                     continue;
                 }
+                assert.ok(
+                    issue.fields,
+                    `Response of issue ${issue.key} does not contain any fields: ${JSON.stringify(issue, null, 2)}`
+                );
                 assert.ok(
                     field in issue.fields,
                     `Response of issue ${issue.key} does not contain a value for field ${field}: ${JSON.stringify(issue, null, 2)}`
