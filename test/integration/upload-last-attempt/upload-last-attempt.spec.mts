@@ -47,6 +47,14 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                         [testExecutionIssueKey, testCase.linkedTests[0], testCase.linkedTests[1]],
                         { logger: context.diagnostic.bind(context), fields: ["id"] }
                     );
+                assert.ok(
+                    executionIssue.id,
+                    `Execution issue does not have an ID: ${JSON.stringify(executionIssue, null, 2)}`
+                );
+                assert.ok(
+                    testIssueRetried.id,
+                    `Retried test issue does not have an ID: ${JSON.stringify(testIssueRetried, null, 2)}`
+                );
                 const testResultsRetried = await XRAY_CLIENT_CLOUD.graphql.getTestRuns(
                     {
                         limit: 1,
@@ -74,6 +82,10 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                         iterations: { results: [] },
                     },
                 ]);
+                assert.ok(
+                    testIssueRetriedScreenshot.id,
+                    `Retried screenshot test issue does not have an ID: ${JSON.stringify(testIssueRetriedScreenshot, null, 2)}`
+                );
                 const testResultsRetriedScreenshot = await XRAY_CLIENT_CLOUD.graphql.getTestRuns(
                     {
                         limit: 1,

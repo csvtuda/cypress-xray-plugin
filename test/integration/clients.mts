@@ -1,5 +1,5 @@
 import { XrayClientCloud, XrayClientServer } from "@qytera/xray-client";
-import { Version2Client, Version3Client } from "jira.js";
+import { CloudClient, createCloudClient } from "jira.js";
 
 import "dotenv/config";
 
@@ -14,28 +14,24 @@ export const XRAY_CLIENT_CLOUD = new XrayClientCloud({
 
 export const XRAY_CLIENT_SERVER = new XrayClientServer({
     credentials: {
-        password: getEnv("CYPRESS_JIRA_PASSWORD_SERVER"),
-        username: getEnv("CYPRESS_JIRA_USERNAME_SERVER"),
+        token: getEnv("CYPRESS_JIRA_API_TOKEN_SERVER"),
     },
     url: getEnv("CYPRESS_JIRA_URL_SERVER"),
 });
 
-export const JIRA_CLIENT_CLOUD = new Version3Client({
-    authentication: {
-        basic: {
-            apiToken: getEnv("CYPRESS_JIRA_API_TOKEN_CLOUD"),
-            email: getEnv("CYPRESS_JIRA_USERNAME_CLOUD"),
-        },
+export const JIRA_CLIENT_CLOUD = createCloudClient({
+    auth: {
+        type: "basic",
+        apiToken: getEnv("CYPRESS_JIRA_API_TOKEN_CLOUD"),
+        email: getEnv("CYPRESS_JIRA_USERNAME_CLOUD"),
     },
     host: getEnv("CYPRESS_JIRA_URL_CLOUD"),
 });
 
-export const JIRA_CLIENT_SERVER = new Version2Client({
-    authentication: {
-        basic: {
-            apiToken: getEnv("CYPRESS_JIRA_PASSWORD_SERVER"),
-            email: getEnv("CYPRESS_JIRA_USERNAME_SERVER"),
-        },
+export const JIRA_CLIENT_SERVER = createCloudClient({
+    auth: {
+        type: "bearer",
+        token: getEnv("CYPRESS_JIRA_API_TOKEN_SERVER"),
     },
     host: getEnv("CYPRESS_JIRA_URL_SERVER"),
 });
@@ -44,10 +40,7 @@ export function getIntegrationClient<T extends "cloud" | "server">(
     client: "xray",
     service: T
 ): T extends "cloud" ? XrayClientCloud : XrayClientServer;
-export function getIntegrationClient<T extends "cloud" | "server">(
-    client: "jira",
-    service: T
-): T extends "cloud" ? Version3Client : Version2Client;
+export function getIntegrationClient(client: "jira", service: "cloud" | "server"): CloudClient;
 export function getIntegrationClient(client: "jira" | "xray", service: "cloud" | "server") {
     switch (client) {
         case "jira": {
