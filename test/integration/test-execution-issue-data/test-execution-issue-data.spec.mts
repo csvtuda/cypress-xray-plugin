@@ -45,11 +45,11 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     getIntegrationClient("jira", "cloud"),
                     [testExecutionIssueKey],
                     {
-                        logger: context.diagnostic.bind(context),
                         fields: ["labels", "summary"],
+                        logger: context.diagnostic.bind(context),
                     }
                 );
-
+                assert.ok(searchResult.fields);
                 assert.deepStrictEqual(searchResult.fields.labels, test.expectedLabels);
                 assert.deepStrictEqual(searchResult.fields.summary, test.expectedSummary);
             });
@@ -86,11 +86,12 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     JIRA_CLIENT_SERVER,
                     [testExecutionIssueKey],
                     {
-                        logger: context.diagnostic.bind(context),
                         fields: ["labels", "summary"],
+                        logger: context.diagnostic.bind(context),
                     }
                 );
 
+                assert.ok(executionIssue.fields);
                 assert.deepStrictEqual(executionIssue.fields.labels, test.expectedLabels);
                 assert.deepStrictEqual(executionIssue.fields.summary, test.expectedSummary);
             });

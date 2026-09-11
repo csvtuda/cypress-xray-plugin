@@ -39,8 +39,10 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 const [executionIssue, testIssue] = await searchIssues(
                     JIRA_CLIENT_CLOUD,
                     [testExecutionIssueKey, testCase.linkedTest],
-                    { logger: context.diagnostic.bind(context), fields: ["id"] }
+                    { fields: ["id"], logger: context.diagnostic.bind(context) }
                 );
+                assert.ok(executionIssue.id);
+                assert.ok(testIssue.id);
                 const testResults = await XRAY_CLIENT_CLOUD.graphql.getTestRuns(
                     {
                         limit: 1,

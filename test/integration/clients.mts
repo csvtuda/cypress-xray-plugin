@@ -1,5 +1,6 @@
 import { XrayClientCloud, XrayClientServer } from "@qytera/xray-client";
-import { Version2Client, Version3Client } from "jira.js";
+import type { CloudClient, ServerClient } from "jira.js";
+import { createCloudClient, createServerClient } from "jira.js";
 
 import "dotenv/config";
 
@@ -14,31 +15,41 @@ export const XRAY_CLIENT_CLOUD = new XrayClientCloud({
 
 export const XRAY_CLIENT_SERVER = new XrayClientServer({
     credentials: {
-        password: getEnv("CYPRESS_JIRA_PASSWORD_SERVER"),
-        username: getEnv("CYPRESS_JIRA_USERNAME_SERVER"),
+        token: getEnv("CYPRESS_JIRA_API_TOKEN_SERVER"),
     },
     url: getEnv("CYPRESS_JIRA_URL_SERVER"),
 });
 
-export const JIRA_CLIENT_CLOUD = new Version3Client({
-    authentication: {
-        basic: {
+export interface JiraClientCloud extends CloudClient {
+    kind: "cloud";
+}
+
+export interface JiraClientServer extends ServerClient {
+    kind: "server";
+}
+
+export const JIRA_CLIENT_CLOUD: JiraClientCloud = {
+    ...createCloudClient({
+        auth: {
             apiToken: getEnv("CYPRESS_JIRA_API_TOKEN_CLOUD"),
             email: getEnv("CYPRESS_JIRA_USERNAME_CLOUD"),
+            type: "basic",
         },
-    },
-    host: getEnv("CYPRESS_JIRA_URL_CLOUD"),
-});
+        host: getEnv("CYPRESS_JIRA_URL_CLOUD"),
+    }),
+    kind: "cloud",
+};
 
-export const JIRA_CLIENT_SERVER = new Version2Client({
-    authentication: {
-        basic: {
-            apiToken: getEnv("CYPRESS_JIRA_PASSWORD_SERVER"),
-            email: getEnv("CYPRESS_JIRA_USERNAME_SERVER"),
+export const JIRA_CLIENT_SERVER: JiraClientServer = {
+    ...createServerClient({
+        auth: {
+            token: getEnv("CYPRESS_JIRA_API_TOKEN_SERVER"),
+            type: "bearer",
         },
-    },
-    host: getEnv("CYPRESS_JIRA_URL_SERVER"),
-});
+        host: getEnv("CYPRESS_JIRA_URL_SERVER"),
+    }),
+    kind: "server",
+};
 
 export function getIntegrationClient<T extends "cloud" | "server">(
     client: "xray",
@@ -47,7 +58,7 @@ export function getIntegrationClient<T extends "cloud" | "server">(
 export function getIntegrationClient<T extends "cloud" | "server">(
     client: "jira",
     service: T
-): T extends "cloud" ? Version3Client : Version2Client;
+): T extends "cloud" ? JiraClientCloud : JiraClientServer;
 export function getIntegrationClient(client: "jira" | "xray", service: "cloud" | "server") {
     switch (client) {
         case "jira": {

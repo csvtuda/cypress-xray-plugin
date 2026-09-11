@@ -38,9 +38,10 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 const [testExecutionIssue, testIssue] = await searchIssues(
                     getIntegrationClient("jira", "cloud"),
                     [testExecutionIssueKey, testCase.linkedTest],
-                    { logger: context.diagnostic.bind(context), fields: ["id"] }
+                    { fields: ["id"], logger: context.diagnostic.bind(context) }
                 );
-
+                assert.ok(testExecutionIssue.id);
+                assert.ok(testIssue.id);
                 const testResults = await getIntegrationClient("xray", "cloud").graphql.getTestRuns(
                     {
                         limit: 1,
@@ -67,8 +68,6 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 assert.partialDeepStrictEqual(testResults, {
                     results: [
                         {
-                            status: { name: "FAILED" },
-                            test: { jira: { key: testCase.linkedTest } },
                             evidence: [
                                 {
                                     filename: `${testCase.linkedTest} Test Suite Name -- Test Method Name 1 (failed).png`,
@@ -87,6 +86,8 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                                     },
                                 ],
                             },
+                            status: { name: "FAILED" },
+                            test: { jira: { key: testCase.linkedTest } },
                         },
                     ],
                 });
@@ -126,8 +127,6 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     testIssueKey: testCase.linkedTest,
                 });
                 assert.partialDeepStrictEqual(testRun, {
-                    status: "FAIL",
-                    testKey: testCase.linkedTest,
                     evidences: [
                         {
                             fileName: `${testCase.linkedTest} Test Suite Name -- Test Method Name 1 (failed).png`,
@@ -139,9 +138,11 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     iterations: [
                         // Workaround because of configured status automations for which I don't have permission.
                         // Would be "FAIL" normally.
-                        { status: "TODO", parameters: [{ name: "iteration", value: "1" }] },
-                        { status: "TODO", parameters: [{ name: "iteration", value: "2" }] },
+                        { parameters: [{ name: "iteration", value: "1" }], status: "TODO" },
+                        { parameters: [{ name: "iteration", value: "2" }], status: "TODO" },
                     ],
+                    status: "FAIL",
+                    testKey: testCase.linkedTest,
                 });
             });
         }
