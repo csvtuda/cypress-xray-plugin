@@ -63,7 +63,7 @@
         }
     },
     "devDependencies": {
-        "@badeball/cypress-cucumber-preprocessor": "^26.0.0",
+        "@badeball/cypress-cucumber-preprocessor": "^28.0.0",
         "@bahmutov/cypress-esbuild-preprocessor": "^2.2.8",
         "@cucumber/messages": "^34.2.1",
         "@eslint/js": "^10.0.1",
