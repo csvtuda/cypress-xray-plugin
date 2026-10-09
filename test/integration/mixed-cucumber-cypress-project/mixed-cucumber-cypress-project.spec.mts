@@ -39,8 +39,9 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 const [issue] = await searchIssues(
                     getIntegrationClient("jira", "cloud"),
                     [testExecutionIssueKey],
-                    { logger: context.diagnostic.bind(context), fields: ["id"] }
+                    { fields: ["id"], logger: context.diagnostic.bind(context) }
                 );
+                assert.ok(issue.id);
                 const execution = await getIntegrationClient(
                     "xray",
                     "cloud"

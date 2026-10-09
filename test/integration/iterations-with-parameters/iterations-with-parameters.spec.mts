@@ -43,8 +43,10 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 const [executionIssue, testIssue] = await searchIssues(
                     JIRA_CLIENT_CLOUD,
                     [testExecutionIssueKey, testCase.linkedTest],
-                    { logger: context.diagnostic.bind(context), fields: ["id"] }
+                    { fields: ["id"], logger: context.diagnostic.bind(context) }
                 );
+                assert.ok(executionIssue.id);
+                assert.ok(testIssue.id);
                 const testResults = await XRAY_CLIENT_CLOUD.graphql.getTestRuns(
                     {
                         limit: 1,
@@ -71,8 +73,6 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 assert.partialDeepStrictEqual(testResults, {
                     results: [
                         {
-                            status: { name: "PASSED" },
-                            test: { jira: { key: testCase.linkedTest } },
                             iterations: {
                                 results: [
                                     {
@@ -117,6 +117,8 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                                     },
                                 ],
                             },
+                            status: { name: "PASSED" },
+                            test: { jira: { key: testCase.linkedTest } },
                         },
                     ],
                 });
@@ -156,13 +158,8 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                     testIssueKey: testCase.linkedTest,
                 });
                 assert.partialDeepStrictEqual(testRun, {
-                    status: "PASS",
-                    testKey: testCase.linkedTest,
                     iterations: [
                         {
-                            // Workarounds because of configured status automations for which I don't have permission.
-                            // "TODO" Would be "PASS" normally.
-                            status: "TODO",
                             parameters: [
                                 { name: "iteration", value: "1" },
                                 { name: "hello", value: "there" },
@@ -170,9 +167,11 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                                 { name: "using", value: "cy.task" },
                                 { name: "id", value: "#1" },
                             ],
+                            // Workarounds because of configured status automations for which I don't have permission.
+                            // "TODO" Would be "PASS" normally.
+                            status: "TODO",
                         },
                         {
-                            status: "TODO",
                             parameters: [
                                 { name: "iteration", value: "2" },
                                 { name: "hello", value: "there" },
@@ -180,9 +179,9 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                                 { name: "using", value: "cy.task" },
                                 { name: "id", value: "#2" },
                             ],
+                            status: "TODO",
                         },
                         {
-                            status: "TODO",
                             parameters: [
                                 { name: "iteration", value: "3" },
                                 { name: "hello", value: "there" },
@@ -190,9 +189,9 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                                 { name: "using", value: "cy.task" },
                                 { name: "id", value: "#3" },
                             ],
+                            status: "TODO",
                         },
                         {
-                            status: "TODO",
                             parameters: [
                                 { name: "iteration", value: "4" },
                                 { name: "hello", value: "there" },
@@ -200,8 +199,11 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                                 { name: "using", value: "enqueueTask" },
                                 { name: "id", value: "" },
                             ],
+                            status: "TODO",
                         },
                     ],
+                    status: "PASS",
+                    testKey: testCase.linkedTest,
                 });
             });
         }

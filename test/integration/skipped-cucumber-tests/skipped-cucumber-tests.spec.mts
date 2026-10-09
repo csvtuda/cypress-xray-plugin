@@ -43,8 +43,9 @@ void describe(relative(cwd(), import.meta.filename), { timeout: 180000 }, () => 
                 const [execution] = await searchIssues(
                     getIntegrationClient("jira", "cloud"),
                     [testExecutionIssueKey],
-                    { logger: context.diagnostic.bind(context), fields: ["id"] }
+                    { fields: ["id"], logger: context.diagnostic.bind(context) }
                 );
+                assert.ok(execution.id);
                 const query = await getIntegrationClient("xray", "cloud").graphql.getTestExecution(
                     { issueId: execution.id },
                     (testExecution) => [
