@@ -1,8 +1,22 @@
 # Changelog
 
+# `8.6.8`
+
+- Added support for Cypress v16
+
+## Dependency updates
+
+- Bumped form-data from 4.0.5 to 4.0.6
+- Bumped axios from 1.15.2 to 1.20.0
+- Bumped @cucumber/gherkin from 39.0.0 to 42.0.1
+- Bumped semver from 7.7.4 to 7.8.5
+
 # `8.6.7`
 
 - Moved @cucumber/messages to dev dependencies ([#105](https://github.com/csvtuda/cypress-xray-plugin/issues/105))
+
+## Dependency updates
+
 - Bumped axios from 1.13.5 to 1.15.2
 - Bumped @cucumber/gherkin from 37.0.1 to 39.0.0
 
