@@ -3,8 +3,8 @@
   <img width="100%" src="logo.svg" alt="Cypress Xray Plugin">
 </h1>
 
-[![npm version](https://img.shields.io/npm/v/cypress-xray-plugin?style=flat-square)](https://www.npmjs.com/package/cypress-xray-plugin)
-[![npm downloads](https://img.shields.io/npm/dm/cypress-xray-plugin?style=flat-square)](https://www.npmjs.com/package/cypress-xray-plugin)
+[![npm version](https://img.shields.io/npm/v/@csvtuda/cypress-xray-plugin?style=flat-square)](https://www.npmjs.com/package/@csvtuda/cypress-xray-plugin)
+[![npm downloads](https://img.shields.io/npm/dm/@csvtuda/cypress-xray-plugin?style=flat-square)](https://www.npmjs.com/package/@csvtuda/cypress-xray-plugin)
 [![open GitHub issues](https://img.shields.io/github/issues-raw/csvtuda/cypress-xray-plugin?style=flat-square)](https://github.com/csvtuda/cypress-xray-plugin/issues?q=is%3Aissue+is%3Aopen)
 [![unaddressed GitHub issues](https://img.shields.io/github/issues-search/csvtuda/cypress-xray-plugin?label=unaddressed%20issues&query=no%3Aassignee%20is%3Aopen&style=flat-square)](https://github.com/csvtuda/cypress-xray-plugin/issues?q=is%3Aissue+is%3Aopen+no%3Aassignee)
 
